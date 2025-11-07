@@ -1,0 +1,132 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2025-10-25T14:26:41.631Z",
+  "architecture": "Edge-Native + AI",
+  "data_format": "Parquet + DuckDB-WASM",
+  "id_system": {
+    "enabled": true,
+    "description": "Full ID-based relationship system",
+    "relationships": {
+      "colleges": "college_id → colleges.id",
+      "courses": "course_id → courses.id",
+      "states": "state_id → states.id",
+      "categories": "category_id → categories.id",
+      "quotas": "quota_id → quotas.id"
+    }
+  },
+  "data_sources": {
+    "master_data": {
+      "colleges": {
+        "path": "/data/parquet/master_data/colleges.parquet",
+        "type": "colleges",
+        "format": "parquet",
+        "id_field": "id",
+        "size": "1.13 KB"
+      },
+      "courses": {
+        "path": "/data/parquet/master_data/courses.parquet",
+        "type": "courses",
+        "format": "parquet",
+        "id_field": "id",
+        "size": "1.37 KB"
+      },
+      "states": {
+        "path": "/data/parquet/master_data/states.parquet",
+        "type": "states",
+        "format": "parquet",
+        "id_field": "id",
+        "size": "141.00 B"
+      },
+      "categories": {
+        "path": "/data/parquet/master_data/categories.parquet",
+        "type": "categories",
+        "format": "parquet",
+        "id_field": "id",
+        "size": "332.00 B"
+      },
+      "quotas": {
+        "path": "/data/parquet/master_data/quotas.parquet",
+        "type": "quotas",
+        "format": "parquet",
+        "id_field": "id",
+        "size": "237.00 B"
+      }
+    },
+    "streams": {
+      "UG": {
+        "description": "Undergraduate Medical & Dental (MBBS, BDS)",
+        "priority_data": "/data/parquet/UG/UG_priority_rounds.parquet",
+        "other_data": "/data/parquet/UG/UG_other_rounds.parquet",
+        "format": "parquet",
+        "compression": "SNAPPY",
+        "priority_rounds": [
+          1,
+          2
+        ],
+        "id_relationships": {
+          "college_id": "colleges.id",
+          "course_id": "courses.id",
+          "state_id": "states.id",
+          "category_id": "categories.id",
+          "quota_id": "quotas.id"
+        }
+      },
+      "PG_MEDICAL": {
+        "description": "Postgraduate Medical (MD, MS, DNB, DIPLOMA, DNB-DIPLOMA)",
+        "priority_data": "/data/parquet/PG_MEDICAL/PG_MEDICAL_priority_rounds.parquet",
+        "other_data": "/data/parquet/PG_MEDICAL/PG_MEDICAL_other_rounds.parquet",
+        "format": "parquet",
+        "compression": "SNAPPY",
+        "priority_rounds": [
+          1,
+          2
+        ],
+        "excludes": [
+          "DENTAL"
+        ],
+        "id_relationships": {
+          "college_id": "colleges.id",
+          "course_id": "courses.id",
+          "state_id": "states.id",
+          "category_id": "categories.id",
+          "quota_id": "quotas.id"
+        }
+      },
+      "PG_DENTAL": {
+        "description": "Postgraduate Dental (MDS, PG DIPLOMA)",
+        "priority_data": "/data/parquet/PG_DENTAL/PG_DENTAL_priority_rounds.parquet",
+        "other_data": "/data/parquet/PG_DENTAL/PG_DENTAL_other_rounds.parquet",
+        "format": "parquet",
+        "compression": "SNAPPY",
+        "priority_rounds": [
+          1,
+          2
+        ],
+        "excludes": [
+          "MEDICAL"
+        ],
+        "id_relationships": {
+          "college_id": "colleges.id",
+          "course_id": "courses.id",
+          "state_id": "states.id",
+          "category_id": "categories.id",
+          "quota_id": "quotas.id"
+        }
+      }
+    }
+  },
+  "performance": {
+    "expected_load_time": "< 200ms",
+    "query_response_time": "< 20ms",
+    "memory_usage": "< 50MB",
+    "cache_hit_rate": "> 95%",
+    "compression_ratio": "~80%"
+  },
+  "loading_strategy": {
+    "initial_load": "Priority rounds (1 & 2) only",
+    "progressive_load": "Other rounds on demand",
+    "format": "Parquet for DuckDB-WASM processing",
+    "caching": "IndexedDB with TTL",
+    "id_joins": "Client-side ID-based joins with DuckDB"
+  }
+}

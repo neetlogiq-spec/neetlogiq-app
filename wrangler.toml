@@ -1,0 +1,44 @@
+name = "neetlogiq-edge-native"
+main = "src/worker.js"
+compatibility_date = "2024-10-25"
+compatibility_flags = ["nodejs_compat"]
+
+# Environment variables
+[vars]
+ENVIRONMENT = "development"
+API_VERSION = "v1"
+
+[env.production]
+name = "neetlogiq-edge-native-prod"
+vars = { ENVIRONMENT = "production" }
+
+[env.staging]
+name = "neetlogiq-edge-native-staging"
+vars = { ENVIRONMENT = "staging" }
+
+# Local development configuration
+[env.local]
+name = "neetlogiq-edge-native-local"
+vars = { ENVIRONMENT = "local" }
+
+# KV Namespaces for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "9d0f582b2da1411898587d33391a1dc5"
+preview_id = "5c9be6eb9e5f4294ba556fc64b6349ec"
+
+# D1 Database for data storage
+[[d1_databases]]
+binding = "DB"
+database_name = "neetlogiq-data"
+database_id = "efb55e4d-183e-4957-9715-26189901b5ad"
+
+# R2 Bucket for static assets
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "neetlogiq-assets"
+
+# Vectorize for AI search
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "neetlogiq-vectors"

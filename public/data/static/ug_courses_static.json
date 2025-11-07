@@ -1,0 +1,310 @@
+{
+  "stream": "UG",
+  "data_type": "courses",
+  "year": 2024,
+  "generated_at": "2025-10-25T12:44:07.612Z",
+  "version": "1.0.0",
+  "total_courses": 46,
+  "data": [
+    {
+      "id": "course_1",
+      "name": "MBBS",
+      "duration": 4,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 92,
+      "fee_range": {
+        "min": 49190,
+        "max": 354303
+      }
+    },
+    {
+      "id": "course_2",
+      "name": "BDS",
+      "duration": 5,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 98,
+      "fee_range": {
+        "min": 20657,
+        "max": 240462
+      }
+    },
+    {
+      "id": "course_3",
+      "name": "MD",
+      "duration": 3,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 96,
+      "fee_range": {
+        "min": 23861,
+        "max": 185166
+      }
+    },
+    {
+      "id": "course_4",
+      "name": "MS",
+      "duration": 2,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 90,
+      "fee_range": {
+        "min": 17224,
+        "max": 420529
+      }
+    },
+    {
+      "id": "course_5",
+      "name": "MDS",
+      "duration": 4,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 95,
+      "fee_range": {
+        "min": 45622,
+        "max": 151713
+      }
+    },
+    {
+      "id": "course_6",
+      "name": "DNB",
+      "duration": 5,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 81,
+      "fee_range": {
+        "min": 48719,
+        "max": 191217
+      }
+    },
+    {
+      "id": "course_7",
+      "name": "DIPLOMA",
+      "duration": 3,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 61,
+      "fee_range": {
+        "min": 45722,
+        "max": 211253
+      }
+    },
+    {
+      "id": "course_8",
+      "name": "MBBS",
+      "duration": 2,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 78,
+      "fee_range": {
+        "min": 17255,
+        "max": 187037
+      }
+    },
+    {
+      "id": "course_9",
+      "name": "BDS",
+      "duration": 4,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 16,
+      "fee_range": {
+        "min": 59322,
+        "max": 232710
+      }
+    },
+    {
+      "id": "course_10",
+      "name": "MD",
+      "duration": 5,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 80,
+      "fee_range": {
+        "min": 56789,
+        "max": 442165
+      }
+    },
+    {
+      "id": "course_11",
+      "name": "MS",
+      "duration": 3,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 14,
+      "fee_range": {
+        "min": 56857,
+        "max": 496514
+      }
+    },
+    {
+      "id": "course_12",
+      "name": "MDS",
+      "duration": 2,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 31,
+      "fee_range": {
+        "min": 35387,
+        "max": 164949
+      }
+    },
+    {
+      "id": "course_13",
+      "name": "DNB",
+      "duration": 4,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 17,
+      "fee_range": {
+        "min": 30296,
+        "max": 599247
+      }
+    },
+    {
+      "id": "course_14",
+      "name": "DIPLOMA",
+      "duration": 5,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 36,
+      "fee_range": {
+        "min": 15594,
+        "max": 584942
+      }
+    },
+    {
+      "id": "course_15",
+      "name": "MBBS",
+      "duration": 3,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 72,
+      "fee_range": {
+        "min": 46039,
+        "max": 275969
+      }
+    },
+    {
+      "id": "course_16",
+      "name": "BDS",
+      "duration": 2,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 88,
+      "fee_range": {
+        "min": 14086,
+        "max": 134751
+      }
+    },
+    {
+      "id": "course_17",
+      "name": "MD",
+      "duration": 4,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 105,
+      "fee_range": {
+        "min": 56080,
+        "max": 589759
+      }
+    },
+    {
+      "id": "course_18",
+      "name": "MS",
+      "duration": 5,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 79,
+      "fee_range": {
+        "min": 26047,
+        "max": 399735
+      }
+    },
+    {
+      "id": "course_19",
+      "name": "MDS",
+      "duration": 3,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 77,
+      "fee_range": {
+        "min": 32100,
+        "max": 159425
+      }
+    },
+    {
+      "id": "course_20",
+      "name": "DNB",
+      "duration": 2,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 22,
+      "fee_range": {
+        "min": 25900,
+        "max": 542769
+      }
+    },
+    {
+      "id": "course_21",
+      "name": "DIPLOMA",
+      "duration": 4,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 42,
+      "fee_range": {
+        "min": 55370,
+        "max": 576102
+      }
+    },
+    {
+      "id": "course_22",
+      "name": "MBBS",
+      "duration": 5,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 101,
+      "fee_range": {
+        "min": 21202,
+        "max": 307818
+      }
+    },
+    {
+      "id": "course_23",
+      "name": "BDS",
+      "duration": 3,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 48,
+      "fee_range": {
+        "min": 42010,
+        "max": 387637
+      }
+    },
+    {
+      "id": "course_24",
+      "name": "MD",
+      "duration": 2,
+      "level": "PG",
+      "stream": "DENTAL",
+      "total_seats": 109,
+      "fee_range": {
+        "min": 42548,
+        "max": 133369
+      }
+    },
+    {
+      "id": "course_25",
+      "name": "MS",
+      "duration": 4,
+      "level": "UG",
+      "stream": "MEDICAL",
+      "total_seats": 100,
+      "fee_range": {
+        "min": 23122,
+        "max": 425398
+      }
+    }
+  ]
+}

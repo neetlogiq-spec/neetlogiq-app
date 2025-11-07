@@ -1,0 +1,1865 @@
+{
+  "CRS0001": {
+    "id": "CRS0001",
+    "name": "ALL PG COURSES",
+    "short_name": "ALL PG COURSES",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0002": {
+    "id": "CRS0002",
+    "name": "BDS",
+    "short_name": "BDS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0003": {
+    "id": "CRS0003",
+    "name": "DIPLOMA IN ANAESTHESIOLOGY",
+    "short_name": "DIPLOMA IN ANAESTHESIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0004": {
+    "id": "CRS0004",
+    "name": "DIPLOMA IN BACTERIOLOGY",
+    "short_name": "DIPLOMA IN BACTERIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0005": {
+    "id": "CRS0005",
+    "name": "DIPLOMA IN CHILD HEALTH/ PAEDIATRICS",
+    "short_name": "DIPLOMA IN CHILD HEALTH/ PAEDIATRICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0006": {
+    "id": "CRS0006",
+    "name": "DIPLOMA IN CLINICAL PATHOLOGY",
+    "short_name": "DIPLOMA IN CLINICAL PATHOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0007": {
+    "id": "CRS0007",
+    "name": "DIPLOMA IN CONSERVATIVE DENTISTRY",
+    "short_name": "DIPLOMA IN CONSERVATIVE DENTISTRY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0008": {
+    "id": "CRS0008",
+    "name": "DIPLOMA IN DERMATOLOGY",
+    "short_name": "DIPLOMA IN DERMATOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0009": {
+    "id": "CRS0009",
+    "name": "DIPLOMA IN DIABETOLOGY",
+    "short_name": "DIPLOMA IN DIABETOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0010": {
+    "id": "CRS0010",
+    "name": "DIPLOMA IN EMERGENCY MEDICINE",
+    "short_name": "DIPLOMA IN EMERGENCY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0011": {
+    "id": "CRS0011",
+    "name": "DIPLOMA IN ENT",
+    "short_name": "DIPLOMA IN ENT",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0012": {
+    "id": "CRS0012",
+    "name": "DIPLOMA IN FAMILY MEDICINE",
+    "short_name": "DIPLOMA IN FAMILY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0013": {
+    "id": "CRS0013",
+    "name": "DIPLOMA IN FORENSIC MEDICINE",
+    "short_name": "DIPLOMA IN FORENSIC MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0014": {
+    "id": "CRS0014",
+    "name": "DIPLOMA IN HEALTH ADMINISTRATION",
+    "short_name": "DIPLOMA IN HEALTH ADMINISTRATION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0015": {
+    "id": "CRS0015",
+    "name": "DIPLOMA IN HEALTH EDUCATION",
+    "short_name": "DIPLOMA IN HEALTH EDUCATION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0016": {
+    "id": "CRS0016",
+    "name": "DIPLOMA IN HOSPITAL ADMINISTRATION",
+    "short_name": "DIPLOMA IN HOSPITAL ADMINISTRATION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0017": {
+    "id": "CRS0017",
+    "name": "DIPLOMA IN IMMUNO HAEMATOLOGY AND BLOOD TRANSFUSION",
+    "short_name": "DIPLOMA IN IMMUNO HAEMATOLOGY AND BLOOD TRANSFUSION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0018": {
+    "id": "CRS0018",
+    "name": "DIPLOMA IN MARINE MEDICINE",
+    "short_name": "DIPLOMA IN MARINE MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0019": {
+    "id": "CRS0019",
+    "name": "DIPLOMA IN MEDICAL RADIO DIAGNOSIS",
+    "short_name": "DIPLOMA IN MEDICAL RADIO DIAGNOSIS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0020": {
+    "id": "CRS0020",
+    "name": "DIPLOMA IN MEDICAL RADIOTHERAPY",
+    "short_name": "DIPLOMA IN MEDICAL RADIOTHERAPY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0021": {
+    "id": "CRS0021",
+    "name": "DIPLOMA IN OBSTETRICS AND GYNAECOLOGY",
+    "short_name": "DIPLOMA IN OBSTETRICS AND GYNAECOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0022": {
+    "id": "CRS0022",
+    "name": "DIPLOMA IN OPHTHALMIC MEDICINE AND SURGERY",
+    "short_name": "DIPLOMA IN OPHTHALMIC MEDICINE AND SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0023": {
+    "id": "CRS0023",
+    "name": "DIPLOMA IN OPHTHALMOLOGY",
+    "short_name": "DIPLOMA IN OPHTHALMOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0024": {
+    "id": "CRS0024",
+    "name": "DIPLOMA IN ORTHOPAEDICS",
+    "short_name": "DIPLOMA IN ORTHOPAEDICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0025": {
+    "id": "CRS0025",
+    "name": "DIPLOMA IN PAEDIATRICS",
+    "short_name": "DIPLOMA IN PAEDIATRICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0026": {
+    "id": "CRS0026",
+    "name": "DIPLOMA IN PHYSICAL MEDICINE AND REHABILITATION",
+    "short_name": "DIPLOMA IN PHYSICAL MEDICINE AND REHABILITATION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0027": {
+    "id": "CRS0027",
+    "name": "DIPLOMA IN PREVENTIVE AND SOCIAL MEDICINE",
+    "short_name": "DIPLOMA IN PREVENTIVE AND SOCIAL MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0028": {
+    "id": "CRS0028",
+    "name": "DIPLOMA IN RADIATION MEDICINE",
+    "short_name": "DIPLOMA IN RADIATION MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0029": {
+    "id": "CRS0029",
+    "name": "DIPLOMA IN RADIO DIAGNOSIS",
+    "short_name": "DIPLOMA IN RADIO DIAGNOSIS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0030": {
+    "id": "CRS0030",
+    "name": "DIPLOMA IN RADIO THERAPY",
+    "short_name": "DIPLOMA IN RADIO THERAPY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0031": {
+    "id": "CRS0031",
+    "name": "DIPLOMA IN RESPIRATORY MEDICINE",
+    "short_name": "DIPLOMA IN RESPIRATORY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0032": {
+    "id": "CRS0032",
+    "name": "DIPLOMA IN SPORTS MEDICINE",
+    "short_name": "DIPLOMA IN SPORTS MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0033": {
+    "id": "CRS0033",
+    "name": "DM IN CARDIAC ANAESTHESIA",
+    "short_name": "DM IN CARDIAC ANAESTHESIA",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0034": {
+    "id": "CRS0034",
+    "name": "DM IN CARDIOLOGY",
+    "short_name": "DM IN CARDIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0035": {
+    "id": "CRS0035",
+    "name": "DM IN CLINICAL HAEMATOLOGY",
+    "short_name": "DM IN CLINICAL HAEMATOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0036": {
+    "id": "CRS0036",
+    "name": "DM IN CLINICAL IMMUNOLOGY",
+    "short_name": "DM IN CLINICAL IMMUNOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0037": {
+    "id": "CRS0037",
+    "name": "DM IN CLINICAL IMMUNOLOGY AND RHEUMATOLOGY",
+    "short_name": "DM IN CLINICAL IMMUNOLOGY AND RHEUMATOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0038": {
+    "id": "CRS0038",
+    "name": "DM IN CLINICAL PHARMACOLOGY",
+    "short_name": "DM IN CLINICAL PHARMACOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0039": {
+    "id": "CRS0039",
+    "name": "DM IN CRITICAL CARE MEDICINE",
+    "short_name": "DM IN CRITICAL CARE MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0040": {
+    "id": "CRS0040",
+    "name": "DM IN ENDOCRINOLOGY",
+    "short_name": "DM IN ENDOCRINOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0041": {
+    "id": "CRS0041",
+    "name": "DM IN GERIATRIC MENTAL HEALTH",
+    "short_name": "DM IN GERIATRIC MENTAL HEALTH",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0042": {
+    "id": "CRS0042",
+    "name": "DM IN HAEMATOLOGY PATHOLOGY",
+    "short_name": "DM IN HAEMATOLOGY PATHOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0043": {
+    "id": "CRS0043",
+    "name": "DM IN HEPATOLOGY",
+    "short_name": "DM IN HEPATOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0044": {
+    "id": "CRS0044",
+    "name": "DM IN INFECTIOUS DISEASES",
+    "short_name": "DM IN INFECTIOUS DISEASES",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0045": {
+    "id": "CRS0045",
+    "name": "DM IN INTERVENTIONAL RADIOLOGY",
+    "short_name": "DM IN INTERVENTIONAL RADIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0046": {
+    "id": "CRS0046",
+    "name": "DM IN MEDICAL GASTROENTEROLOGY",
+    "short_name": "DM IN MEDICAL GASTROENTEROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0047": {
+    "id": "CRS0047",
+    "name": "DM IN MEDICAL GENETICS",
+    "short_name": "DM IN MEDICAL GENETICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0048": {
+    "id": "CRS0048",
+    "name": "DM IN MEDICAL ONCOLOGY",
+    "short_name": "DM IN MEDICAL ONCOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0049": {
+    "id": "CRS0049",
+    "name": "DM IN NEONATOLOGY",
+    "short_name": "DM IN NEONATOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0050": {
+    "id": "CRS0050",
+    "name": "DM IN NEPHROLOGY",
+    "short_name": "DM IN NEPHROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0051": {
+    "id": "CRS0051",
+    "name": "DM IN NEURO ANESTHESIOLOGY",
+    "short_name": "DM IN NEURO ANESTHESIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0052": {
+    "id": "CRS0052",
+    "name": "DM IN NEURO RADIOLOGY",
+    "short_name": "DM IN NEURO RADIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0053": {
+    "id": "CRS0053",
+    "name": "DM IN NEUROLOGY",
+    "short_name": "DM IN NEUROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0054": {
+    "id": "CRS0054",
+    "name": "DM IN ONCO PATHOLOGY",
+    "short_name": "DM IN ONCO PATHOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0055": {
+    "id": "CRS0055",
+    "name": "DM IN ONCOLOGY",
+    "short_name": "DM IN ONCOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0056": {
+    "id": "CRS0056",
+    "name": "DM IN ORGAN TRANSPLANT ANAESTHESIA & CRITICAL CARE",
+    "short_name": "DM IN ORGAN TRANSPLANT ANAESTHESIA & CRITICAL CARE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0057": {
+    "id": "CRS0057",
+    "name": "DM IN PAEDIATRIC AND NEONATAL ANAESTHESIA",
+    "short_name": "DM IN PAEDIATRIC AND NEONATAL ANAESTHESIA",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0058": {
+    "id": "CRS0058",
+    "name": "DM IN PAEDIATRIC HEPATOLOGY",
+    "short_name": "DM IN PAEDIATRIC HEPATOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0059": {
+    "id": "CRS0059",
+    "name": "DM IN PAEDIATRIC NEPHROLOGY",
+    "short_name": "DM IN PAEDIATRIC NEPHROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0060": {
+    "id": "CRS0060",
+    "name": "DM IN PAEDIATRIC NEUROLOGY",
+    "short_name": "DM IN PAEDIATRIC NEUROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0061": {
+    "id": "CRS0061",
+    "name": "DM IN PAEDIATRIC ONCOLOGY",
+    "short_name": "DM IN PAEDIATRIC ONCOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0062": {
+    "id": "CRS0062",
+    "name": "DM IN PEDIATRICS CARDIOLOGY",
+    "short_name": "DM IN PEDIATRICS CARDIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0063": {
+    "id": "CRS0063",
+    "name": "DM IN PEDIATRICS GASTROENTEROLOGY",
+    "short_name": "DM IN PEDIATRICS GASTROENTEROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0064": {
+    "id": "CRS0064",
+    "name": "DM IN PULMONARY MEDICINE",
+    "short_name": "DM IN PULMONARY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0065": {
+    "id": "CRS0065",
+    "name": "DM IN PULMONARY MEDICINE AND CRITICAL CARE MEDICINE",
+    "short_name": "DM IN PULMONARY MEDICINE AND CRITICAL CARE MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0066": {
+    "id": "CRS0066",
+    "name": "DM IN REPRODUCTIVE MEDICINE/MCH IN REPRODUCTIVE MEDICINE AND SURGERY",
+    "short_name": "DM IN REPRODUCTIVE MEDICINE/MCH IN REPRODUCTIVE MEDICINE AND SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0067": {
+    "id": "CRS0067",
+    "name": "DM IN VIROLOGY",
+    "short_name": "DM IN VIROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0068": {
+    "id": "CRS0068",
+    "name": "DNB IN ANAESTHESIOLOGY",
+    "short_name": "DNB IN ANAESTHESIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0069": {
+    "id": "CRS0069",
+    "name": "DNB IN ANATOMY",
+    "short_name": "DNB IN ANATOMY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0070": {
+    "id": "CRS0070",
+    "name": "DNB IN BIOCHEMISTRY",
+    "short_name": "DNB IN BIOCHEMISTRY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0071": {
+    "id": "CRS0071",
+    "name": "DNB IN CARDIO VASCULAR AND THORACIC SURGERY (DIRECT 6 YEARS COURSE)",
+    "short_name": "DNB IN CARDIO VASCULAR AND THORACIC SURGERY (DIRECT 6 YEARS COURSE)",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0072": {
+    "id": "CRS0072",
+    "name": "DNB IN COMMUNITY MEDICINE",
+    "short_name": "DNB IN COMMUNITY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0073": {
+    "id": "CRS0073",
+    "name": "DNB IN DERMATOLOGY",
+    "short_name": "DNB IN DERMATOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0074": {
+    "id": "CRS0074",
+    "name": "DNB IN EMERGENCY MEDICINE",
+    "short_name": "DNB IN EMERGENCY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0075": {
+    "id": "CRS0075",
+    "name": "DNB IN ENT",
+    "short_name": "DNB IN ENT",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0076": {
+    "id": "CRS0076",
+    "name": "DNB IN FAMILY MEDICINE",
+    "short_name": "DNB IN FAMILY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0077": {
+    "id": "CRS0077",
+    "name": "DNB IN FORENSIC MEDICINE",
+    "short_name": "DNB IN FORENSIC MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0078": {
+    "id": "CRS0078",
+    "name": "DNB IN GENERAL MEDICINE",
+    "short_name": "DNB IN GENERAL MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0079": {
+    "id": "CRS0079",
+    "name": "DNB IN GENERAL SURGERY",
+    "short_name": "DNB IN GENERAL SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0080": {
+    "id": "CRS0080",
+    "name": "DNB IN GERIATRIC MEDICINE",
+    "short_name": "DNB IN GERIATRIC MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0081": {
+    "id": "CRS0081",
+    "name": "DNB IN HOSPITAL ADMINISTRATION",
+    "short_name": "DNB IN HOSPITAL ADMINISTRATION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0082": {
+    "id": "CRS0082",
+    "name": "DNB IN IMMUNO HAEMATOLOGY AND BLOOD TRANSFUSION",
+    "short_name": "DNB IN IMMUNO HAEMATOLOGY AND BLOOD TRANSFUSION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0083": {
+    "id": "CRS0083",
+    "name": "DNB IN MICROBIOLOGY",
+    "short_name": "DNB IN MICROBIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0084": {
+    "id": "CRS0084",
+    "name": "DNB IN NEURO SURGERY (DIRECT 6 YEARS COURSE)",
+    "short_name": "DNB IN NEURO SURGERY (DIRECT 6 YEARS COURSE)",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0085": {
+    "id": "CRS0085",
+    "name": "DNB IN NUCLEAR MEDICINE",
+    "short_name": "DNB IN NUCLEAR MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0086": {
+    "id": "CRS0086",
+    "name": "DNB IN OBSTETRICS AND GYNAECOLOGY",
+    "short_name": "DNB IN OBSTETRICS AND GYNAECOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0087": {
+    "id": "CRS0087",
+    "name": "DNB IN OPHTHALMOLOGY",
+    "short_name": "DNB IN OPHTHALMOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0088": {
+    "id": "CRS0088",
+    "name": "DNB IN ORTHOPAEDICS",
+    "short_name": "DNB IN ORTHOPAEDICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0089": {
+    "id": "CRS0089",
+    "name": "DNB IN PAEDIATRIC SURGERY (DIRECT 6 YEARS COURSE)",
+    "short_name": "DNB IN PAEDIATRIC SURGERY (DIRECT 6 YEARS COURSE)",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0090": {
+    "id": "CRS0090",
+    "name": "DNB IN PAEDIATRICS",
+    "short_name": "DNB IN PAEDIATRICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0091": {
+    "id": "CRS0091",
+    "name": "DNB IN PALLIATIVE MEDICINE",
+    "short_name": "DNB IN PALLIATIVE MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0092": {
+    "id": "CRS0092",
+    "name": "DNB IN PATHOLOGY",
+    "short_name": "DNB IN PATHOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0093": {
+    "id": "CRS0093",
+    "name": "DNB IN PHARMACOLOGY",
+    "short_name": "DNB IN PHARMACOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0094": {
+    "id": "CRS0094",
+    "name": "DNB IN PHYSICAL MEDICINE AND REHABILITATION",
+    "short_name": "DNB IN PHYSICAL MEDICINE AND REHABILITATION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0095": {
+    "id": "CRS0095",
+    "name": "DNB IN PHYSIOLOGY",
+    "short_name": "DNB IN PHYSIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0096": {
+    "id": "CRS0096",
+    "name": "DNB IN PLASTIC AND RECONSTRUCTIVE SURGERY (DIRECT 6 YEARS COURSE)",
+    "short_name": "DNB IN PLASTIC AND RECONSTRUCTIVE SURGERY (DIRECT 6 YEARS COURSE)",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0097": {
+    "id": "CRS0097",
+    "name": "DNB IN PREVENTIVE AND SOCIAL MEDICINE",
+    "short_name": "DNB IN PREVENTIVE AND SOCIAL MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0098": {
+    "id": "CRS0098",
+    "name": "DNB IN PSYCHIATRY",
+    "short_name": "DNB IN PSYCHIATRY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0099": {
+    "id": "CRS0099",
+    "name": "DNB IN RADIATION ONCOLOGY",
+    "short_name": "DNB IN RADIATION ONCOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0100": {
+    "id": "CRS0100",
+    "name": "DNB IN RADIO DIAGNOSIS",
+    "short_name": "DNB IN RADIO DIAGNOSIS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0101": {
+    "id": "CRS0101",
+    "name": "DNB IN RESPIRATORY MEDICINE",
+    "short_name": "DNB IN RESPIRATORY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0102": {
+    "id": "CRS0102",
+    "name": "DNB POST DIPLOMA IN ANAESTHESIOLOGY",
+    "short_name": "DNB POST DIPLOMA IN ANAESTHESIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0103": {
+    "id": "CRS0103",
+    "name": "DNB POST DIPLOMA IN DERMATOLOGY",
+    "short_name": "DNB POST DIPLOMA IN DERMATOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0104": {
+    "id": "CRS0104",
+    "name": "DNB POST DIPLOMA IN EMERGENCY MEDICINE",
+    "short_name": "DNB POST DIPLOMA IN EMERGENCY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0105": {
+    "id": "CRS0105",
+    "name": "DNB POST DIPLOMA IN ENT",
+    "short_name": "DNB POST DIPLOMA IN ENT",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0106": {
+    "id": "CRS0106",
+    "name": "DNB POST DIPLOMA IN FAMILY MEDICINE",
+    "short_name": "DNB POST DIPLOMA IN FAMILY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0107": {
+    "id": "CRS0107",
+    "name": "DNB POST DIPLOMA IN NUCLEAR MEDICINE",
+    "short_name": "DNB POST DIPLOMA IN NUCLEAR MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0108": {
+    "id": "CRS0108",
+    "name": "DNB POST DIPLOMA IN OBSTETRICS AND GYNAECOLOGY",
+    "short_name": "DNB POST DIPLOMA IN OBSTETRICS AND GYNAECOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0109": {
+    "id": "CRS0109",
+    "name": "DNB POST DIPLOMA IN OPHTHALMOLOGY",
+    "short_name": "DNB POST DIPLOMA IN OPHTHALMOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0110": {
+    "id": "CRS0110",
+    "name": "DNB POST DIPLOMA IN ORTHOPAEDICS",
+    "short_name": "DNB POST DIPLOMA IN ORTHOPAEDICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0111": {
+    "id": "CRS0111",
+    "name": "DNB POST DIPLOMA IN PAEDIATRICS",
+    "short_name": "DNB POST DIPLOMA IN PAEDIATRICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0112": {
+    "id": "CRS0112",
+    "name": "DNB POST DIPLOMA IN PATHOLOGY",
+    "short_name": "DNB POST DIPLOMA IN PATHOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0113": {
+    "id": "CRS0113",
+    "name": "DNB POST DIPLOMA IN PHYSICAL MEDICINE AND REHABILITATION",
+    "short_name": "DNB POST DIPLOMA IN PHYSICAL MEDICINE AND REHABILITATION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0114": {
+    "id": "CRS0114",
+    "name": "DNB POST DIPLOMA IN PSYCHIATRY",
+    "short_name": "DNB POST DIPLOMA IN PSYCHIATRY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0115": {
+    "id": "CRS0115",
+    "name": "DNB POST DIPLOMA IN RADIATION ONCOLOGY",
+    "short_name": "DNB POST DIPLOMA IN RADIATION ONCOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0116": {
+    "id": "CRS0116",
+    "name": "DNB POST DIPLOMA IN RADIO DIAGNOSIS",
+    "short_name": "DNB POST DIPLOMA IN RADIO DIAGNOSIS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0117": {
+    "id": "CRS0117",
+    "name": "DNB POST DIPLOMA IN RESPIRATORY MEDICINE",
+    "short_name": "DNB POST DIPLOMA IN RESPIRATORY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0118": {
+    "id": "CRS0118",
+    "name": "DNB- DIPLOMA IN ANAESTHESIOLOGY",
+    "short_name": "DNB- DIPLOMA IN ANAESTHESIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0119": {
+    "id": "CRS0119",
+    "name": "DNB- DIPLOMA IN FAMILY MEDICINE",
+    "short_name": "DNB- DIPLOMA IN FAMILY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0120": {
+    "id": "CRS0120",
+    "name": "DNB- DIPLOMA IN OBSTETRICS AND GYNAECOLOGY",
+    "short_name": "DNB- DIPLOMA IN OBSTETRICS AND GYNAECOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0121": {
+    "id": "CRS0121",
+    "name": "DNB- DIPLOMA IN OPHTHALMOLOGY",
+    "short_name": "DNB- DIPLOMA IN OPHTHALMOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0122": {
+    "id": "CRS0122",
+    "name": "DNB- DIPLOMA IN ENT",
+    "short_name": "DNB- DIPLOMA IN ENT",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0123": {
+    "id": "CRS0123",
+    "name": "DNB- DIPLOMA IN PAEDIATRICS",
+    "short_name": "DNB- DIPLOMA IN PAEDIATRICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0124": {
+    "id": "CRS0124",
+    "name": "DNB- DIPLOMA IN RADIO DIAGNOSIS",
+    "short_name": "DNB- DIPLOMA IN RADIO DIAGNOSIS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0125": {
+    "id": "CRS0125",
+    "name": "DNB- DIPLOMA IN RESPIRATORY MEDICINE",
+    "short_name": "DNB- DIPLOMA IN RESPIRATORY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0126": {
+    "id": "CRS0126",
+    "name": "MBBS",
+    "short_name": "MBBS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0127": {
+    "id": "CRS0127",
+    "name": "MCH IN CARDIO VASCULAR AND THORACIC SURGERY",
+    "short_name": "MCH IN CARDIO VASCULAR AND THORACIC SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0128": {
+    "id": "CRS0128",
+    "name": "MCH IN CRITICAL CARE MEDICINE",
+    "short_name": "MCH IN CRITICAL CARE MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0129": {
+    "id": "CRS0129",
+    "name": "MCH IN ENDOCRINE SURGERY",
+    "short_name": "MCH IN ENDOCRINE SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0130": {
+    "id": "CRS0130",
+    "name": "MCH IN GYNAECOLOGICAL ONCOLOGY",
+    "short_name": "MCH IN GYNAECOLOGICAL ONCOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0131": {
+    "id": "CRS0131",
+    "name": "MCH IN HAND SURGERY",
+    "short_name": "MCH IN HAND SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0132": {
+    "id": "CRS0132",
+    "name": "MCH IN HEAD AND NECK SURGERY",
+    "short_name": "MCH IN HEAD AND NECK SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0133": {
+    "id": "CRS0133",
+    "name": "MCH IN HEPATO PANCREATO BILIARY SURGERY",
+    "short_name": "MCH IN HEPATO PANCREATO BILIARY SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0134": {
+    "id": "CRS0134",
+    "name": "MCH IN MEDICAL GASTROENTEROLOGY",
+    "short_name": "MCH IN MEDICAL GASTROENTEROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0135": {
+    "id": "CRS0135",
+    "name": "MCH IN NEPHROLOGY",
+    "short_name": "MCH IN NEPHROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0136": {
+    "id": "CRS0136",
+    "name": "MCH IN NEURO SURGERY DIRECT 6 YEARS",
+    "short_name": "MCH IN NEURO SURGERY DIRECT 6 YEARS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0137": {
+    "id": "CRS0137",
+    "name": "MCH IN NEUROLOGY",
+    "short_name": "MCH IN NEUROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0138": {
+    "id": "CRS0138",
+    "name": "MCH IN NEUROSURGERY",
+    "short_name": "MCH IN NEUROSURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0139": {
+    "id": "CRS0139",
+    "name": "MCH IN PAEDIATRIC NEPHROLOGY",
+    "short_name": "MCH IN PAEDIATRIC NEPHROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0140": {
+    "id": "CRS0140",
+    "name": "MCH IN PAEDIATRIC ORTHOPAEDICS",
+    "short_name": "MCH IN PAEDIATRIC ORTHOPAEDICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0141": {
+    "id": "CRS0141",
+    "name": "MCH IN PEDIATRIC CARDIO THORACIC VASCULAR SURGERY",
+    "short_name": "MCH IN PEDIATRIC CARDIO THORACIC VASCULAR SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0142": {
+    "id": "CRS0142",
+    "name": "MCH IN PEDIATRICS SURGERY",
+    "short_name": "MCH IN PEDIATRICS SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0143": {
+    "id": "CRS0143",
+    "name": "MCH IN PLASTIC RECONSTRUCTIVE SURGERY",
+    "short_name": "MCH IN PLASTIC RECONSTRUCTIVE SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0144": {
+    "id": "CRS0144",
+    "name": "MCH IN REPRODUCTIVE MEDICINE SURGERY",
+    "short_name": "MCH IN REPRODUCTIVE MEDICINE SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0145": {
+    "id": "CRS0145",
+    "name": "MCH IN SURGICAL GASTROENTEROLOGY",
+    "short_name": "MCH IN SURGICAL GASTROENTEROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0146": {
+    "id": "CRS0146",
+    "name": "MCH IN SURGICAL ONCOLOGY",
+    "short_name": "MCH IN SURGICAL ONCOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0147": {
+    "id": "CRS0147",
+    "name": "MCH IN UROLOGY",
+    "short_name": "MCH IN UROLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0148": {
+    "id": "CRS0148",
+    "name": "MCH IN VASCULAR SURGERY",
+    "short_name": "MCH IN VASCULAR SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0149": {
+    "id": "CRS0149",
+    "name": "MD IN AEROSPACE MEDICINE",
+    "short_name": "MD IN AEROSPACE MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0150": {
+    "id": "CRS0150",
+    "name": "MD IN ANAESTHESIOLOGY",
+    "short_name": "MD IN ANAESTHESIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0151": {
+    "id": "CRS0151",
+    "name": "MD IN BIO PHYSICS",
+    "short_name": "MD IN BIO PHYSICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0152": {
+    "id": "CRS0152",
+    "name": "MD IN BIOCHEMISTRY",
+    "short_name": "MD IN BIOCHEMISTRY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0153": {
+    "id": "CRS0153",
+    "name": "MD IN COMMUNITY HEALTH AND ADMINISTRATION",
+    "short_name": "MD IN COMMUNITY HEALTH AND ADMINISTRATION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0154": {
+    "id": "CRS0154",
+    "name": "MD IN DERMATOLOGY",
+    "short_name": "MD IN DERMATOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0155": {
+    "id": "CRS0155",
+    "name": "MD IN EMERGENCY MEDICINE",
+    "short_name": "MD IN EMERGENCY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0156": {
+    "id": "CRS0156",
+    "name": "MD IN FAMILY MEDICINE",
+    "short_name": "MD IN FAMILY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0157": {
+    "id": "CRS0157",
+    "name": "MD IN FORENSIC MEDICINE",
+    "short_name": "MD IN FORENSIC MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0158": {
+    "id": "CRS0158",
+    "name": "MD IN GENERAL MEDICINE",
+    "short_name": "MD IN GENERAL MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0159": {
+    "id": "CRS0159",
+    "name": "MD IN GERIATRICS",
+    "short_name": "MD IN GERIATRICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0160": {
+    "id": "CRS0160",
+    "name": "MD IN HOSPITAL ADMINISTRATION",
+    "short_name": "MD IN HOSPITAL ADMINISTRATION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0161": {
+    "id": "CRS0161",
+    "name": "MD IN IMMUNO HAEMATOLOGY AND BLOOD TRANSFUSION",
+    "short_name": "MD IN IMMUNO HAEMATOLOGY AND BLOOD TRANSFUSION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0162": {
+    "id": "CRS0162",
+    "name": "MD IN LAB MEDICINE",
+    "short_name": "MD IN LAB MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0163": {
+    "id": "CRS0163",
+    "name": "MD IN LABORATORY MEDICINE COURSE",
+    "short_name": "MD IN LABORATORY MEDICINE COURSE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0164": {
+    "id": "CRS0164",
+    "name": "MD IN MICROBIOLOGY",
+    "short_name": "MD IN MICROBIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0165": {
+    "id": "CRS0165",
+    "name": "MD IN NUCLEAR MEDICINE",
+    "short_name": "MD IN NUCLEAR MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0166": {
+    "id": "CRS0166",
+    "name": "MD IN PAEDIATRICS",
+    "short_name": "MD IN PAEDIATRICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0167": {
+    "id": "CRS0167",
+    "name": "MD IN PALLIATIVE MEDICINE",
+    "short_name": "MD IN PALLIATIVE MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0168": {
+    "id": "CRS0168",
+    "name": "MD IN PATHOLOGY",
+    "short_name": "MD IN PATHOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0169": {
+    "id": "CRS0169",
+    "name": "MD IN PHARMACOLOGY",
+    "short_name": "MD IN PHARMACOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0170": {
+    "id": "CRS0170",
+    "name": "MD IN PHYSICAL MEDICINE AND REHABILITATION",
+    "short_name": "MD IN PHYSICAL MEDICINE AND REHABILITATION",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0171": {
+    "id": "CRS0171",
+    "name": "MD IN PHYSIOLOGY",
+    "short_name": "MD IN PHYSIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0172": {
+    "id": "CRS0172",
+    "name": "MD IN PREVENTIVE AND SOCIAL MEDICINE",
+    "short_name": "MD IN PREVENTIVE AND SOCIAL MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0173": {
+    "id": "CRS0173",
+    "name": "MD IN PSYCHIATRY",
+    "short_name": "MD IN PSYCHIATRY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0174": {
+    "id": "CRS0174",
+    "name": "MD IN RADIATION ONCOLOGY",
+    "short_name": "MD IN RADIATION ONCOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0175": {
+    "id": "CRS0175",
+    "name": "MD IN RADIO DIAGNOSIS",
+    "short_name": "MD IN RADIO DIAGNOSIS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0176": {
+    "id": "CRS0176",
+    "name": "MD IN RADIO THERAPY",
+    "short_name": "MD IN RADIO THERAPY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0177": {
+    "id": "CRS0177",
+    "name": "MD IN RESPIRATORY MEDICINE",
+    "short_name": "MD IN RESPIRATORY MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0178": {
+    "id": "CRS0178",
+    "name": "MD IN SPORTS MEDICINE",
+    "short_name": "MD IN SPORTS MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0179": {
+    "id": "CRS0179",
+    "name": "MD IN TRANSFUSION MEDICINE",
+    "short_name": "MD IN TRANSFUSION MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0180": {
+    "id": "CRS0180",
+    "name": "MD IN TROPICAL MEDICINE",
+    "short_name": "MD IN TROPICAL MEDICINE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0181": {
+    "id": "CRS0181",
+    "name": "MD/MS ANATOMY",
+    "short_name": "MD/MS ANATOMY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0182": {
+    "id": "CRS0182",
+    "name": "MD/MS OBSTETRICS AND GYNAECOLOGY",
+    "short_name": "MD/MS OBSTETRICS AND GYNAECOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0183": {
+    "id": "CRS0183",
+    "name": "MDS IN CONSERVATIVE DENTISTRY & ENDODONTICS",
+    "short_name": "MDS IN CONSERVATIVE DENTISTRY & ENDODONTICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0184": {
+    "id": "CRS0184",
+    "name": "MDS IN ORAL & MAXILLOFACIAL PATHOLOGY AND ORAL MICROBIOLOGY",
+    "short_name": "MDS IN ORAL & MAXILLOFACIAL PATHOLOGY AND ORAL MICROBIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0185": {
+    "id": "CRS0185",
+    "name": "MDS IN ORAL AND MAXILLOFACIAL SURGERY",
+    "short_name": "MDS IN ORAL AND MAXILLOFACIAL SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0186": {
+    "id": "CRS0186",
+    "name": "MDS IN ORAL MEDICINE & RADIOLOGY",
+    "short_name": "MDS IN ORAL MEDICINE & RADIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0187": {
+    "id": "CRS0187",
+    "name": "MDS IN ORTHODONITICS & DENTOFACIAL ORTHOPEDICS",
+    "short_name": "MDS IN ORTHODONITICS & DENTOFACIAL ORTHOPEDICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0188": {
+    "id": "CRS0188",
+    "name": "MDS IN PEDIATRIC AND PREVENTIVE DENTISTRY",
+    "short_name": "MDS IN PEDIATRIC AND PREVENTIVE DENTISTRY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0189": {
+    "id": "CRS0189",
+    "name": "MDS IN PERIODONTOLOGY",
+    "short_name": "MDS IN PERIODONTOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0190": {
+    "id": "CRS0190",
+    "name": "MDS IN PROSTHODONTICS AND CROWN & BRIDGE",
+    "short_name": "MDS IN PROSTHODONTICS AND CROWN & BRIDGE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0191": {
+    "id": "CRS0191",
+    "name": "MDS IN PUBLIC HEALTH DENTISTRY",
+    "short_name": "MDS IN PUBLIC HEALTH DENTISTRY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0192": {
+    "id": "CRS0192",
+    "name": "MPH IN EPIDEMIOLOGY",
+    "short_name": "MPH IN EPIDEMIOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0193": {
+    "id": "CRS0193",
+    "name": "MS IN ENT",
+    "short_name": "MS IN ENT",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0194": {
+    "id": "CRS0194",
+    "name": "MS IN GENERAL SURGERY",
+    "short_name": "MS IN GENERAL SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0195": {
+    "id": "CRS0195",
+    "name": "MS IN OPHTHALMOLOGY",
+    "short_name": "MS IN OPHTHALMOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0196": {
+    "id": "CRS0196",
+    "name": "MS IN ORTHOPAEDICS",
+    "short_name": "MS IN ORTHOPAEDICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0197": {
+    "id": "CRS0197",
+    "name": "MS IN TRAUMATOLOGY AND SURGERY",
+    "short_name": "MS IN TRAUMATOLOGY AND SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0198": {
+    "id": "CRS0198",
+    "name": "PG DIPLOMA IN CONSERVATIVE DENTISTRY ENDODONTICS",
+    "short_name": "PG DIPLOMA IN CONSERVATIVE DENTISTRY ENDODONTICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0199": {
+    "id": "CRS0199",
+    "name": "PG DIPLOMA IN ORAL AND MAXILLOFACIAL SURGERY",
+    "short_name": "PG DIPLOMA IN ORAL AND MAXILLOFACIAL SURGERY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0200": {
+    "id": "CRS0200",
+    "name": "PG DIPLOMA IN ORTHODONTICS & DENTOFACIAL ORTHOPEDICS",
+    "short_name": "PG DIPLOMA IN ORTHODONTICS & DENTOFACIAL ORTHOPEDICS",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0201": {
+    "id": "CRS0201",
+    "name": "PG DIPLOMA IN PEDIATRIC AND PREVENTIVE DENTISTRY",
+    "short_name": "PG DIPLOMA IN PEDIATRIC AND PREVENTIVE DENTISTRY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0202": {
+    "id": "CRS0202",
+    "name": "PG DIPLOMA IN PERIODONTOLOGY",
+    "short_name": "PG DIPLOMA IN PERIODONTOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0203": {
+    "id": "CRS0203",
+    "name": "PG DIPLOMA IN PROSTHODONTICS AND CROWN BRIDGE",
+    "short_name": "PG DIPLOMA IN PROSTHODONTICS AND CROWN BRIDGE",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0204": {
+    "id": "CRS0204",
+    "name": "PG DIPLOMA IN PUBLIC HEALTH",
+    "short_name": "PG DIPLOMA IN PUBLIC HEALTH",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0205": {
+    "id": "CRS0205",
+    "name": "POST MBBS DIPLOMA COURSES IN OBG DGO",
+    "short_name": "POST MBBS DIPLOMA COURSES IN OBG DGO",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0206": {
+    "id": "CRS0206",
+    "name": "DIPLOMA IN OTORHINOLARYNGOLOGY",
+    "short_name": "DIPLOMA IN OTORHINOLARYNGOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  },
+  "CRS0207": {
+    "id": "CRS0207",
+    "name": "DNB IN OTORHINOLARYNGOLOGY",
+    "short_name": "DNB IN OTORHINOLARYNGOLOGY",
+    "level": "UG",
+    "domain": "MEDICAL",
+    "duration_years": 3,
+    "description": ""
+  }
+}

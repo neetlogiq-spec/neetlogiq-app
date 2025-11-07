@@ -1,0 +1,12 @@
+[
+  {
+    "id": "STATE001",
+    "name": "Delhi",
+    "code": "DL"
+  },
+  {
+    "id": "STATE002",
+    "name": "Punjab",
+    "code": "PB"
+  }
+]

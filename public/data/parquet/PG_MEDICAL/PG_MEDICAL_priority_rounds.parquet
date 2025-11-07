@@ -1,0 +1,22 @@
+[
+  {
+    "id": "CUT003",
+    "college_id": "MED0001",
+    "college_name": "All India Institute of Medical Sciences, New Delhi",
+    "course_id": "CRS0002",
+    "course_name": "MD Internal Medicine",
+    "state_id": "STATE001",
+    "state_name": "Delhi",
+    "category_id": "CAT001",
+    "category_name": "General",
+    "quota_id": "QUOTA001",
+    "quota_name": "All India Quota",
+    "year": 2024,
+    "round": 1,
+    "opening_rank": 1,
+    "closing_rank": 20,
+    "total_seats": 20,
+    "stream": "MEDICAL",
+    "level": "PG"
+  }
+]

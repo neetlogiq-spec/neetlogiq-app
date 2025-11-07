@@ -1,0 +1,14 @@
+{
+  "total_records": 216705,
+  "valid_records": 216705,
+  "issues": [
+    {
+      "type": "missing_columns",
+      "columns": [
+        "course_name",
+        "college_name",
+        "state"
+      ]
+    }
+  ]
+}

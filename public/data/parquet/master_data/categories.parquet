@@ -1,0 +1,27 @@
+[
+  {
+    "id": "CAT001",
+    "name": "General",
+    "code": "GEN"
+  },
+  {
+    "id": "CAT002",
+    "name": "OBC",
+    "code": "OBC"
+  },
+  {
+    "id": "CAT003",
+    "name": "SC",
+    "code": "SC"
+  },
+  {
+    "id": "CAT004",
+    "name": "ST",
+    "code": "ST"
+  },
+  {
+    "id": "CAT005",
+    "name": "EWS",
+    "code": "EWS"
+  }
+]

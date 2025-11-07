@@ -1,0 +1,407 @@
+{
+  "version": "1.0.0",
+  "created_at": "2025-10-25T12:44:07.699Z",
+  "environment": "production",
+  "architecture": "edge-native",
+  "streams": {
+    "UG": {
+      "description": "Undergraduate Medical & Dental (MBBS, BDS)",
+      "total_files": 12,
+      "total_size": 21432,
+      "priority_rounds": 2,
+      "data_types": [
+        "colleges",
+        "courses",
+        "cutoffs"
+      ],
+      "files": [
+        {
+          "filename": "ug_colleges_static.gz",
+          "data_type": "colleges",
+          "round": null,
+          "size": 1185,
+          "original_size": 10581,
+          "compression_ratio": "88.80",
+          "priority": "normal",
+          "url": "/data/compressed/ug_colleges_static.gz"
+        },
+        {
+          "filename": "ug_courses_static.gz",
+          "data_type": "courses",
+          "round": null,
+          "size": 781,
+          "original_size": 5810,
+          "compression_ratio": "86.56",
+          "priority": "normal",
+          "url": "/data/compressed/ug_courses_static.gz"
+        },
+        {
+          "filename": "ug_cutoffs_2024_round_1.gz",
+          "data_type": "cutoffs",
+          "round": 1,
+          "size": 2605,
+          "original_size": 31650,
+          "compression_ratio": "91.77",
+          "priority": "high",
+          "url": "/data/compressed/ug_cutoffs_2024_round_1.gz"
+        },
+        {
+          "filename": "ug_cutoffs_2024_round_2.gz",
+          "data_type": "cutoffs",
+          "round": 2,
+          "size": 2268,
+          "original_size": 26637,
+          "compression_ratio": "91.49",
+          "priority": "high",
+          "url": "/data/compressed/ug_cutoffs_2024_round_2.gz"
+        },
+        {
+          "filename": "ug_cutoffs_2024_round_3.gz",
+          "data_type": "cutoffs",
+          "round": 3,
+          "size": 1882,
+          "original_size": 20908,
+          "compression_ratio": "91.00",
+          "priority": "normal",
+          "url": "/data/compressed/ug_cutoffs_2024_round_3.gz"
+        },
+        {
+          "filename": "ug_cutoffs_2024_round_4.gz",
+          "data_type": "cutoffs",
+          "round": 4,
+          "size": 1439,
+          "original_size": 14912,
+          "compression_ratio": "90.35",
+          "priority": "normal",
+          "url": "/data/compressed/ug_cutoffs_2024_round_4.gz"
+        },
+        {
+          "filename": "ug_cutoffs_2024_round_5.gz",
+          "data_type": "cutoffs",
+          "round": 5,
+          "size": 1500,
+          "original_size": 15422,
+          "compression_ratio": "90.27",
+          "priority": "normal",
+          "url": "/data/compressed/ug_cutoffs_2024_round_5.gz"
+        },
+        {
+          "filename": "ug_cutoffs_2024_round_6.gz",
+          "data_type": "cutoffs",
+          "round": 6,
+          "size": 1756,
+          "original_size": 19408,
+          "compression_ratio": "90.95",
+          "priority": "normal",
+          "url": "/data/compressed/ug_cutoffs_2024_round_6.gz"
+        },
+        {
+          "filename": "ug_cutoffs_2024_round_7.gz",
+          "data_type": "cutoffs",
+          "round": 7,
+          "size": 1392,
+          "original_size": 14169,
+          "compression_ratio": "90.18",
+          "priority": "normal",
+          "url": "/data/compressed/ug_cutoffs_2024_round_7.gz"
+        },
+        {
+          "filename": "ug_cutoffs_2024_round_8.gz",
+          "data_type": "cutoffs",
+          "round": 8,
+          "size": 2247,
+          "original_size": 26388,
+          "compression_ratio": "91.48",
+          "priority": "normal",
+          "url": "/data/compressed/ug_cutoffs_2024_round_8.gz"
+        },
+        {
+          "filename": "ug_cutoffs_2024_round_9.gz",
+          "data_type": "cutoffs",
+          "round": 9,
+          "size": 2219,
+          "original_size": 26158,
+          "compression_ratio": "91.52",
+          "priority": "normal",
+          "url": "/data/compressed/ug_cutoffs_2024_round_9.gz"
+        },
+        {
+          "filename": "ug_cutoffs_2024_round_10.gz",
+          "data_type": "cutoffs",
+          "round": 10,
+          "size": 2158,
+          "original_size": 25233,
+          "compression_ratio": "91.45",
+          "priority": "normal",
+          "url": "/data/compressed/ug_cutoffs_2024_round_10.gz"
+        }
+      ]
+    },
+    "PG_MEDICAL": {
+      "description": "Postgraduate Medical (MD, MS, DNB, DIPLOMA)",
+      "total_files": 12,
+      "total_size": 26184,
+      "priority_rounds": 2,
+      "data_types": [
+        "colleges",
+        "courses",
+        "cutoffs"
+      ],
+      "files": [
+        {
+          "filename": "pg_medical_colleges_static.gz",
+          "data_type": "colleges",
+          "round": null,
+          "size": 1356,
+          "original_size": 12687,
+          "compression_ratio": "89.31",
+          "priority": "normal",
+          "url": "/data/compressed/pg_medical_colleges_static.gz"
+        },
+        {
+          "filename": "pg_medical_courses_static.gz",
+          "data_type": "courses",
+          "round": null,
+          "size": 600,
+          "original_size": 3784,
+          "compression_ratio": "84.14",
+          "priority": "normal",
+          "url": "/data/compressed/pg_medical_courses_static.gz"
+        },
+        {
+          "filename": "pg_medical_cutoffs_2024_round_1.gz",
+          "data_type": "cutoffs",
+          "round": 1,
+          "size": 2794,
+          "original_size": 33918,
+          "compression_ratio": "91.76",
+          "priority": "high",
+          "url": "/data/compressed/pg_medical_cutoffs_2024_round_1.gz"
+        },
+        {
+          "filename": "pg_medical_cutoffs_2024_round_2.gz",
+          "data_type": "cutoffs",
+          "round": 2,
+          "size": 2809,
+          "original_size": 34163,
+          "compression_ratio": "91.78",
+          "priority": "high",
+          "url": "/data/compressed/pg_medical_cutoffs_2024_round_2.gz"
+        },
+        {
+          "filename": "pg_medical_cutoffs_2024_round_3.gz",
+          "data_type": "cutoffs",
+          "round": 3,
+          "size": 2651,
+          "original_size": 31909,
+          "compression_ratio": "91.69",
+          "priority": "normal",
+          "url": "/data/compressed/pg_medical_cutoffs_2024_round_3.gz"
+        },
+        {
+          "filename": "pg_medical_cutoffs_2024_round_4.gz",
+          "data_type": "cutoffs",
+          "round": 4,
+          "size": 2402,
+          "original_size": 28165,
+          "compression_ratio": "91.47",
+          "priority": "normal",
+          "url": "/data/compressed/pg_medical_cutoffs_2024_round_4.gz"
+        },
+        {
+          "filename": "pg_medical_cutoffs_2024_round_5.gz",
+          "data_type": "cutoffs",
+          "round": 5,
+          "size": 2731,
+          "original_size": 33154,
+          "compression_ratio": "91.76",
+          "priority": "normal",
+          "url": "/data/compressed/pg_medical_cutoffs_2024_round_5.gz"
+        },
+        {
+          "filename": "pg_medical_cutoffs_2024_round_6.gz",
+          "data_type": "cutoffs",
+          "round": 6,
+          "size": 1526,
+          "original_size": 15929,
+          "compression_ratio": "90.42",
+          "priority": "normal",
+          "url": "/data/compressed/pg_medical_cutoffs_2024_round_6.gz"
+        },
+        {
+          "filename": "pg_medical_cutoffs_2024_round_7.gz",
+          "data_type": "cutoffs",
+          "round": 7,
+          "size": 2936,
+          "original_size": 35921,
+          "compression_ratio": "91.83",
+          "priority": "normal",
+          "url": "/data/compressed/pg_medical_cutoffs_2024_round_7.gz"
+        },
+        {
+          "filename": "pg_medical_cutoffs_2024_round_8.gz",
+          "data_type": "cutoffs",
+          "round": 8,
+          "size": 1587,
+          "original_size": 16672,
+          "compression_ratio": "90.48",
+          "priority": "normal",
+          "url": "/data/compressed/pg_medical_cutoffs_2024_round_8.gz"
+        },
+        {
+          "filename": "pg_medical_cutoffs_2024_round_9.gz",
+          "data_type": "cutoffs",
+          "round": 9,
+          "size": 2241,
+          "original_size": 26409,
+          "compression_ratio": "91.51",
+          "priority": "normal",
+          "url": "/data/compressed/pg_medical_cutoffs_2024_round_9.gz"
+        },
+        {
+          "filename": "pg_medical_cutoffs_2024_round_10.gz",
+          "data_type": "cutoffs",
+          "round": 10,
+          "size": 2551,
+          "original_size": 30795,
+          "compression_ratio": "91.72",
+          "priority": "normal",
+          "url": "/data/compressed/pg_medical_cutoffs_2024_round_10.gz"
+        }
+      ]
+    },
+    "PG_DENTAL": {
+      "description": "Postgraduate Dental (MDS, PG DIPLOMA)",
+      "total_files": 12,
+      "total_size": 24805,
+      "priority_rounds": 2,
+      "data_types": [
+        "colleges",
+        "courses",
+        "cutoffs"
+      ],
+      "files": [
+        {
+          "filename": "pg_dental_colleges_static.gz",
+          "data_type": "colleges",
+          "round": null,
+          "size": 1631,
+          "original_size": 16181,
+          "compression_ratio": "89.92",
+          "priority": "normal",
+          "url": "/data/compressed/pg_dental_colleges_static.gz"
+        },
+        {
+          "filename": "pg_dental_courses_static.gz",
+          "data_type": "courses",
+          "round": null,
+          "size": 1018,
+          "original_size": 8530,
+          "compression_ratio": "88.07",
+          "priority": "normal",
+          "url": "/data/compressed/pg_dental_courses_static.gz"
+        },
+        {
+          "filename": "pg_dental_cutoffs_2024_round_1.gz",
+          "data_type": "cutoffs",
+          "round": 1,
+          "size": 1822,
+          "original_size": 20171,
+          "compression_ratio": "90.97",
+          "priority": "high",
+          "url": "/data/compressed/pg_dental_cutoffs_2024_round_1.gz"
+        },
+        {
+          "filename": "pg_dental_cutoffs_2024_round_2.gz",
+          "data_type": "cutoffs",
+          "round": 2,
+          "size": 2338,
+          "original_size": 27401,
+          "compression_ratio": "91.47",
+          "priority": "high",
+          "url": "/data/compressed/pg_dental_cutoffs_2024_round_2.gz"
+        },
+        {
+          "filename": "pg_dental_cutoffs_2024_round_3.gz",
+          "data_type": "cutoffs",
+          "round": 3,
+          "size": 2233,
+          "original_size": 26146,
+          "compression_ratio": "91.46",
+          "priority": "normal",
+          "url": "/data/compressed/pg_dental_cutoffs_2024_round_3.gz"
+        },
+        {
+          "filename": "pg_dental_cutoffs_2024_round_4.gz",
+          "data_type": "cutoffs",
+          "round": 4,
+          "size": 2908,
+          "original_size": 35667,
+          "compression_ratio": "91.85",
+          "priority": "normal",
+          "url": "/data/compressed/pg_dental_cutoffs_2024_round_4.gz"
+        },
+        {
+          "filename": "pg_dental_cutoffs_2024_round_5.gz",
+          "data_type": "cutoffs",
+          "round": 5,
+          "size": 2317,
+          "original_size": 27166,
+          "compression_ratio": "91.47",
+          "priority": "normal",
+          "url": "/data/compressed/pg_dental_cutoffs_2024_round_5.gz"
+        },
+        {
+          "filename": "pg_dental_cutoffs_2024_round_6.gz",
+          "data_type": "cutoffs",
+          "round": 6,
+          "size": 2236,
+          "original_size": 25914,
+          "compression_ratio": "91.37",
+          "priority": "normal",
+          "url": "/data/compressed/pg_dental_cutoffs_2024_round_6.gz"
+        },
+        {
+          "filename": "pg_dental_cutoffs_2024_round_7.gz",
+          "data_type": "cutoffs",
+          "round": 7,
+          "size": 2188,
+          "original_size": 25391,
+          "compression_ratio": "91.38",
+          "priority": "normal",
+          "url": "/data/compressed/pg_dental_cutoffs_2024_round_7.gz"
+        },
+        {
+          "filename": "pg_dental_cutoffs_2024_round_8.gz",
+          "data_type": "cutoffs",
+          "round": 8,
+          "size": 1857,
+          "original_size": 20405,
+          "compression_ratio": "90.90",
+          "priority": "normal",
+          "url": "/data/compressed/pg_dental_cutoffs_2024_round_8.gz"
+        },
+        {
+          "filename": "pg_dental_cutoffs_2024_round_9.gz",
+          "data_type": "cutoffs",
+          "round": 9,
+          "size": 1988,
+          "original_size": 22651,
+          "compression_ratio": "91.22",
+          "priority": "normal",
+          "url": "/data/compressed/pg_dental_cutoffs_2024_round_9.gz"
+        },
+        {
+          "filename": "pg_dental_cutoffs_2024_round_10.gz",
+          "data_type": "cutoffs",
+          "round": 10,
+          "size": 2269,
+          "original_size": 26507,
+          "compression_ratio": "91.44",
+          "priority": "normal",
+          "url": "/data/compressed/pg_dental_cutoffs_2024_round_10.gz"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "CUT001",
+    "college_id": "MED0001",
+    "college_name": "All India Institute of Medical Sciences, New Delhi",
+    "course_id": "CRS0001",
+    "course_name": "MBBS",
+    "year": 2024,
+    "round": 1,
+    "category": "General",
+    "opening_rank": 1,
+    "closing_rank": 50,
+    "total_seats": 100,
+    "stream": "MEDICAL",
+    "level": "UG"
+  },
+  {
+    "id": "CUT002",
+    "college_id": "MED0001",
+    "college_name": "All India Institute of Medical Sciences, New Delhi",
+    "course_id": "CRS0001",
+    "course_name": "MBBS",
+    "year": 2024,
+    "round": 2,
+    "category": "General",
+    "opening_rank": 51,
+    "closing_rank": 100,
+    "total_seats": 100,
+    "stream": "MEDICAL",
+    "level": "UG"
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "AIQ": {
+    "id": "AIQ",
+    "name": "All India Quota",
+    "type": "CENTRAL"
+  },
+  "STATE": {
+    "id": "STATE",
+    "name": "State Quota",
+    "type": "STATE"
+  },
+  "MANAGEMENT": {
+    "id": "MANAGEMENT",
+    "name": "Management Quota",
+    "type": "PRIVATE"
+  },
+  "NRI": {
+    "id": "NRI",
+    "name": "NRI Quota",
+    "type": "PRIVATE"
+  },
+  "DEEMED": {
+    "id": "DEEMED",
+    "name": "Deemed University",
+    "type": "DEEMED"
+  }
+}

@@ -1,0 +1,51 @@
+[
+  {
+    "id": "MED0001",
+    "name": "All India Institute of Medical Sciences, New Delhi",
+    "state": "Delhi",
+    "city": "New Delhi",
+    "type": "Government",
+    "established_year": 1956,
+    "rating": 4.8,
+    "total_seats": 100,
+    "stream": "MEDICAL",
+    "courses": [
+      "MBBS",
+      "MD",
+      "MS",
+      "DNB"
+    ]
+  },
+  {
+    "id": "MED0002",
+    "name": "Post Graduate Institute of Medical Education and Research, Chandigarh",
+    "state": "Punjab",
+    "city": "Chandigarh",
+    "type": "Government",
+    "established_year": 1962,
+    "rating": 4.7,
+    "total_seats": 80,
+    "stream": "MEDICAL",
+    "courses": [
+      "MBBS",
+      "MD",
+      "MS",
+      "DNB"
+    ]
+  },
+  {
+    "id": "DEN0001",
+    "name": "Maulana Azad Institute of Dental Sciences, New Delhi",
+    "state": "Delhi",
+    "city": "New Delhi",
+    "type": "Government",
+    "established_year": 2003,
+    "rating": 4.5,
+    "total_seats": 50,
+    "stream": "DENTAL",
+    "courses": [
+      "BDS",
+      "MDS"
+    ]
+  }
+]

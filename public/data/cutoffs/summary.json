@@ -1,0 +1,17 @@
+{
+  "totalFiles": 8,
+  "totalCutoffs": 8,
+  "byQuota": {
+    "AIQ": 4,
+    "KEA": 4
+  },
+  "byStream": {
+    "PG": 4,
+    "UG": 2,
+    "DEN": 2
+  },
+  "byYear": {
+    "2023": 4,
+    "2024": 4
+  }
+}

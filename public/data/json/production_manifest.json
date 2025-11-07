@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2025-10-25T13:19:57.337Z",
+  "data_sources": {
+    "master_data": {
+      "path": "/data/json/master_data/medical_colleges.json",
+      "type": "colleges",
+      "format": "json",
+      "size": "1017.00 B"
+    },
+    "courses_data": {
+      "path": "/data/json/master_data/courses.json",
+      "type": "courses",
+      "format": "json",
+      "size": "545.00 B"
+    },
+    "cutoffs_data": {
+      "path": "/data/json/counselling_data_partitioned/counselling_data_partitioned.json",
+      "type": "cutoffs",
+      "format": "json",
+      "size": "911.00 B"
+    }
+  },
+  "streams": {
+    "UG": {
+      "description": "Undergraduate Medical & Dental (MBBS, BDS)",
+      "data_files": [
+        "/data/json/master_data/medical_colleges.json",
+        "/data/json/master_data/courses.json",
+        "/data/json/counselling_data_partitioned/counselling_data_partitioned.json"
+      ],
+      "priority_rounds": [
+        1,
+        2
+      ]
+    },
+    "PG_MEDICAL": {
+      "description": "Postgraduate Medical (MD, MS, DNB)",
+      "data_files": [
+        "/data/json/master_data/medical_colleges.json",
+        "/data/json/master_data/courses.json",
+        "/data/json/counselling_data_partitioned/counselling_data_partitioned.json"
+      ],
+      "priority_rounds": [
+        1,
+        2
+      ]
+    },
+    "PG_DENTAL": {
+      "description": "Postgraduate Dental (MDS, PG DIPLOMA)",
+      "data_files": [
+        "/data/json/master_data/medical_colleges.json",
+        "/data/json/master_data/courses.json",
+        "/data/json/counselling_data_partitioned/counselling_data_partitioned.json"
+      ],
+      "priority_rounds": [
+        1,
+        2
+      ]
+    }
+  },
+  "performance": {
+    "expected_load_time": "< 500ms",
+    "query_response_time": "< 50ms",
+    "memory_usage": "< 100MB",
+    "cache_hit_rate": "> 90%"
+  }
+}

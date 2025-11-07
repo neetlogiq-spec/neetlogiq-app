@@ -1,0 +1,17 @@
+[
+  {
+    "id": "QUOTA001",
+    "name": "All India Quota",
+    "code": "AIQ"
+  },
+  {
+    "id": "QUOTA002",
+    "name": "State Quota",
+    "code": "SQ"
+  },
+  {
+    "id": "QUOTA003",
+    "name": "Management Quota",
+    "code": "MQ"
+  }
+]

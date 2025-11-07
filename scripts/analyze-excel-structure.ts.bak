@@ -1,0 +1,91 @@
+#!/usr/bin/env tsx
+
+import * as XLSX from 'xlsx';
+import path from 'path';
+
+interface ExcelAnalysis {
+  fileName: string;
+  sheets: {
+    name: string;
+    rowCount: number;
+    columns: string[];
+    sampleData: any;
+  }[];
+}
+
+async function analyzeExcelFiles() {
+  console.log('🔍 === Excel Data Structure Analysis ===\n');
+
+  const dataDir = path.join(process.cwd(), 'data/Foundation');
+  const files = [
+    'medical.xlsx',
+    'dental.xlsx', 
+    'dnb.xlsx',
+    'CATEGORY.xlsx',
+    'QUOTA.xlsx',
+    'STATES OF INDIA.xlsx'
+  ];
+
+  const analyses: ExcelAnalysis[] = [];
+
+  for (const file of files) {
+    const filePath = path.join(dataDir, file);
+    console.log(`📄 Analyzing ${file}:`);
+    
+    try {
+      const workbook = XLSX.readFile(filePath);
+      const analysis: ExcelAnalysis = {
+        fileName: file,
+        sheets: []
+      };
+
+      for (const sheetName of workbook.SheetNames) {
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        
+        const sheetAnalysis = {
+          name: sheetName,
+          rowCount: jsonData.length,
+          columns: jsonData.length > 0 ? Object.keys(jsonData[0]) : [],
+          sampleData: jsonData.length > 0 ? jsonData[0] : null
+        };
+
+        analysis.sheets.push(sheetAnalysis);
+        
+        console.log(`  📊 Sheet: ${sheetName}`);
+        console.log(`  📈 Rows: ${jsonData.length}`);
+        
+        if (jsonData.length > 0) {
+          console.log(`  📋 Columns: ${Object.keys(jsonData[0]).join(', ')}`);
+          console.log(`  📝 Sample: ${JSON.stringify(jsonData[0])}`);
+        }
+        console.log();
+      }
+
+      analyses.push(analysis);
+      console.log('---\n');
+
+    } catch (error) {
+      console.error(`❌ Error analyzing ${file}:`, error);
+    }
+  }
+
+  // Generate summary
+  console.log('📊 === Summary ===');
+  let totalRecords = 0;
+  const collegeFiles = analyses.filter(a => ['medical.xlsx', 'dental.xlsx', 'dnb.xlsx'].includes(a.fileName));
+  
+  collegeFiles.forEach(analysis => {
+    const records = analysis.sheets.reduce((sum, sheet) => sum + sheet.rowCount, 0);
+    totalRecords += records;
+    console.log(`${analysis.fileName}: ${records} records`);
+  });
+
+  console.log(`\n🎯 Total College Records: ${totalRecords}`);
+  console.log(`🏥 Expected 2400+ colleges: ${totalRecords >= 2400 ? '✅ Target met' : '⚠️ Below target'}`);
+
+  return analyses;
+}
+
+// Run the analysis
+analyzeExcelFiles().catch(console.error);

@@ -1,0 +1,38 @@
+[
+  {
+    "college_id": "MED0001",
+    "college_name": "All India Institute of Medical Sciences, New Delhi",
+    "course_id": "CRS0001",
+    "course_name": "MBBS",
+    "year": 2024,
+    "round": 1,
+    "category": "General",
+    "opening_rank": 1,
+    "closing_rank": 50,
+    "total_seats": 100
+  },
+  {
+    "college_id": "MED0001",
+    "college_name": "All India Institute of Medical Sciences, New Delhi",
+    "course_id": "CRS0002",
+    "course_name": "MD Internal Medicine",
+    "year": 2024,
+    "round": 1,
+    "category": "General",
+    "opening_rank": 1,
+    "closing_rank": 20,
+    "total_seats": 20
+  },
+  {
+    "college_id": "DEN0001",
+    "college_name": "Maulana Azad Institute of Dental Sciences, New Delhi",
+    "course_id": "CRS0003",
+    "course_name": "BDS",
+    "year": 2024,
+    "round": 1,
+    "category": "General",
+    "opening_rank": 1,
+    "closing_rank": 50,
+    "total_seats": 50
+  }
+]

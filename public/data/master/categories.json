@@ -1,0 +1,32 @@
+{
+  "OPEN": {
+    "id": "OPEN",
+    "name": "Open Category",
+    "type": "GENERAL"
+  },
+  "OBC": {
+    "id": "OBC",
+    "name": "Other Backward Classes",
+    "type": "RESERVED"
+  },
+  "SC": {
+    "id": "SC",
+    "name": "Scheduled Caste",
+    "type": "RESERVED"
+  },
+  "ST": {
+    "id": "ST",
+    "name": "Scheduled Tribe",
+    "type": "RESERVED"
+  },
+  "EWS": {
+    "id": "EWS",
+    "name": "Economically Weaker Section",
+    "type": "RESERVED"
+  },
+  "PWD": {
+    "id": "PWD",
+    "name": "Person with Disability",
+    "type": "PWD"
+  }
+}

@@ -1,0 +1,9 @@
+/Users/kashyapanand/Public/New/wasm-processor/target/wasm32-unknown-unknown/debug/deps/wasm_bindgen_futures-e30c22cec2b916a2.d: /Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/lib.rs /Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/queue.rs /Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/task/singlethread.rs
+
+/Users/kashyapanand/Public/New/wasm-processor/target/wasm32-unknown-unknown/debug/deps/libwasm_bindgen_futures-e30c22cec2b916a2.rlib: /Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/lib.rs /Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/queue.rs /Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/task/singlethread.rs
+
+/Users/kashyapanand/Public/New/wasm-processor/target/wasm32-unknown-unknown/debug/deps/libwasm_bindgen_futures-e30c22cec2b916a2.rmeta: /Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/lib.rs /Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/queue.rs /Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/task/singlethread.rs
+
+/Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/lib.rs:
+/Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/queue.rs:
+/Users/kashyapanand/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-futures-0.4.54/src/task/singlethread.rs:

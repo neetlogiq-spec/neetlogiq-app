@@ -1,0 +1,553 @@
+{
+  "stream": "PG_MEDICAL",
+  "data_type": "colleges",
+  "year": 2024,
+  "generated_at": "2025-10-25T12:44:07.640Z",
+  "version": "1.0.0",
+  "total_colleges": 346,
+  "total_seats": 10058,
+  "states": [
+    "Maharashtra",
+    "Karnataka",
+    "Tamil Nadu",
+    "Delhi",
+    "Gujarat"
+  ],
+  "categories": [
+    "Government",
+    "Private",
+    "Deemed"
+  ],
+  "data": [
+    {
+      "id": "college_1",
+      "name": "Medical College 1",
+      "state": "Maharashtra",
+      "city": "City 1",
+      "type": "Government",
+      "established_year": 1950,
+      "rating": "3.9",
+      "total_seats": 182
+    },
+    {
+      "id": "college_2",
+      "name": "Medical College 2",
+      "state": "Karnataka",
+      "city": "City 2",
+      "type": "Private",
+      "established_year": 1951,
+      "rating": "5.0",
+      "total_seats": 203
+    },
+    {
+      "id": "college_3",
+      "name": "Medical College 3",
+      "state": "Tamil Nadu",
+      "city": "City 3",
+      "type": "Deemed",
+      "established_year": 1952,
+      "rating": "3.5",
+      "total_seats": 135
+    },
+    {
+      "id": "college_4",
+      "name": "Medical College 4",
+      "state": "Delhi",
+      "city": "City 4",
+      "type": "Government",
+      "established_year": 1953,
+      "rating": "3.2",
+      "total_seats": 124
+    },
+    {
+      "id": "college_5",
+      "name": "Medical College 5",
+      "state": "Gujarat",
+      "city": "City 5",
+      "type": "Private",
+      "established_year": 1954,
+      "rating": "4.8",
+      "total_seats": 161
+    },
+    {
+      "id": "college_6",
+      "name": "Medical College 6",
+      "state": "Maharashtra",
+      "city": "City 6",
+      "type": "Deemed",
+      "established_year": 1955,
+      "rating": "4.5",
+      "total_seats": 205
+    },
+    {
+      "id": "college_7",
+      "name": "Medical College 7",
+      "state": "Karnataka",
+      "city": "City 7",
+      "type": "Government",
+      "established_year": 1956,
+      "rating": "4.2",
+      "total_seats": 100
+    },
+    {
+      "id": "college_8",
+      "name": "Medical College 8",
+      "state": "Tamil Nadu",
+      "city": "City 8",
+      "type": "Private",
+      "established_year": 1957,
+      "rating": "4.6",
+      "total_seats": 88
+    },
+    {
+      "id": "college_9",
+      "name": "Medical College 9",
+      "state": "Delhi",
+      "city": "City 9",
+      "type": "Deemed",
+      "established_year": 1958,
+      "rating": "3.6",
+      "total_seats": 83
+    },
+    {
+      "id": "college_10",
+      "name": "Medical College 10",
+      "state": "Gujarat",
+      "city": "City 10",
+      "type": "Government",
+      "established_year": 1959,
+      "rating": "3.9",
+      "total_seats": 50
+    },
+    {
+      "id": "college_11",
+      "name": "Medical College 11",
+      "state": "Maharashtra",
+      "city": "City 11",
+      "type": "Private",
+      "established_year": 1960,
+      "rating": "4.6",
+      "total_seats": 53
+    },
+    {
+      "id": "college_12",
+      "name": "Medical College 12",
+      "state": "Karnataka",
+      "city": "City 12",
+      "type": "Deemed",
+      "established_year": 1961,
+      "rating": "4.1",
+      "total_seats": 78
+    },
+    {
+      "id": "college_13",
+      "name": "Medical College 13",
+      "state": "Tamil Nadu",
+      "city": "City 13",
+      "type": "Government",
+      "established_year": 1962,
+      "rating": "3.8",
+      "total_seats": 80
+    },
+    {
+      "id": "college_14",
+      "name": "Medical College 14",
+      "state": "Delhi",
+      "city": "City 14",
+      "type": "Private",
+      "established_year": 1963,
+      "rating": "4.0",
+      "total_seats": 163
+    },
+    {
+      "id": "college_15",
+      "name": "Medical College 15",
+      "state": "Gujarat",
+      "city": "City 15",
+      "type": "Deemed",
+      "established_year": 1964,
+      "rating": "4.9",
+      "total_seats": 92
+    },
+    {
+      "id": "college_16",
+      "name": "Medical College 16",
+      "state": "Maharashtra",
+      "city": "City 16",
+      "type": "Government",
+      "established_year": 1965,
+      "rating": "4.5",
+      "total_seats": 56
+    },
+    {
+      "id": "college_17",
+      "name": "Medical College 17",
+      "state": "Karnataka",
+      "city": "City 17",
+      "type": "Private",
+      "established_year": 1966,
+      "rating": "3.2",
+      "total_seats": 75
+    },
+    {
+      "id": "college_18",
+      "name": "Medical College 18",
+      "state": "Tamil Nadu",
+      "city": "City 18",
+      "type": "Deemed",
+      "established_year": 1967,
+      "rating": "3.6",
+      "total_seats": 201
+    },
+    {
+      "id": "college_19",
+      "name": "Medical College 19",
+      "state": "Delhi",
+      "city": "City 19",
+      "type": "Government",
+      "established_year": 1968,
+      "rating": "3.8",
+      "total_seats": 194
+    },
+    {
+      "id": "college_20",
+      "name": "Medical College 20",
+      "state": "Gujarat",
+      "city": "City 20",
+      "type": "Private",
+      "established_year": 1969,
+      "rating": "3.9",
+      "total_seats": 95
+    },
+    {
+      "id": "college_21",
+      "name": "Medical College 21",
+      "state": "Maharashtra",
+      "city": "City 21",
+      "type": "Deemed",
+      "established_year": 1970,
+      "rating": "3.9",
+      "total_seats": 230
+    },
+    {
+      "id": "college_22",
+      "name": "Medical College 22",
+      "state": "Karnataka",
+      "city": "City 22",
+      "type": "Government",
+      "established_year": 1971,
+      "rating": "3.4",
+      "total_seats": 155
+    },
+    {
+      "id": "college_23",
+      "name": "Medical College 23",
+      "state": "Tamil Nadu",
+      "city": "City 23",
+      "type": "Private",
+      "established_year": 1972,
+      "rating": "4.9",
+      "total_seats": 163
+    },
+    {
+      "id": "college_24",
+      "name": "Medical College 24",
+      "state": "Delhi",
+      "city": "City 24",
+      "type": "Deemed",
+      "established_year": 1973,
+      "rating": "3.2",
+      "total_seats": 158
+    },
+    {
+      "id": "college_25",
+      "name": "Medical College 25",
+      "state": "Gujarat",
+      "city": "City 25",
+      "type": "Government",
+      "established_year": 1974,
+      "rating": "4.4",
+      "total_seats": 108
+    },
+    {
+      "id": "college_26",
+      "name": "Medical College 26",
+      "state": "Maharashtra",
+      "city": "City 26",
+      "type": "Private",
+      "established_year": 1975,
+      "rating": "4.0",
+      "total_seats": 248
+    },
+    {
+      "id": "college_27",
+      "name": "Medical College 27",
+      "state": "Karnataka",
+      "city": "City 27",
+      "type": "Deemed",
+      "established_year": 1976,
+      "rating": "4.7",
+      "total_seats": 82
+    },
+    {
+      "id": "college_28",
+      "name": "Medical College 28",
+      "state": "Tamil Nadu",
+      "city": "City 28",
+      "type": "Government",
+      "established_year": 1977,
+      "rating": "3.2",
+      "total_seats": 198
+    },
+    {
+      "id": "college_29",
+      "name": "Medical College 29",
+      "state": "Delhi",
+      "city": "City 29",
+      "type": "Private",
+      "established_year": 1978,
+      "rating": "3.8",
+      "total_seats": 137
+    },
+    {
+      "id": "college_30",
+      "name": "Medical College 30",
+      "state": "Gujarat",
+      "city": "City 30",
+      "type": "Deemed",
+      "established_year": 1979,
+      "rating": "4.2",
+      "total_seats": 220
+    },
+    {
+      "id": "college_31",
+      "name": "Medical College 31",
+      "state": "Maharashtra",
+      "city": "City 31",
+      "type": "Government",
+      "established_year": 1980,
+      "rating": "3.0",
+      "total_seats": 184
+    },
+    {
+      "id": "college_32",
+      "name": "Medical College 32",
+      "state": "Karnataka",
+      "city": "City 32",
+      "type": "Private",
+      "established_year": 1981,
+      "rating": "4.3",
+      "total_seats": 69
+    },
+    {
+      "id": "college_33",
+      "name": "Medical College 33",
+      "state": "Tamil Nadu",
+      "city": "City 33",
+      "type": "Deemed",
+      "established_year": 1982,
+      "rating": "3.6",
+      "total_seats": 100
+    },
+    {
+      "id": "college_34",
+      "name": "Medical College 34",
+      "state": "Delhi",
+      "city": "City 34",
+      "type": "Government",
+      "established_year": 1983,
+      "rating": "4.8",
+      "total_seats": 170
+    },
+    {
+      "id": "college_35",
+      "name": "Medical College 35",
+      "state": "Gujarat",
+      "city": "City 35",
+      "type": "Private",
+      "established_year": 1984,
+      "rating": "4.4",
+      "total_seats": 239
+    },
+    {
+      "id": "college_36",
+      "name": "Medical College 36",
+      "state": "Maharashtra",
+      "city": "City 36",
+      "type": "Deemed",
+      "established_year": 1985,
+      "rating": "4.4",
+      "total_seats": 81
+    },
+    {
+      "id": "college_37",
+      "name": "Medical College 37",
+      "state": "Karnataka",
+      "city": "City 37",
+      "type": "Government",
+      "established_year": 1986,
+      "rating": "3.6",
+      "total_seats": 133
+    },
+    {
+      "id": "college_38",
+      "name": "Medical College 38",
+      "state": "Tamil Nadu",
+      "city": "City 38",
+      "type": "Private",
+      "established_year": 1987,
+      "rating": "3.7",
+      "total_seats": 112
+    },
+    {
+      "id": "college_39",
+      "name": "Medical College 39",
+      "state": "Delhi",
+      "city": "City 39",
+      "type": "Deemed",
+      "established_year": 1988,
+      "rating": "3.5",
+      "total_seats": 128
+    },
+    {
+      "id": "college_40",
+      "name": "Medical College 40",
+      "state": "Gujarat",
+      "city": "City 40",
+      "type": "Government",
+      "established_year": 1989,
+      "rating": "3.4",
+      "total_seats": 83
+    },
+    {
+      "id": "college_41",
+      "name": "Medical College 41",
+      "state": "Maharashtra",
+      "city": "City 41",
+      "type": "Private",
+      "established_year": 1990,
+      "rating": "4.6",
+      "total_seats": 99
+    },
+    {
+      "id": "college_42",
+      "name": "Medical College 42",
+      "state": "Karnataka",
+      "city": "City 42",
+      "type": "Deemed",
+      "established_year": 1991,
+      "rating": "3.1",
+      "total_seats": 172
+    },
+    {
+      "id": "college_43",
+      "name": "Medical College 43",
+      "state": "Tamil Nadu",
+      "city": "City 43",
+      "type": "Government",
+      "established_year": 1992,
+      "rating": "3.9",
+      "total_seats": 135
+    },
+    {
+      "id": "college_44",
+      "name": "Medical College 44",
+      "state": "Delhi",
+      "city": "City 44",
+      "type": "Private",
+      "established_year": 1993,
+      "rating": "3.2",
+      "total_seats": 97
+    },
+    {
+      "id": "college_45",
+      "name": "Medical College 45",
+      "state": "Gujarat",
+      "city": "City 45",
+      "type": "Deemed",
+      "established_year": 1994,
+      "rating": "3.9",
+      "total_seats": 101
+    },
+    {
+      "id": "college_46",
+      "name": "Medical College 46",
+      "state": "Maharashtra",
+      "city": "City 46",
+      "type": "Government",
+      "established_year": 1995,
+      "rating": "4.9",
+      "total_seats": 197
+    },
+    {
+      "id": "college_47",
+      "name": "Medical College 47",
+      "state": "Karnataka",
+      "city": "City 47",
+      "type": "Private",
+      "established_year": 1996,
+      "rating": "3.6",
+      "total_seats": 63
+    },
+    {
+      "id": "college_48",
+      "name": "Medical College 48",
+      "state": "Tamil Nadu",
+      "city": "City 48",
+      "type": "Deemed",
+      "established_year": 1997,
+      "rating": "4.5",
+      "total_seats": 196
+    },
+    {
+      "id": "college_49",
+      "name": "Medical College 49",
+      "state": "Delhi",
+      "city": "City 49",
+      "type": "Government",
+      "established_year": 1998,
+      "rating": "4.6",
+      "total_seats": 140
+    },
+    {
+      "id": "college_50",
+      "name": "Medical College 50",
+      "state": "Gujarat",
+      "city": "City 50",
+      "type": "Private",
+      "established_year": 1999,
+      "rating": "4.4",
+      "total_seats": 137
+    },
+    {
+      "id": "college_51",
+      "name": "Medical College 51",
+      "state": "Maharashtra",
+      "city": "City 51",
+      "type": "Deemed",
+      "established_year": 2000,
+      "rating": "4.8",
+      "total_seats": 75
+    },
+    {
+      "id": "college_52",
+      "name": "Medical College 52",
+      "state": "Karnataka",
+      "city": "City 52",
+      "type": "Government",
+      "established_year": 2001,
+      "rating": "4.6",
+      "total_seats": 134
+    },
+    {
+      "id": "college_53",
+      "name": "Medical College 53",
+      "state": "Tamil Nadu",
+      "city": "City 53",
+      "type": "Private",
+      "established_year": 2002,
+      "rating": "4.9",
+      "total_seats": 209
+    }
+  ]
+}

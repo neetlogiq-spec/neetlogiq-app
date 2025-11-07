@@ -1,0 +1,11 @@
+{
+  "stream": "PG_MEDICAL",
+  "round": 2,
+  "year": 2024,
+  "total_records": 1772,
+  "compressed_size": 363743,
+  "original_size": 528610,
+  "compression_ratio": "31.19",
+  "priority": "high",
+  "last_updated": "2025-10-25T12:34:29.658Z"
+}

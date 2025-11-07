@@ -1,0 +1,117 @@
+{
+  "created_timestamp": "2025-09-26T23:18:03.901394",
+  "autorag_compatible": true,
+  "max_file_size_mb": 3.5,
+  "total_original_records": 128602,
+  "duckdb_files": [
+    {
+      "source": "AIQ_2024_PART1",
+      "file": "autorag_data/counselling_data_aiq_2024_part1.duckdb",
+      "records": 28866,
+      "size_mb": 2.51171875
+    },
+    {
+      "source": "AIQ_2024_PART2",
+      "file": "autorag_data/counselling_data_aiq_2024_part2.duckdb",
+      "records": 28866,
+      "size_mb": 2.76171875
+    },
+    {
+      "source": "AIQ_2024_PART3",
+      "file": "autorag_data/counselling_data_aiq_2024_part3.duckdb",
+      "records": 1,
+      "size_mb": 1.01171875
+    },
+    {
+      "source": "AIQ_2023_PART1",
+      "file": "autorag_data/counselling_data_aiq_2023_part1.duckdb",
+      "records": 26984,
+      "size_mb": 2.51171875
+    },
+    {
+      "source": "AIQ_2023_PART2",
+      "file": "autorag_data/counselling_data_aiq_2023_part2.duckdb",
+      "records": 26984,
+      "size_mb": 2.76171875
+    },
+    {
+      "source": "KEA_2024",
+      "file": "autorag_data/counselling_data_kea_2024.duckdb",
+      "records": 7105,
+      "size_mb": 1.26171875
+    },
+    {
+      "source": "KEA_2023",
+      "file": "autorag_data/counselling_data_kea_2023.duckdb",
+      "records": 7041,
+      "size_mb": 1.26171875
+    },
+    {
+      "source": "KEA_DENTAL_2024",
+      "file": "autorag_data/counselling_data_kea_dental_2024.duckdb",
+      "records": 2755,
+      "size_mb": 1.26171875
+    }
+  ],
+  "parquet_files": [
+    {
+      "source": "AIQ_2024_CHUNK1",
+      "file": "autorag_data/parquet_chunks/counselling_aiq_2024_chunk1.parquet",
+      "records": 20000,
+      "size_mb": 0.43865013122558594
+    },
+    {
+      "source": "AIQ_2024_CHUNK2",
+      "file": "autorag_data/parquet_chunks/counselling_aiq_2024_chunk2.parquet",
+      "records": 20000,
+      "size_mb": 0.45499610900878906
+    },
+    {
+      "source": "AIQ_2024_CHUNK3",
+      "file": "autorag_data/parquet_chunks/counselling_aiq_2024_chunk3.parquet",
+      "records": 17733,
+      "size_mb": 0.4125509262084961
+    },
+    {
+      "source": "AIQ_2023_CHUNK1",
+      "file": "autorag_data/parquet_chunks/counselling_aiq_2023_chunk1.parquet",
+      "records": 20000,
+      "size_mb": 0.41285228729248047
+    },
+    {
+      "source": "AIQ_2023_CHUNK2",
+      "file": "autorag_data/parquet_chunks/counselling_aiq_2023_chunk2.parquet",
+      "records": 20000,
+      "size_mb": 0.4686393737792969
+    },
+    {
+      "source": "AIQ_2023_CHUNK3",
+      "file": "autorag_data/parquet_chunks/counselling_aiq_2023_chunk3.parquet",
+      "records": 13968,
+      "size_mb": 0.37040233612060547
+    },
+    {
+      "source": "KEA_2024_CHUNK1",
+      "file": "autorag_data/parquet_chunks/counselling_kea_2024_chunk1.parquet",
+      "records": 7105,
+      "size_mb": 0.11362457275390625
+    },
+    {
+      "source": "KEA_2023_CHUNK1",
+      "file": "autorag_data/parquet_chunks/counselling_kea_2023_chunk1.parquet",
+      "records": 7041,
+      "size_mb": 0.1166839599609375
+    },
+    {
+      "source": "KEA_DENTAL_2024_CHUNK1",
+      "file": "autorag_data/parquet_chunks/counselling_kea_dental_2024_chunk1.parquet",
+      "records": 2755,
+      "size_mb": 0.04624652862548828
+    }
+  ],
+  "usage_instructions": {
+    "duckdb": "Use duckdb.connect(file) to query individual sources",
+    "parquet": "Use pandas.read_parquet(file) for chunk analysis",
+    "recommended": "Use DuckDB files for SQL analytics, Parquet for ML/AutoRAG"
+  }
+}

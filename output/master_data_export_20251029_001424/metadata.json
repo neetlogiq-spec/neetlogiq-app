@@ -1,0 +1,22 @@
+{
+  "export_date": "2025-10-29T00:14:41.031106",
+  "total_tables": 14,
+  "total_records": 5403,
+  "compression": "snappy",
+  "tables": [
+    "sqlite_sequence",
+    "course_aliases",
+    "state_mappings",
+    "states",
+    "categories",
+    "quotas",
+    "quota_aliases",
+    "category_aliases",
+    "state_college_link",
+    "college_aliases",
+    "medical_colleges",
+    "dental_colleges",
+    "dnb_colleges",
+    "courses"
+  ]
+}

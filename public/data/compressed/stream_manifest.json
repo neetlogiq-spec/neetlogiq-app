@@ -1,0 +1,270 @@
+{
+  "version": "1.0.0",
+  "created_at": "2025-10-25T12:34:29.676Z",
+  "streams": {
+    "UG": {
+      "description": "Undergraduate (MBBS, BDS)",
+      "total_files": 10,
+      "total_size": 1851,
+      "priority_rounds": 2,
+      "files": [
+        {
+          "filename": "ug_2024_round_1.gz",
+          "round": 1,
+          "size": 183,
+          "original_size": 232,
+          "compression_ratio": "21.12",
+          "priority": "high"
+        },
+        {
+          "filename": "ug_2024_round_2.gz",
+          "round": 2,
+          "size": 183,
+          "original_size": 231,
+          "compression_ratio": "20.78",
+          "priority": "high"
+        },
+        {
+          "filename": "ug_2024_round_3.gz",
+          "round": 3,
+          "size": 185,
+          "original_size": 232,
+          "compression_ratio": "20.26",
+          "priority": "normal"
+        },
+        {
+          "filename": "ug_2024_round_4.gz",
+          "round": 4,
+          "size": 184,
+          "original_size": 233,
+          "compression_ratio": "21.03",
+          "priority": "normal"
+        },
+        {
+          "filename": "ug_2024_round_5.gz",
+          "round": 5,
+          "size": 185,
+          "original_size": 234,
+          "compression_ratio": "20.94",
+          "priority": "normal"
+        },
+        {
+          "filename": "ug_2024_round_6.gz",
+          "round": 6,
+          "size": 187,
+          "original_size": 234,
+          "compression_ratio": "20.09",
+          "priority": "normal"
+        },
+        {
+          "filename": "ug_2024_round_7.gz",
+          "round": 7,
+          "size": 185,
+          "original_size": 234,
+          "compression_ratio": "20.94",
+          "priority": "normal"
+        },
+        {
+          "filename": "ug_2024_round_8.gz",
+          "round": 8,
+          "size": 186,
+          "original_size": 234,
+          "compression_ratio": "20.51",
+          "priority": "normal"
+        },
+        {
+          "filename": "ug_2024_round_9.gz",
+          "round": 9,
+          "size": 186,
+          "original_size": 233,
+          "compression_ratio": "20.17",
+          "priority": "normal"
+        },
+        {
+          "filename": "ug_2024_round_10.gz",
+          "round": 10,
+          "size": 187,
+          "original_size": 234,
+          "compression_ratio": "20.09",
+          "priority": "normal"
+        }
+      ]
+    },
+    "PG_MEDICAL": {
+      "description": "Postgraduate Medical (MD, MS, DNB, DIPLOMA)",
+      "total_files": 10,
+      "total_size": 1951,
+      "priority_rounds": 2,
+      "files": [
+        {
+          "filename": "pg_medical_2024_round_1.gz",
+          "round": 1,
+          "size": 195,
+          "original_size": 240,
+          "compression_ratio": "18.75",
+          "priority": "high"
+        },
+        {
+          "filename": "pg_medical_2024_round_2.gz",
+          "round": 2,
+          "size": 194,
+          "original_size": 239,
+          "compression_ratio": "18.83",
+          "priority": "high"
+        },
+        {
+          "filename": "pg_medical_2024_round_3.gz",
+          "round": 3,
+          "size": 195,
+          "original_size": 242,
+          "compression_ratio": "19.42",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_medical_2024_round_4.gz",
+          "round": 4,
+          "size": 194,
+          "original_size": 242,
+          "compression_ratio": "19.83",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_medical_2024_round_5.gz",
+          "round": 5,
+          "size": 197,
+          "original_size": 243,
+          "compression_ratio": "18.93",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_medical_2024_round_6.gz",
+          "round": 6,
+          "size": 194,
+          "original_size": 240,
+          "compression_ratio": "19.17",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_medical_2024_round_7.gz",
+          "round": 7,
+          "size": 194,
+          "original_size": 240,
+          "compression_ratio": "19.17",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_medical_2024_round_8.gz",
+          "round": 8,
+          "size": 195,
+          "original_size": 243,
+          "compression_ratio": "19.75",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_medical_2024_round_9.gz",
+          "round": 9,
+          "size": 196,
+          "original_size": 242,
+          "compression_ratio": "19.01",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_medical_2024_round_10.gz",
+          "round": 10,
+          "size": 197,
+          "original_size": 243,
+          "compression_ratio": "18.93",
+          "priority": "normal"
+        }
+      ]
+    },
+    "PG_DENTAL": {
+      "description": "Postgraduate Dental (MDS, PG DIPLOMA)",
+      "total_files": 10,
+      "total_size": 1942,
+      "priority_rounds": 2,
+      "files": [
+        {
+          "filename": "pg_dental_2024_round_1.gz",
+          "round": 1,
+          "size": 195,
+          "original_size": 239,
+          "compression_ratio": "18.41",
+          "priority": "high"
+        },
+        {
+          "filename": "pg_dental_2024_round_2.gz",
+          "round": 2,
+          "size": 193,
+          "original_size": 239,
+          "compression_ratio": "19.25",
+          "priority": "high"
+        },
+        {
+          "filename": "pg_dental_2024_round_3.gz",
+          "round": 3,
+          "size": 195,
+          "original_size": 241,
+          "compression_ratio": "19.09",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_dental_2024_round_4.gz",
+          "round": 4,
+          "size": 194,
+          "original_size": 242,
+          "compression_ratio": "19.83",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_dental_2024_round_5.gz",
+          "round": 5,
+          "size": 194,
+          "original_size": 240,
+          "compression_ratio": "19.17",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_dental_2024_round_6.gz",
+          "round": 6,
+          "size": 194,
+          "original_size": 241,
+          "compression_ratio": "19.50",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_dental_2024_round_7.gz",
+          "round": 7,
+          "size": 193,
+          "original_size": 241,
+          "compression_ratio": "19.92",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_dental_2024_round_8.gz",
+          "round": 8,
+          "size": 195,
+          "original_size": 241,
+          "compression_ratio": "19.09",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_dental_2024_round_9.gz",
+          "round": 9,
+          "size": 194,
+          "original_size": 240,
+          "compression_ratio": "19.17",
+          "priority": "normal"
+        },
+        {
+          "filename": "pg_dental_2024_round_10.gz",
+          "round": 10,
+          "size": 195,
+          "original_size": 241,
+          "compression_ratio": "19.09",
+          "priority": "normal"
+        }
+      ]
+    }
+  }
+}

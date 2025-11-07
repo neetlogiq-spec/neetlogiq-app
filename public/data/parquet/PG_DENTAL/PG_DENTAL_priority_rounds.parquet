@@ -1,0 +1,22 @@
+[
+  {
+    "id": "CUT005",
+    "college_id": "DEN0001",
+    "college_name": "Maulana Azad Institute of Dental Sciences, New Delhi",
+    "course_id": "CRS0004",
+    "course_name": "MDS",
+    "state_id": "STATE001",
+    "state_name": "Delhi",
+    "category_id": "CAT001",
+    "category_name": "General",
+    "quota_id": "QUOTA001",
+    "quota_name": "All India Quota",
+    "year": 2024,
+    "round": 1,
+    "opening_rank": 1,
+    "closing_rank": 25,
+    "total_seats": 25,
+    "stream": "DENTAL",
+    "level": "PG"
+  }
+]

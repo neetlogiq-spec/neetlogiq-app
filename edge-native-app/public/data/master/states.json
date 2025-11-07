@@ -1,0 +1,260 @@
+{
+  "ANDAMAN_AN": {
+    "id": "ANDAMAN_AN",
+    "name": "ANDAMAN AND NICOBAR ISLANDS",
+    "code": "ANDAMAN_AN",
+    "region": ""
+  },
+  "ANDAMAN_NI": {
+    "id": "ANDAMAN_NI",
+    "name": "ANDAMAN NICOBAR ISLANDS",
+    "code": "ANDAMAN_NI",
+    "region": ""
+  },
+  "ANDHRA_PRA": {
+    "id": "ANDHRA_PRA",
+    "name": "ANDHRA PRADESH",
+    "code": "ANDHRA_PRA",
+    "region": ""
+  },
+  "ARUNACHAL_": {
+    "id": "ARUNACHAL_",
+    "name": "ARUNACHAL PRADESH",
+    "code": "ARUNACHAL_",
+    "region": ""
+  },
+  "ASSAM": {
+    "id": "ASSAM",
+    "name": "ASSAM",
+    "code": "ASSAM",
+    "region": ""
+  },
+  "BIHAR": {
+    "id": "BIHAR",
+    "name": "BIHAR",
+    "code": "BIHAR",
+    "region": ""
+  },
+  "CHANDIGARH": {
+    "id": "CHANDIGARH",
+    "name": "CHANDIGARH",
+    "code": "CHANDIGARH",
+    "region": ""
+  },
+  "CHATTISGAR": {
+    "id": "CHATTISGAR",
+    "name": "CHATTISGARH",
+    "code": "CHATTISGAR",
+    "region": ""
+  },
+  "CHHATTISGA": {
+    "id": "CHHATTISGA",
+    "name": "CHHATTISGARH",
+    "code": "CHHATTISGA",
+    "region": ""
+  },
+  "DADRA_AND_": {
+    "id": "DADRA_AND_",
+    "name": "DADRA AND NAGAR HAVELI",
+    "code": "DADRA_AND_",
+    "region": ""
+  },
+  "DAMAN_AND_": {
+    "id": "DAMAN_AND_",
+    "name": "DAMAN & DIU",
+    "code": "DAMAN_AND_",
+    "region": ""
+  },
+  "DELHI": {
+    "id": "DELHI",
+    "name": "DELHI",
+    "code": "DELHI",
+    "region": ""
+  },
+  "DELHI_(NCT": {
+    "id": "DELHI_(NCT",
+    "name": "DELHI (NCT)",
+    "code": "DELHI_(NCT",
+    "region": ""
+  },
+  "GOA": {
+    "id": "GOA",
+    "name": "GOA",
+    "code": "GOA",
+    "region": ""
+  },
+  "GUJARAT": {
+    "id": "GUJARAT",
+    "name": "GUJARAT",
+    "code": "GUJARAT",
+    "region": ""
+  },
+  "HARYANA": {
+    "id": "HARYANA",
+    "name": "HARYANA",
+    "code": "HARYANA",
+    "region": ""
+  },
+  "HIMACHAL_P": {
+    "id": "HIMACHAL_P",
+    "name": "HIMACHAL PRADESH",
+    "code": "HIMACHAL_P",
+    "region": ""
+  },
+  "JAMMU_AND_": {
+    "id": "JAMMU_AND_",
+    "name": "JAMMU AND KASHMIR",
+    "code": "JAMMU_AND_",
+    "region": ""
+  },
+  "JHARKHAND": {
+    "id": "JHARKHAND",
+    "name": "JHARKHAND",
+    "code": "JHARKHAND",
+    "region": ""
+  },
+  "KARNATAKA": {
+    "id": "KARNATAKA",
+    "name": "KARNATAKA",
+    "code": "KARNATAKA",
+    "region": ""
+  },
+  "KERALA": {
+    "id": "KERALA",
+    "name": "KERALA",
+    "code": "KERALA",
+    "region": ""
+  },
+  "LADAKH": {
+    "id": "LADAKH",
+    "name": "LADAKH",
+    "code": "LADAKH",
+    "region": ""
+  },
+  "MADHYA_PRA": {
+    "id": "MADHYA_PRA",
+    "name": "MADHYA PRADESH",
+    "code": "MADHYA_PRA",
+    "region": ""
+  },
+  "MAHARASHTR": {
+    "id": "MAHARASHTR",
+    "name": "MAHARASHTRA",
+    "code": "MAHARASHTR",
+    "region": ""
+  },
+  "MANIPUR": {
+    "id": "MANIPUR",
+    "name": "MANIPUR",
+    "code": "MANIPUR",
+    "region": ""
+  },
+  "MEGHALAYA": {
+    "id": "MEGHALAYA",
+    "name": "MEGHALAYA",
+    "code": "MEGHALAYA",
+    "region": ""
+  },
+  "MIZORAM": {
+    "id": "MIZORAM",
+    "name": "MIZORAM",
+    "code": "MIZORAM",
+    "region": ""
+  },
+  "NAGALAND": {
+    "id": "NAGALAND",
+    "name": "NAGALAND",
+    "code": "NAGALAND",
+    "region": ""
+  },
+  "NEW_DELHI": {
+    "id": "NEW_DELHI",
+    "name": "NEW DELHI",
+    "code": "NEW_DELHI",
+    "region": ""
+  },
+  "ODISHA": {
+    "id": "ODISHA",
+    "name": "ODISHA",
+    "code": "ODISHA",
+    "region": ""
+  },
+  "ORISSA": {
+    "id": "ORISSA",
+    "name": "ORISSA",
+    "code": "ORISSA",
+    "region": ""
+  },
+  "PONDICHERR": {
+    "id": "PONDICHERR",
+    "name": "PONDICHERRY",
+    "code": "PONDICHERR",
+    "region": ""
+  },
+  "PUDUCHERRY": {
+    "id": "PUDUCHERRY",
+    "name": "PUDUCHERRY",
+    "code": "PUDUCHERRY",
+    "region": ""
+  },
+  "PUNJAB": {
+    "id": "PUNJAB",
+    "name": "PUNJAB",
+    "code": "PUNJAB",
+    "region": ""
+  },
+  "RAJASTHAN": {
+    "id": "RAJASTHAN",
+    "name": "RAJASTHAN",
+    "code": "RAJASTHAN",
+    "region": ""
+  },
+  "SIKKIM": {
+    "id": "SIKKIM",
+    "name": "SIKKIM",
+    "code": "SIKKIM",
+    "region": ""
+  },
+  "TAMIL_NADU": {
+    "id": "TAMIL_NADU",
+    "name": "TAMIL NADU",
+    "code": "TAMIL_NADU",
+    "region": ""
+  },
+  "TELANGANA": {
+    "id": "TELANGANA",
+    "name": "TELANGANA",
+    "code": "TELANGANA",
+    "region": ""
+  },
+  "TRIPURA": {
+    "id": "TRIPURA",
+    "name": "TRIPURA",
+    "code": "TRIPURA",
+    "region": ""
+  },
+  "UTTAR_PRAD": {
+    "id": "UTTAR_PRAD",
+    "name": "UTTAR PRADESH",
+    "code": "UTTAR_PRAD",
+    "region": ""
+  },
+  "UTTARAKHAN": {
+    "id": "UTTARAKHAN",
+    "name": "UTTARAKHAND",
+    "code": "UTTARAKHAN",
+    "region": ""
+  },
+  "UTTRAKHAND": {
+    "id": "UTTRAKHAND",
+    "name": "UTTRAKHAND",
+    "code": "UTTRAKHAND",
+    "region": ""
+  },
+  "WEST_BENGA": {
+    "id": "WEST_BENGA",
+    "name": "WEST BENGAL",
+    "code": "WEST_BENGA",
+    "region": ""
+  }
+}
