@@ -55,3 +55,13 @@ ENV/
 dist/
 build/
 .pytest_cache/
+
+# large database files
+*.db
+*.sqlite
+*.sqlite3
+data/counselling_data_partitioned.db
+edge-native-app/data/counselling_data_partitioned.db
+data/sqlite/counselling_data_partitioned.db
+models/fine_tuned_embeddings/model.safetensors
+public/data/cutoffs/all-cutoffs.json

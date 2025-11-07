@@ -15280,70 +15280,70 @@ class AdvancedSQLiteMatcher:
                 )
 
                 if len(unmatched_df) > 0:
-                console.print(f"[cyan]📋 Found {len(unmatched_df):,} unmatched records from PASS 1[/cyan]")
+                    console.print(f"[cyan]📋 Found {len(unmatched_df):,} unmatched records from PASS 1[/cyan]")
 
-                # Split into batches
-                unmatched_batches = [unmatched_df.iloc[i:i+batch_size] for i in range(0, len(unmatched_df), batch_size)]
-                all_pass2_results = []
+                    # Split into batches
+                    unmatched_batches = [unmatched_df.iloc[i:i+batch_size] for i in range(0, len(unmatched_df), batch_size)]
+                    all_pass2_results = []
 
-                # Process PASS 2 batches with aliases
-                with ThreadPoolExecutor(max_workers=num_threads) as executor:
-                    future_to_batch = {
-                        executor.submit(self.process_batch_with_aliases, batch.to_dict('records')): batch
-                        for batch in unmatched_batches
-                    }
+                    # Process PASS 2 batches with aliases
+                    with ThreadPoolExecutor(max_workers=num_threads) as executor:
+                        future_to_batch = {
+                            executor.submit(self.process_batch_with_aliases, batch.to_dict('records')): batch
+                            for batch in unmatched_batches
+                        }
 
-                    if self.show_progress_bars and self.verbosity_level >= 1:
-                        pbar = tqdm(
-                            total=len(unmatched_batches),
-                            desc="🔄 Alias matching",
-                            unit="batch",
-                            bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]',
-                            ncols=100
-                        )
+                        if self.show_progress_bars and self.verbosity_level >= 1:
+                            pbar = tqdm(
+                                total=len(unmatched_batches),
+                                desc="🔄 Alias matching",
+                                unit="batch",
+                                bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]',
+                                ncols=100
+                            )
 
-                        alias_matched_count = 0
-                        for future in as_completed(future_to_batch):
-                            try:
-                                batch_results = future.result()
-                                all_pass2_results.extend(batch_results)
-                                alias_matched_count += sum(1 for r in batch_results if r.get('master_college_id'))
-                                pbar.set_postfix({'matched': alias_matched_count})
-                                pbar.update(1)
-                            except Exception as e:
-                                logger.error(f"PASS 2 batch processing failed: {e}")
-                                pbar.update(1)
-                        pbar.close()
-                    else:
-                        for future in as_completed(future_to_batch):
-                            try:
-                                batch_results = future.result()
-                                all_pass2_results.extend(batch_results)
-                            except Exception as e:
-                                logger.error(f"PASS 2 batch processing failed: {e}")
+                            alias_matched_count = 0
+                            for future in as_completed(future_to_batch):
+                                try:
+                                    batch_results = future.result()
+                                    all_pass2_results.extend(batch_results)
+                                    alias_matched_count += sum(1 for r in batch_results if r.get('master_college_id'))
+                                    pbar.set_postfix({'matched': alias_matched_count})
+                                    pbar.update(1)
+                                except Exception as e:
+                                    logger.error(f"PASS 2 batch processing failed: {e}")
+                                    pbar.update(1)
+                            pbar.close()
+                        else:
+                            for future in as_completed(future_to_batch):
+                                try:
+                                    batch_results = future.result()
+                                    all_pass2_results.extend(batch_results)
+                                except Exception as e:
+                                    logger.error(f"PASS 2 batch processing failed: {e}")
 
-                # Update the database with PASS 2 results
-                if all_pass2_results:
-                    pass2_df = pd.DataFrame(all_pass2_results)
-                    pass2_matched = sum(1 for _, row in pass2_df.iterrows() if row.get('master_college_id'))
+                    # Update the database with PASS 2 results
+                    if all_pass2_results:
+                        pass2_df = pd.DataFrame(all_pass2_results)
+                        pass2_matched = sum(1 for _, row in pass2_df.iterrows() if row.get('master_college_id'))
 
-                    console.print(f"[cyan]📝 Updating {len(all_pass2_results):,} records with PASS 2 alias results...[/cyan]")
+                        console.print(f"[cyan]📝 Updating {len(all_pass2_results):,} records with PASS 2 alias results...[/cyan]")
 
-                    # Merge PASS 2 results back into main results_df
-                    for _, pass2_row in pass2_df.iterrows():
-                        if pass2_row.get('master_college_id'):  # Only update if alias matching found something
-                            record_id = pass2_row.get('id')
-                            if 'id' in results_df.columns:
-                                mask = results_df['id'] == record_id
-                                if mask.any():
-                                    # Update with alias match
-                                    results_df.loc[mask, 'master_college_id'] = pass2_row['master_college_id']
-                                    results_df.loc[mask, 'college_match_score'] = pass2_row.get('college_match_score', 0)
-                                    results_df.loc[mask, 'college_match_method'] = pass2_row.get('college_match_method', 'no_match')
-                                    results_df.loc[mask, 'master_course_id'] = pass2_row['master_course_id']
-                                    results_df.loc[mask, 'course_match_score'] = pass2_row.get('course_match_score', 0)
-                                    results_df.loc[mask, 'course_match_method'] = pass2_row.get('course_match_method', 'no_match')
-                                    results_df.loc[mask, 'is_linked'] = True
+                        # Merge PASS 2 results back into main results_df
+                        for _, pass2_row in pass2_df.iterrows():
+                            if pass2_row.get('master_college_id'):  # Only update if alias matching found something
+                                record_id = pass2_row.get('id')
+                                if 'id' in results_df.columns:
+                                    mask = results_df['id'] == record_id
+                                    if mask.any():
+                                        # Update with alias match
+                                        results_df.loc[mask, 'master_college_id'] = pass2_row['master_college_id']
+                                        results_df.loc[mask, 'college_match_score'] = pass2_row.get('college_match_score', 0)
+                                        results_df.loc[mask, 'college_match_method'] = pass2_row.get('college_match_method', 'no_match')
+                                        results_df.loc[mask, 'master_course_id'] = pass2_row['master_course_id']
+                                        results_df.loc[mask, 'course_match_score'] = pass2_row.get('course_match_score', 0)
+                                        results_df.loc[mask, 'course_match_method'] = pass2_row.get('course_match_method', 'no_match')
+                                        results_df.loc[mask, 'is_linked'] = True
 
                         # CRITICAL: Use UPDATE statements instead of replace to preserve all columns
                         # Only update matching-related columns, preserve all other columns
@@ -15381,18 +15381,18 @@ class AdvancedSQLiteMatcher:
                                 cursor.execute(query, values)
                                 update_count += 1
                         
-                    conn.commit()
+                        conn.commit()
                         
                         # Log update count
                         console.print(f"[green]   • {update_count:,} records updated via UPDATE (preserving all existing columns)[/green]")
 
-                    console.print(f"[green]✅ PASS 2 Results:[/green]")
-                    console.print(f"[green]   • {pass2_matched:,} records recovered via aliases[/green]")
-                    console.print(f"[green]   • {len(unmatched_df) - pass2_matched:,} records still unmatched[/green]")
+                        console.print(f"[green]✅ PASS 2 Results:[/green]")
+                        console.print(f"[green]   • {pass2_matched:,} records recovered via aliases[/green]")
+                        console.print(f"[green]   • {len(unmatched_df) - pass2_matched:,} records still unmatched[/green]")
+                    else:
+                        console.print("[yellow]⚠️  No PASS 2 results generated[/yellow]")
                 else:
-                    console.print("[yellow]⚠️  No PASS 2 results generated[/yellow]")
-            else:
-                console.print("[green]✅ All records matched in PASS 1 - no PASS 2 needed![/green]")
+                    console.print("[green]✅ All records matched in PASS 1 - no PASS 2 needed![/green]")
 
         # Calculate final statistics
         total_records = len(results_df)
@@ -21184,8 +21184,8 @@ class AdvancedSQLiteMatcher:
         # IMPORTANT: Address filtering runs in PARALLEL with name filtering
         # Both filters operate on the ORIGINAL candidates list (SHORTLIST 1)
         # Then we find intersection to get common colleges
-            address_filtered_candidates = []
-            
+        address_filtered_candidates = []
+        
         if normalized_address and original_candidates:
             # Extract address keywords from seat data
             seat_keywords = self.extract_address_keywords(normalized_address)
@@ -21210,7 +21210,7 @@ class AdvancedSQLiteMatcher:
                     else:
                         # Both have no address OR seat data also has no address - safe to include
                         if not is_generic:
-                        address_filtered_candidates.append(candidate)
+                            address_filtered_candidates.append(candidate)
                             logger.debug(f"⚠️  AI Path INCLUDED: Master '{candidate.get('name', '')[:50]}' (ID: {candidate.get('id')}) has no address, seat also has no address")
                         # For generic names, skip (no address = can't validate)
                         continue
