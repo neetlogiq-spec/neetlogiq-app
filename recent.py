@@ -21236,7 +21236,7 @@ class AdvancedSQLiteMatcher:
                         continue
                 elif seat_city or master_city:
                     # One has city but other doesn't - for generic names, reject
-                if is_generic:
+                    if is_generic:
                         logger.debug(f"❌ AI REJECTED: Generic name - City missing in one address (Seat: '{seat_city}', Master: '{master_city}') (ID: {candidate.get('id')})")
                         continue
                 
@@ -21249,11 +21249,11 @@ class AdvancedSQLiteMatcher:
                 
                 # Accept if EITHER requirement is met (2+ keywords OR 50%+ overlap)
                 if passes_keyword_requirement or passes_overlap_requirement:
-                        address_filtered_candidates.append(candidate)
+                    address_filtered_candidates.append(candidate)
                     logger.debug(f"✅ AI ADDRESS MATCH: {candidate.get('id')} (overlap={keyword_overlap:.2f}, common={len(common_keywords)})")
-                    else:
+                else:
                     logger.debug(f"❌ AI REJECTED: {candidate.get('id')} (overlap={keyword_overlap:.2f}, common={len(common_keywords)}) - Need ≥{min_keywords_required} keywords OR ≥{min_overlap_required:.0%} overlap")
-                        continue
+                    continue
             
             address_filtered_count = len(address_filtered_candidates)
             logger.info(f"📍 AI Path (2/2): Address filtering: {len(original_candidates)} → {address_filtered_count} candidates")
@@ -21309,11 +21309,11 @@ class AdvancedSQLiteMatcher:
                         logger.warning(f"❌ AI Path REJECTED: Address '{normalized_address}' provided but ZERO intersection")
                         logger.warning(f"   College = College Name + Address (composite key) - both must match")
                         return None, 0.0, "no_intersection_with_address"
-                else:
+                    else:
                         # No address provided - safe to use name-filtered candidates
                         logger.info(f"⚠️  AI Path Fallback: No address provided - Using {name_filtered_count} name-filtered candidates")
                         common_candidates = name_filtered_candidates
-                    else:
+                else:
                     logger.warning(f"⚠️  AI Path: All {len(original_candidates)} candidates REJECTED by parallel filtering - no matches possible")
                     return None, 0.0, "parallel_filter_rejected_all"
             
