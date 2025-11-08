@@ -14,7 +14,7 @@
     "generate:embeddings": "node scripts/generate-embeddings.js",
     "build:wasm": "bash scripts/build-wasm.sh",
     "build:rust": "cd build/data-processor && cargo build --release",
-    "build:all": "pnpm build:wasm && pnpm build",
+    "build:all": "npm run build:wasm && npm run build",
     "create:stream-manifest": "node scripts/create-stream-manifest.js",
     "create:compressed-cutoffs": "node scripts/create-partitioned-cutoffs.js",
     "test:compression": "node scripts/compression-comparison.js"
