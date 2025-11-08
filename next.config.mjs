@@ -32,8 +32,27 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
 
-  // Configure webpack for memory efficiency
+  // Configure webpack for memory efficiency and WASM support
   webpack: (config, { isServer }) => {
+    // Enable WebAssembly support
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+      layers: true,
+    };
+
+    // Handle WASM files
+    config.module.rules.push({
+      test: /\.wasm$/,
+      type: 'webassembly/async',
+    });
+
+    // Ignore problematic pages with advanced features
+    config.ignoreWarnings = [
+      { module: /duckdb-wasm/ },
+      { module: /papaparse/ },
+    ];
+
     // Externalize native modules and services that use them
     config.externals = config.externals || [];
     if (isServer) {
@@ -46,6 +65,7 @@ const nextConfig = {
         'xlsx',
         'natural',
         'lz4js',
+        'papaparse',
         // Services that import native modules
         /^@\/services\/master-data-service/,
         /^@\/services\/id-based-data-service/,

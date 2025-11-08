@@ -46,12 +46,14 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.16",
+    "@types/papaparse": "^5.5.0",
     "better-sqlite3": "^12.4.1",
     "duckdb": "^1.4.1",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
     "lz4js": "^0.2.0",
     "natural": "^8.1.0",
+    "papaparse": "^5.5.3",
     "parquetjs": "^0.11.2",
     "sqlite3": "^5.1.7",
     "xlsx": "^0.18.5"
