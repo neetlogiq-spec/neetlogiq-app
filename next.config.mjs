@@ -6,9 +6,20 @@ const isDev = process.env.NODE_ENV === 'development';
 // });
 
 const nextConfig = {
+  // Output standalone for optimized deployment
+  output: 'standalone',
+
+  // Skip type checking and linting in production to reduce memory usage
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // Turbopack configuration
   turbopack: {},
-  
+
   // Development optimizations
   ...(isDev && {
     // Faster development builds
@@ -16,41 +27,41 @@ const nextConfig = {
       maxInactiveAge: 25 * 1000, // 25 seconds
       pagesBufferLength: 2, // Keep only 2 pages in memory
     },
-    // Skip type checking in development for faster builds
-    typescript: {
-      ignoreBuildErrors: true,
-    },
-    // Skip ESLint during builds in development
-    eslint: {
-      ignoreDuringBuilds: true,
-    },
   }),
-
-  // Turbopack configuration (commented out for Next.js 14 compatibility)
-  // turbopack: {
-  //   rules: {
-  //     '*.svg': {
-  //       loaders: ['@svgr/webpack'],
-  //       as: '*.js',
-  //     },
-  //   },
-  // },
 
   // Experimental optimizations
   experimental: {
     // Enable faster builds in development
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+    // Reduce memory usage during build
+    serverMinification: false,
   },
 
-  // Server external packages - exclude native modules (commented out for Next.js 14 compatibility)
-  // serverExternalPackages: ['duckdb'],
-  
-  // Configure webpack for native modules
-  webpack: (config) => {
-    // Handle native modules
-    config.externals.push({
-      'duckdb': 'commonjs duckdb',
-    });
+  // Externalize native modules (not needed in browser/edge)
+  serverExternalPackages: [
+    'duckdb',
+    'better-sqlite3',
+    'sqlite3',
+    'parquetjs',
+    'xlsx',
+    'natural',
+  ],
+
+  // Configure webpack to exclude native modules from bundling
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Externalize native modules on server
+      config.externals.push({
+        'duckdb': 'commonjs duckdb',
+        'better-sqlite3': 'commonjs better-sqlite3',
+        'sqlite3': 'commonjs sqlite3',
+      });
+    }
+    // Reduce memory usage
+    config.optimization = {
+      ...config.optimization,
+      minimize: false, // Disable minification during build to save memory
+    };
     return config;
   },
   
