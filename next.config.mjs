@@ -6,62 +6,53 @@ const isDev = process.env.NODE_ENV === 'development';
 // });
 
 const nextConfig = {
-  // Output standalone for optimized deployment
+  // Standalone build for Cloudflare Pages
   output: 'standalone',
 
-  // Skip type checking and linting in production to reduce memory usage
+  // Skip type checking to reduce memory usage
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 
-  // Turbopack configuration
-  turbopack: {},
+  // Turbopack disabled for compatibility
+  turbopack: undefined,
 
   // Development optimizations
   ...(isDev && {
-    // Faster development builds
     onDemandEntries: {
-      maxInactiveAge: 25 * 1000, // 25 seconds
-      pagesBufferLength: 2, // Keep only 2 pages in memory
+      maxInactiveAge: 25 * 1000,
+      pagesBufferLength: 2,
     },
   }),
 
-  // Experimental optimizations
+  // Minimal experimental features to reduce memory
   experimental: {
-    // Enable faster builds in development
     optimizePackageImports: ['lucide-react', 'framer-motion'],
-    // Reduce memory usage during build
-    serverMinification: false,
   },
 
-  // Externalize native modules (not needed in browser/edge)
-  serverExternalPackages: [
-    'duckdb',
-    'better-sqlite3',
-    'sqlite3',
-    'parquetjs',
-    'xlsx',
-    'natural',
-  ],
-
-  // Configure webpack to exclude native modules from bundling
+  // Configure webpack for memory efficiency
   webpack: (config, { isServer }) => {
+    // Don't process native modules at all
+    config.externals = config.externals || [];
     if (isServer) {
-      // Externalize native modules on server
       config.externals.push({
         'duckdb': 'commonjs duckdb',
         'better-sqlite3': 'commonjs better-sqlite3',
         'sqlite3': 'commonjs sqlite3',
       });
     }
-    // Reduce memory usage
+
+    // Aggressive memory optimization
     config.optimization = {
       ...config.optimization,
-      minimize: false, // Disable minification during build to save memory
+      minimize: false,
+      splitChunks: false,
+      runtimeChunk: false,
     };
+
+    // Reduce parallelism to save memory
+    config.parallelism = 1;
+
     return config;
   },
   
