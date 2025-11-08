@@ -6,8 +6,13 @@ const isDev = process.env.NODE_ENV === 'development';
 // });
 
 const nextConfig = {
-  // Standalone build for Cloudflare Pages
-  output: 'standalone',
+  // Static export for Cloudflare Pages (no Node.js server)
+  output: 'export',
+
+  // Disable image optimization (not supported in static export)
+  images: {
+    unoptimized: true,
+  },
 
   // Skip type checking to reduce memory usage
   typescript: {
@@ -32,14 +37,26 @@ const nextConfig = {
 
   // Configure webpack for memory efficiency
   webpack: (config, { isServer }) => {
-    // Don't process native modules at all
+    // Externalize native modules and services that use them
     config.externals = config.externals || [];
     if (isServer) {
-      config.externals.push({
-        'duckdb': 'commonjs duckdb',
-        'better-sqlite3': 'commonjs better-sqlite3',
-        'sqlite3': 'commonjs sqlite3',
-      });
+      config.externals.push(
+        // Native modules
+        'duckdb',
+        'better-sqlite3',
+        'sqlite3',
+        'parquetjs',
+        'xlsx',
+        'natural',
+        'lz4js',
+        // Services that import native modules
+        /^@\/services\/master-data-service/,
+        /^@\/services\/id-based-data-service/,
+        /^@\/services\/database/,
+        /^@\/services\/cloudflare-optimized-storage/,
+        /^@\/lib\/data\//,
+        /^@\/lib\/database\//,
+      );
     }
 
     // Aggressive memory optimization
@@ -65,44 +82,6 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  
-  // Image optimization
-  images: {
-    domains: ['images.unsplash.com', 'via.placeholder.com'],
-    formats: ['image/webp', 'image/avif'],
-    // Faster image processing in development
-    ...(isDev && {
-      unoptimized: true,
-    }),
-  },
-  
-  // Compression (disable in development for faster builds)
-  compress: !isDev,
-  
-  // Headers for security and performance (skip in development)
-  ...(isDev ? {} : {
-    async headers() {
-      return [
-        {
-          source: '/(.*)',
-          headers: [
-            {
-              key: 'X-Frame-Options',
-              value: 'DENY',
-            },
-            {
-              key: 'X-Content-Type-Options',
-              value: 'nosniff',
-            },
-            {
-              key: 'Referrer-Policy',
-              value: 'origin-when-cross-origin',
-            },
-          ],
-        },
-      ];
-    },
-  }),
 };
 
 export default nextConfig;
