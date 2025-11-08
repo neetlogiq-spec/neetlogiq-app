@@ -13,6 +13,7 @@
  */
 
 import { ParquetDataService } from '@/lib/database/parquet-service';
+import { StreamType, shouldShowForStream } from '@/contexts/StreamContext';
 
 export interface MasterCollege {
   college_id: string;
@@ -135,11 +136,13 @@ export class IdBasedDataService {
 
   /**
    * Get enriched cutoff data with master data names
+   * Automatically filters by selected stream
    */
   async getEnrichedCutoffs(params: {
     stream: string;
     year: number;
     round: number;
+    selectedStream?: StreamType | null; // User's selected stream for filtering
     filters?: {
       college_id?: string;
       course_id?: string;
@@ -194,6 +197,14 @@ export class IdBasedDataService {
         seat_utilization
       };
     });
+
+    // Filter by selected stream if provided
+    if (params.selectedStream) {
+      return enrichedData.filter(item => {
+        const college = this.masterCollegesCache.get(item.college_id);
+        return college && shouldShowForStream(college.stream, params.selectedStream);
+      });
+    }
 
     return enrichedData;
   }

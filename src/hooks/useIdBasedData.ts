@@ -16,6 +16,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getIdBasedDataService, EnrichedCutoffData } from '@/services/IdBasedDataService';
+import { useStream } from '@/contexts/StreamContext';
 
 interface UseIdBasedDataParams {
   stream: string;
@@ -43,6 +44,7 @@ export function useIdBasedData(params: UseIdBasedDataParams): UseIdBasedDataRetu
   const [data, setData] = useState<EnrichedCutoffData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
+  const { selectedStream } = useStream(); // Get selected stream from context
 
   const fetchData = useCallback(async () => {
     if (params.enabled === false) {
@@ -55,7 +57,11 @@ export function useIdBasedData(params: UseIdBasedDataParams): UseIdBasedDataRetu
 
     try {
       const service = getIdBasedDataService();
-      const result = await service.getEnrichedCutoffs(params);
+      // Pass selected stream for automatic filtering
+      const result = await service.getEnrichedCutoffs({
+        ...params,
+        selectedStream
+      });
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch data'));
@@ -63,7 +69,7 @@ export function useIdBasedData(params: UseIdBasedDataParams): UseIdBasedDataRetu
     } finally {
       setLoading(false);
     }
-  }, [params.stream, params.year, params.round, JSON.stringify(params.filters), params.enabled]);
+  }, [params.stream, params.year, params.round, JSON.stringify(params.filters), params.enabled, selectedStream]);
 
   useEffect(() => {
     fetchData();
@@ -187,11 +193,13 @@ export function useCollegeTrends(college_id: string | null, years: number[]) {
 
 /**
  * Hook for searching colleges by name
+ * Automatically filters by selected stream
  */
 export function useSearchColleges(query: string, stream?: string) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
+  const { selectedStream, streamConfig } = useStream();
 
   const search = useCallback(async () => {
     if (!query || query.length < 2) {
@@ -205,14 +213,23 @@ export function useSearchColleges(query: string, stream?: string) {
     try {
       const service = getIdBasedDataService();
       const results = await service.searchColleges(query, stream);
-      setData(results);
+
+      // Filter by selected stream if configured
+      if (selectedStream && streamConfig) {
+        const filtered = results.filter(college =>
+          streamConfig.allowedStreams.includes(college.stream.toUpperCase())
+        );
+        setData(filtered);
+      } else {
+        setData(results);
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Search failed'));
       console.error('Error searching colleges:', err);
     } finally {
       setLoading(false);
     }
-  }, [query, stream]);
+  }, [query, stream, selectedStream, streamConfig]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

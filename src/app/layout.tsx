@@ -3,7 +3,9 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
+import { StreamProvider } from '@/contexts/StreamContext'
 import LayoutWithStreamSelection from '@/components/layout/LayoutWithStreamSelection'
+import StreamGuard from '@/components/StreamGuard'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -71,9 +73,13 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <AuthProvider>
-            <LayoutWithStreamSelection>
-              {children}
-            </LayoutWithStreamSelection>
+            <StreamProvider>
+              <StreamGuard>
+                <LayoutWithStreamSelection>
+                  {children}
+                </LayoutWithStreamSelection>
+              </StreamGuard>
+            </StreamProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
