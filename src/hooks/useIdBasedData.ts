@@ -44,7 +44,7 @@ export function useIdBasedData(params: UseIdBasedDataParams): UseIdBasedDataRetu
   const [data, setData] = useState<EnrichedCutoffData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
-  const { selectedStream } = useStream(); // Get selected stream from context
+  const { selectedStream, isDeveloper } = useStream(); // Get selected stream and developer status
 
   const fetchData = useCallback(async () => {
     if (params.enabled === false) {
@@ -57,10 +57,11 @@ export function useIdBasedData(params: UseIdBasedDataParams): UseIdBasedDataRetu
 
     try {
       const service = getIdBasedDataService();
-      // Pass selected stream for automatic filtering
+      // Pass selected stream and developer status for automatic filtering
       const result = await service.getEnrichedCutoffs({
         ...params,
-        selectedStream
+        selectedStream,
+        isDeveloper
       });
       setData(result);
     } catch (err) {
@@ -69,7 +70,7 @@ export function useIdBasedData(params: UseIdBasedDataParams): UseIdBasedDataRetu
     } finally {
       setLoading(false);
     }
-  }, [params.stream, params.year, params.round, JSON.stringify(params.filters), params.enabled, selectedStream]);
+  }, [params.stream, params.year, params.round, JSON.stringify(params.filters), params.enabled, selectedStream, isDeveloper]);
 
   useEffect(() => {
     fetchData();
@@ -193,13 +194,13 @@ export function useCollegeTrends(college_id: string | null, years: number[]) {
 
 /**
  * Hook for searching colleges by name
- * Automatically filters by selected stream
+ * Automatically filters by selected stream (unless developer account)
  */
 export function useSearchColleges(query: string, stream?: string) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
-  const { selectedStream, streamConfig } = useStream();
+  const { selectedStream, streamConfig, isDeveloper } = useStream();
 
   const search = useCallback(async () => {
     if (!query || query.length < 2) {
@@ -214,13 +215,14 @@ export function useSearchColleges(query: string, stream?: string) {
       const service = getIdBasedDataService();
       const results = await service.searchColleges(query, stream);
 
-      // Filter by selected stream if configured
-      if (selectedStream && streamConfig) {
+      // Filter by selected stream if configured (skip for developers)
+      if (selectedStream && streamConfig && !isDeveloper) {
         const filtered = results.filter(college =>
           streamConfig.allowedStreams.includes(college.stream.toUpperCase())
         );
         setData(filtered);
       } else {
+        // Developers see all results without filtering
         setData(results);
       }
     } catch (err) {
@@ -229,7 +231,7 @@ export function useSearchColleges(query: string, stream?: string) {
     } finally {
       setLoading(false);
     }
-  }, [query, stream, selectedStream, streamConfig]);
+  }, [query, stream, selectedStream, streamConfig, isDeveloper]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

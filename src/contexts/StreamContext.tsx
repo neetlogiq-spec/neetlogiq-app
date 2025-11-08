@@ -14,8 +14,24 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import StreamSelectionModal from '@/components/auth/StreamSelectionModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 export type StreamType = 'UG' | 'PG_MEDICAL' | 'PG_DENTAL';
+
+// Developer accounts with unrestricted access
+const DEVELOPER_EMAILS = [
+  'kashyap0071232000@gmail.com',
+  'kashyap2k007@gmail.com',
+  'neetlogiq@gmail.com'
+];
+
+/**
+ * Check if user is a developer account
+ */
+export function isDeveloperAccount(email: string | null | undefined): boolean {
+  if (!email) return false;
+  return DEVELOPER_EMAILS.includes(email.toLowerCase());
+}
 
 export interface StreamFilterConfig {
   // For colleges and courses tables
@@ -60,6 +76,7 @@ interface StreamContextType {
   showModal: boolean;
   openModal: () => void;
   closeModal: () => void;
+  isDeveloper: boolean; // Developer accounts bypass filtering
 }
 
 const StreamContext = createContext<StreamContextType | undefined>(undefined);
@@ -80,12 +97,22 @@ const STORAGE_KEY = 'neetlogiq_selected_stream';
 const MODAL_SHOWN_KEY = 'neetlogiq_stream_modal_shown';
 
 export const StreamProvider: React.FC<StreamProviderProps> = ({ children }) => {
+  const { user } = useAuth();
   const [selectedStream, setSelectedStream] = useState<StreamType | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Check if current user is a developer
+  const isDeveloper = isDeveloperAccount(user?.email);
+
   // Load stream selection from localStorage on mount
   useEffect(() => {
+    // Developers bypass stream selection entirely
+    if (isDeveloper) {
+      setIsInitialized(true);
+      return;
+    }
+
     const storedStream = localStorage.getItem(STORAGE_KEY) as StreamType | null;
     const modalShown = localStorage.getItem(MODAL_SHOWN_KEY);
 
@@ -100,7 +127,7 @@ export const StreamProvider: React.FC<StreamProviderProps> = ({ children }) => {
       }
       setIsInitialized(true);
     }
-  }, []);
+  }, [isDeveloper]);
 
   const setStream = (stream: StreamType) => {
     setSelectedStream(stream);
@@ -156,15 +183,16 @@ export const StreamProvider: React.FC<StreamProviderProps> = ({ children }) => {
     isStreamSelected: selectedStream !== null,
     showModal,
     openModal,
-    closeModal
+    closeModal,
+    isDeveloper
   };
 
   return (
     <StreamContext.Provider value={value}>
       {children}
 
-      {/* Stream Selection Modal */}
-      {isInitialized && (
+      {/* Stream Selection Modal - Hidden for developers */}
+      {isInitialized && !isDeveloper && (
         <StreamSelectionModal
           isOpen={showModal}
           onClose={closeModal}

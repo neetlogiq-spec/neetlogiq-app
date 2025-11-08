@@ -136,13 +136,14 @@ export class IdBasedDataService {
 
   /**
    * Get enriched cutoff data with master data names
-   * Automatically filters by selected stream
+   * Automatically filters by selected stream (unless isDeveloper is true)
    */
   async getEnrichedCutoffs(params: {
     stream: string;
     year: number;
     round: number;
     selectedStream?: StreamType | null; // User's selected stream for filtering
+    isDeveloper?: boolean; // Developer accounts bypass filtering
     filters?: {
       college_id?: string;
       course_id?: string;
@@ -198,14 +199,15 @@ export class IdBasedDataService {
       };
     });
 
-    // Filter by selected stream if provided
-    if (params.selectedStream) {
+    // Filter by selected stream if provided (skip for developers)
+    if (params.selectedStream && !params.isDeveloper) {
       return enrichedData.filter(item => {
         const college = this.masterCollegesCache.get(item.college_id);
         return college && shouldShowForStream(college.stream, params.selectedStream);
       });
     }
 
+    // Developers see all data without filtering
     return enrichedData;
   }
 
