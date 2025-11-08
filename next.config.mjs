@@ -19,9 +19,6 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // Turbopack disabled for compatibility
-  turbopack: undefined,
-
   // Development optimizations
   ...(isDev && {
     onDemandEntries: {
