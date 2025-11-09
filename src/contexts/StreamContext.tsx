@@ -107,6 +107,12 @@ export const StreamProvider: React.FC<StreamProviderProps> = ({ children }) => {
 
   // Load stream selection from localStorage on mount
   useEffect(() => {
+    // Only show modal if user is authenticated
+    if (!user) {
+      setIsInitialized(true);
+      return;
+    }
+
     // Developers bypass stream selection entirely
     if (isDeveloper) {
       setIsInitialized(true);
@@ -120,14 +126,14 @@ export const StreamProvider: React.FC<StreamProviderProps> = ({ children }) => {
       setSelectedStream(storedStream);
       setIsInitialized(true);
     } else {
-      // Show modal only if not shown before and on a non-landing page
-      // We'll check the route in the component that uses this context
+      // Show modal only if authenticated and not shown before
+      // Modal will appear after successful authentication
       if (!modalShown) {
         setShowModal(true);
       }
       setIsInitialized(true);
     }
-  }, [isDeveloper]);
+  }, [isDeveloper, user]);
 
   const setStream = (stream: StreamType) => {
     setSelectedStream(stream);
