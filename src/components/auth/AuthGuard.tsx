@@ -13,6 +13,8 @@ interface AuthGuardProps {
 const PUBLIC_PATHS = [
   '/',  // Landing page
   '/about',
+  '/login',   // Login page (has its own auth modal)
+  '/signup',  // Signup page (has its own auth modal)
 ];
 
 export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
@@ -54,26 +56,18 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   // Show login modal if on protected page and not authenticated
   if (!isPublicPath && !user) {
     return (
-      <>
-        {/* Show a minimal version of the page in background */}
-        <div className="opacity-50 pointer-events-none">
-          {children}
-        </div>
-
-        {/* Login modal */}
-        <LoginModal
-          isOpen={showLoginModal}
-          onClose={() => {
-            setShowLoginModal(false);
-            // Redirect to landing page if they close the modal
-            router.push('/');
-          }}
-          onSuccess={() => {
-            setShowLoginModal(false);
-            // User is now authenticated, StreamContext will handle stream selection
-          }}
-        />
-      </>
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => {
+          setShowLoginModal(false);
+          // Redirect to landing page if they close the modal
+          router.push('/');
+        }}
+        onSuccess={() => {
+          setShowLoginModal(false);
+          // User is now authenticated, StreamContext will handle stream selection
+        }}
+      />
     );
   }
 
