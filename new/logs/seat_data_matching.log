@@ -1,4 +1,0 @@
-2025-11-06 23:27:08,412 - WARNING - ⚠️  Advanced AI features not available: No module named 'advanced_matching_transformers'
-2025-11-06 23:27:08,413 - WARNING -    Install with: pip install -r requirements_advanced.txt
-2025-11-06 23:27:17,186 - INFO - Loading faiss with AVX2 support.
-2025-11-06 23:27:17,303 - INFO - Successfully loaded faiss with AVX2 support.

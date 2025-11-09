@@ -96,24 +96,6 @@ from rich import print as rprint
 # Add scripts directory to path for state mapping
 sys.path.append(str(Path(__file__).parent / 'scripts'))
 
-# ==================== CASCADING HIERARCHICAL MATCHER INTEGRATION ====================
-# NEW PRIMARY MATCHING PATH: Cascading Hierarchical Ensemble Matcher
-# This is the primary matching engine that replaces old Tier 1/2/3 matching logic
-# Features:
-# - STAGE 1: Pure Hierarchical (State → Stream → Course → College Name → Address)
-# - STAGE 2: Hierarchical + RapidFuzz Fallback (on unmatched from Stage 1)
-# - STAGE 3: Hierarchical + Full Ensemble Fallback (on unmatched from Stage 2)
-# - Config-aware DIPLOMA course stream filtering (dnb_only, overlapping, medical_only)
-# - Composite key matching (COLLEGE NAME + ADDRESS) for multi-campus colleges
-try:
-    from cascading_hierarchical_ensemble_matcher import CascadingHierarchicalEnsembleMatcher
-    CASCADING_MATCHER_AVAILABLE = True
-except ImportError as e:
-    logger = logging.getLogger(__name__)
-    logger.warning(f"Could not import CascadingHierarchicalEnsembleMatcher: {e}")
-    CASCADING_MATCHER_AVAILABLE = False
-# ========================================================================================
-
 # Configure logging - will be updated with config settings in __init__
 # Default: only show warnings and errors on console, log everything to file
 # Ensure logs directory exists
@@ -2486,21 +2468,7 @@ class AdvancedSQLiteMatcher:
         # Cache warming (if enabled)
         if self.config.get('performance', {}).get('warm_caches', True):
             self._warm_caches()
-
-        # ==================== CASCADING HIERARCHICAL MATCHER INITIALIZATION ====================
-        # Initialize the cascading hierarchical ensemble matcher as the primary matching engine
-        if CASCADING_MATCHER_AVAILABLE:
-            logger.info("✅ Cascading Hierarchical Ensemble Matcher (Primary Engine) available")
-            logger.info("  - STAGE 1: Pure Hierarchical (State → Stream → Course → College Name → Address)")
-            logger.info("  - STAGE 2: Hierarchical + RapidFuzz Fallback")
-            logger.info("  - STAGE 3: Hierarchical + Full Ensemble Fallback")
-            logger.info("  - Config-aware DIPLOMA course handling (dnb_only, overlapping, medical_only)")
-            logger.info("  - Stage 1 Accuracy: 85.58% | Execution time: ~1 second")
-        else:
-            logger.warning("⚠️  Cascading Hierarchical Ensemble Matcher not available")
-            logger.warning("  - Will fall back to legacy matching methods if needed")
-        # ========================================================================================
-
+    
     def __del__(self):
         """Cleanup on deletion."""
         self.cleanup()
@@ -7003,12 +6971,13 @@ class AdvancedSQLiteMatcher:
     
     @perf_monitor.track_time("match_college_enhanced")
     def match_college_enhanced(self, college_name, state, course_type, address='', course_name=''):
-        """Enhanced college matching using CASCADING HIERARCHICAL MATCHER.
+        """Enhanced college matching with proper 4-pass mechanism and DIPLOMA fallback logic
 
-        This method now delegates to the cascading matcher which handles:
-        - Course classification (medical/dental/dnb/diploma/overlapping/medicine-only)
-        - Stream routing (medical/dental/dnb tables)
-        - 3-stage cascading matching (Hierarchical → RapidFuzz → Ensemble)
+        NEW ENHANCEMENTS:
+        - #1: Smart parsing of combined college fields
+        - #3: Pre-processing with state validation
+        - #7: State validation and auto-correction
+        - Redis caching for 100x speedup on cache hits
         """
         # Check if path is enabled in config
         path_enabled = self.config.get('matching_paths', {}).get('enable_enhanced', True)
@@ -7024,36 +6993,66 @@ class AdvancedSQLiteMatcher:
                 logger.debug(f"Cache HIT: {cache_key[:50]}...")
                 return cached_result  # Returns (match, score, method)
 
-        # Parse combined college field if detected
+        # ENHANCEMENT #1 & #3: Parse combined college field if detected
+        original_college_field = college_name
         if ',' in college_name and len(college_name.split(',')) >= 2:
+            # Likely contains address - parse it
             parsed_name, parsed_address, parsed_state = self.parse_college_field(college_name)
 
             if parsed_name:
                 college_name = parsed_name
                 self.parsing_stats['name_extracted'] += 1
-                logger.debug(f"📝 Parsed college name: {college_name}")
+                logger.info(f"📝 Parsed college name: {college_name}")
 
             if parsed_address and not address:
                 address = parsed_address
                 self.parsing_stats['address_extracted'] += 1
                 self.session_stats['addresses_parsed'] += 1
-                logger.debug(f"📍 Extracted address: {address[:50]}...")
+                logger.info(f"📍 Extracted address: {address[:50]}...")
 
-        # Apply aliases with location context
+            # ENHANCEMENT #7: Validate and correct state
+            if parsed_state:
+                corrected_state, was_corrected = self.validate_and_correct_state(original_college_field, state)
+                if was_corrected:
+                    logger.warning(f"🔧 State corrected: {state} → {corrected_state}")
+                    state = corrected_state
+
+        # Apply aliases with location context for accurate matching
         college_name = self.apply_aliases(college_name, 'college', state=state, address=address)
 
-        # CASCADING MATCHER: For batch operations only
-        # The cascading matcher is optimized for batch/table-level operations via match_and_link_database_driven()
-        # For individual record matching, use the standard matching methods below
-        match_result = (None, 0.0, 'cascading_batch_only')
+        # Normalize inputs
+        normalized_college = self.normalize_text(college_name)
+        normalized_state = self.normalize_text(state)
+        normalized_address = self.normalize_text(address)
+        
+        # Execute matching based on course type (with path enable/disable checks)
+        if course_type == 'diploma' and course_name in self.config['diploma_courses']['overlapping']:
+            if self.config.get('matching_paths', {}).get('enable_overlapping_diploma', True):
+                result = self.match_overlapping_diploma_course(college_name, state, address, course_name)
+            else:
+                logger.warning(f"⚠️  PATH DISABLED: match_overlapping_diploma_course() - returning no match")
+                result = None, 0.0, 'path_disabled'
+        elif course_type == 'diploma':
+            if self.config.get('matching_paths', {}).get('enable_medical_only_diploma', True):
+                result = self.match_medical_only_diploma_course(college_name, state, address, course_name)
+            else:
+                logger.warning(f"⚠️  PATH DISABLED: match_medical_only_diploma_course() - returning no match")
+                result = None, 0.0, 'path_disabled'
+        else:
+            if self.config.get('matching_paths', {}).get('enable_regular_course', True):
+                result = self.match_regular_course(college_name, state, course_type, address, course_name)
+            else:
+                logger.warning(f"⚠️  PATH DISABLED: match_regular_course() - returning no match")
+                result = None, 0.0, 'path_disabled'
 
         # REDIS CACHE: Store result in cache for future hits
-        if self.redis_cache.enabled and match_result[0]:
+        if self.redis_cache.enabled and result:
             cache_key = f"college:{state}:{college_name}:{course_type}:{address[:20] if address else ''}"
-            self.redis_cache.set(cache_key, match_result, ttl=3600)
+            # Cache for 1 hour (3600 seconds)
+            self.redis_cache.set(cache_key, result, ttl=3600)
             logger.debug(f"Cache SET: {cache_key[:50]}...")
 
-        return match_result
+        return result
 
     @perf_monitor.track_time("match_college_smart_hybrid")
     def match_college_smart_hybrid(
@@ -7067,85 +7066,483 @@ class AdvancedSQLiteMatcher:
         use_ai_fallback: bool = True
     ):
         """
-        Smart hybrid matching now delegates to CASCADING HIERARCHICAL MATCHER.
+        Smart hybrid matching: Fast fuzzy matching first, AI fallback for difficult cases
 
-        The cascading matcher provides:
-        - Stage 1: Pure Hierarchical (fast baseline)
-        - Stage 2: Hierarchical + RapidFuzz (improved matching)
-        - Stage 3: Hierarchical + Full Ensemble (advanced matchers)
+        Performance Strategy:
+        - FAST PATH (85%+ of cases): Fuzzy matching only (~10-50ms)
+        - AI PATH (15% difficult cases): AI-enhanced matching (~1-10s)
+        - Average: ~100-200ms per record (100-200x faster than always-AI)
+
+        Args:
+            college_name: College name to match
+            state: State name
+            course_type: Course type (MEDICAL, DENTAL, DNB)
+            address: College address (optional)
+            course_name: Course name (optional)
+            fast_threshold: Score threshold for accepting fast match (default from config)
+            use_ai_fallback: Enable AI fallback for low-confidence matches
 
         Returns:
             Tuple[dict, float, str]: (matched_college, score, method)
+
+        Examples:
+            # High confidence match (fast path)
+            result, score, method = matcher.match_college_smart_hybrid(
+                "BANGALORE MEDICAL COLLEGE", "KARNATAKA", "MEDICAL"
+            )
+            # Returns in ~20ms with score 95+ → method: 'hybrid_fast'
+
+            # Low confidence match (AI path)
+            result, score, method = matcher.match_college_smart_hybrid(
+                "BNG MED COL", "KAR", "MEDICAL"
+            )
+            # Returns in ~2s with AI-enhanced score → method: 'hybrid_ai'
         """
         # Check if path is enabled in config
         path_enabled = self.config.get('matching_paths', {}).get('enable_smart_hybrid', True)
         if not path_enabled:
-            logger.warning(f"⚠️  PATH DISABLED: match_college_smart_hybrid()")
-            return None, 0.0, 'path_disabled'
+            logger.warning(f"⚠️  PATH DISABLED: match_college_smart_hybrid() - falling back to match_college_enhanced()")
+            return self.match_college_enhanced(college_name, state, course_type, address, course_name)
+        
+        # Get threshold from config or parameter
+        if fast_threshold is None:
+            fast_threshold = self.config.get('matching', {}).get('hybrid_threshold', 85.0)
 
-        # USE CASCADING MATCHER (now handles all complexity internally)
-        return self.match_college_enhanced(college_name, state, course_type, address, course_name)
+        # ========== FAST PATH: Try fuzzy matching first (~10-50ms) ==========
+        start_time = time.time()
 
-    def match_overlapping_diploma_course(self, college_name, state, address, course_name):
-        """Match overlapping DIPLOMA courses using CASCADING MATCHER.
-
-        Cascading matcher handles MEDICAL→DNB fallback for overlapping courses internally.
-        """
-        # Check if path is enabled in config
-        path_enabled = self.config.get('matching_paths', {}).get('enable_overlapping_diploma', True)
-        if not path_enabled:
-            logger.warning(f"⚠️  PATH DISABLED: match_overlapping_diploma_course()")
-            return None, 0.0, 'path_disabled'
-
-        # Delegate to cascading matcher (handles overlapping course logic)
-        return self.match_college_enhanced(
-            college_name=college_name,
-            state=state,
-            course_type='diploma',
-            address=address,
-            course_name=course_name
-        )
-    
-    def match_medical_only_diploma_course(self, college_name, state, address, course_name):
-        """Match medical-only DIPLOMA courses using CASCADING MATCHER.
-
-        Cascading matcher handles MEDICAL→DNB fallback for medicine-only courses internally.
-        """
-        # Check if path is enabled in config
-        path_enabled = self.config.get('matching_paths', {}).get('enable_medical_only_diploma', True)
-        if not path_enabled:
-            logger.warning(f"⚠️  PATH DISABLED: match_medical_only_diploma_course()")
-            return None, 0.0, 'path_disabled'
-
-        # Delegate to cascading matcher (handles medical-only course logic)
-        return self.match_college_enhanced(
-            college_name=college_name,
-            state=state,
-            course_type='diploma',
-            address=address,
-            course_name=course_name
-        )
-    
-    def match_regular_course(self, college_name, state, course_type, address, course_name):
-        """Match regular courses using CASCADING MATCHER.
-
-        Cascading matcher handles all course types (medical/dental/dnb) with
-        hierarchical filtering, address validation, and composite key matching.
-        """
-        # Check if path is enabled in config
-        path_enabled = self.config.get('matching_paths', {}).get('enable_regular_course', True)
-        if not path_enabled:
-            logger.warning(f"⚠️  PATH DISABLED: match_regular_course()")
-            return None, 0.0, 'path_disabled'
-
-        # Delegate to cascading matcher (handles all regular course logic)
-        return self.match_college_enhanced(
+        fast_result = self.match_college_enhanced(
             college_name=college_name,
             state=state,
             course_type=course_type,
             address=address,
             course_name=course_name
         )
+
+        fast_time = time.time() - start_time
+
+        # Unpack result
+        if fast_result and len(fast_result) >= 2:
+            fast_match, fast_score, fast_method = fast_result
+        else:
+            fast_match, fast_score, fast_method = None, 0, 'no_match'
+
+        # Check if fast match is good enough
+        if fast_match and fast_score >= fast_threshold:
+            logger.info(
+                f"✅ FAST PATH: {college_name[:30]} → {fast_match.get('name', '')[:30]} "
+                f"(score: {fast_score:.1f}, time: {fast_time*1000:.0f}ms)"
+            )
+            logger.warning(f"📍 MATCHING PATH: smart_hybrid → fast_path → {fast_method} for '{college_name[:50]}' in {state} (score: {fast_score:.2f})")
+            return (fast_match, fast_score, f'hybrid_fast_{fast_method}')
+
+        # ========== AI PATH: Fast match failed, try AI if enabled (~1-10s) ==========
+        ai_path_enabled = self.config.get('matching_paths', {}).get('enable_ai_enhanced', True)
+        if use_ai_fallback and self.enable_advanced_features and ai_path_enabled:
+            logger.info(
+                f"⚠️  FAST PATH LOW CONFIDENCE (score: {fast_score:.1f}) → Trying AI fallback..."
+            )
+
+            ai_start = time.time()
+
+            try:
+                ai_result = self.match_college_ai_enhanced(
+                    college_name=college_name,
+                    state=state,
+                    course_type=course_type,
+                    address=address
+                )
+
+                ai_time = time.time() - ai_start
+
+                # Unpack AI result
+                if ai_result and len(ai_result) >= 2:
+                    ai_match, ai_score, ai_method = ai_result
+                else:
+                    ai_match, ai_score, ai_method = None, 0, 'no_match'
+
+                # Compare fast vs AI results
+                if ai_match and ai_score > fast_score:
+                    logger.info(
+                        f"✅ AI PATH: {college_name[:30]} → {ai_match.get('name', '')[:30]} "
+                        f"(score: {ai_score:.1f}, time: {ai_time*1000:.0f}ms, improvement: +{ai_score-fast_score:.1f})"
+                    )
+                    logger.warning(f"📍 MATCHING PATH: smart_hybrid → ai_path → {ai_method} for '{college_name[:50]}' in {state} (score: {ai_score:.2f})")
+                    return (ai_match, ai_score, f'hybrid_ai_{ai_method}')
+                else:
+                    logger.info(
+                        f"⚠️  AI PATH: No improvement over fast match (AI: {ai_score:.1f} vs Fast: {fast_score:.1f})"
+                    )
+
+            except Exception as e:
+                logger.warning(f"AI fallback failed: {e}")
+                # Fall through to return fast result
+
+        # ========== FALLBACK: Return best available result ==========
+        total_time = time.time() - start_time
+
+        if fast_match:
+            logger.info(
+                f"⚠️  RETURNING LOW-CONFIDENCE FAST MATCH: score={fast_score:.1f}, time={total_time*1000:.0f}ms"
+            )
+            logger.warning(f"📍 MATCHING PATH: smart_hybrid → fast_path_low → {fast_method} for '{college_name[:50]}' in {state} (score: {fast_score:.2f})")
+            return (fast_match, fast_score, f'hybrid_fast_low_{fast_method}')
+        else:
+            logger.warning(
+                f"❌ NO MATCH FOUND: {college_name} in {state} (tried fast + AI, time={total_time*1000:.0f}ms)"
+            )
+            logger.warning(f"📍 MATCHING PATH: smart_hybrid → no_match for '{college_name[:50]}' in {state}")
+            return (None, 0, 'hybrid_no_match')
+
+    def match_overlapping_diploma_course(self, college_name, state, address, course_name):
+        """Match overlapping DIPLOMA courses with HYBRID hierarchical filtering and MEDICAL→DNB fallback
+        
+        HYBRID APPROACH FLOW:
+        1. SHORTLIST 1: STATE + COURSE filtering (union)
+        2. SHORTLIST 2: COLLEGE NAME filtering
+        3. ADDRESS Pre-Filtering
+        4. Composite Key Validation
+        """
+        # Check if path is enabled in config
+        path_enabled = self.config.get('matching_paths', {}).get('enable_overlapping_diploma', True)
+        if not path_enabled:
+            logger.warning(f"⚠️  PATH DISABLED: match_overlapping_diploma_course() - returning no match")
+            return None, 0.0, 'path_disabled'
+        
+        normalized_college = self.normalize_text(college_name)
+        normalized_state = self.normalize_text(state)
+        normalized_address = self.normalize_text(address)
+        
+        # Try MEDICAL first (24 colleges)
+        logger.info(f"Overlapping DIPLOMA course {course_name}: Trying MEDICAL first (24 colleges)")
+
+        # SHORTLIST 1: Get filtered MEDICAL candidates using get_college_pool
+        medical_state_candidates = self.get_college_pool(course_type='medical', state=state)
+
+        if not medical_state_candidates:
+            # Fallback without state filtering
+            medical_state_candidates = self.get_college_pool(course_type='medical')
+        
+        # SHORTLIST 2 + ADDRESS Pre-Filtering + Composite Key Validation
+        # This implements the hybrid approach: NAME → ADDRESS → VALIDATION
+        medical_matches = self.pass3_college_name_matching(normalized_college, medical_state_candidates, normalized_state, normalized_address)
+
+        logger.info(f"Overlapping DIPLOMA: Found {len(medical_matches) if medical_matches else 0} MEDICAL matches")
+
+        if medical_matches:
+            # Validate each MEDICAL match - pass 'diploma' as course_type for overlapping courses
+            for match in medical_matches:
+                college_stream = self.get_college_stream(match['candidate']['id'])
+                logger.info(f"  Checking MEDICAL match: {match['candidate']['name'][:50]} (stream: {college_stream})")
+
+                if self.validate_college_course_stream_match(match['candidate'], 'diploma', course_name):
+                    logger.info(f"Overlapping DIPLOMA course {course_name}: Found valid MEDICAL match")
+                    # Use combined_score (name + address) if available, otherwise use name score
+                    final_score = match.get('combined_score', match['score'])
+                    logger.warning(f"📍 MATCHING PATH: match_overlapping_diploma_course → medical → {match['method']} for '{college_name[:50]}' in {state} (score: {final_score:.2f})")
+                    
+                    # ============================================================================
+                    # EXPLAINABLE AI (XAI): Generate explanation for match
+                    # ============================================================================
+                    self._generate_xai_for_match(
+                        match['candidate'], final_score, match['method'],
+                        normalized_college, normalized_address, normalized_state,
+                        name_score=match.get('score', final_score),
+                        address_score=match.get('address_score', 0.0),
+                        state_score=1.0 if normalized_state else 0.0,
+                        overlap_score=match.get('overlap_score', 0.7),
+                        path_name='overlapping_diploma'
+                    )
+                    
+                    return match['candidate'], final_score, match['method']
+                else:
+                    logger.info(f"  Validation failed for {match['candidate']['name'][:50]}")
+
+        # Try DNB fallback
+        logger.info(f"Overlapping DIPLOMA course {course_name}: MEDICAL validation failed, trying DNB fallback")
+
+        # SHORTLIST 1: Get filtered DNB candidates using get_college_pool
+        dnb_state_candidates = self.get_college_pool(course_type='dnb', state=state)
+
+        if not dnb_state_candidates:
+            # Fallback without state filtering
+            dnb_state_candidates = self.get_college_pool(course_type='dnb')
+        
+        # SHORTLIST 2 + ADDRESS Pre-Filtering + Composite Key Validation
+        # This implements the hybrid approach: NAME → ADDRESS → VALIDATION
+        dnb_matches = self.pass3_college_name_matching(normalized_college, dnb_state_candidates, normalized_state, normalized_address)
+
+        logger.info(f"Overlapping DIPLOMA: Found {len(dnb_matches) if dnb_matches else 0} DNB matches")
+
+        if dnb_matches:
+            # Validate each DNB match - pass 'diploma' as course_type for overlapping courses
+            for match in dnb_matches:
+                college_stream = self.get_college_stream(match['candidate']['id'])
+                logger.info(f"  Checking DNB match: {match['candidate']['name'][:50]} (stream: {college_stream})")
+
+                if self.validate_college_course_stream_match(match['candidate'], 'diploma', course_name):
+                    logger.info(f"Overlapping DIPLOMA course {course_name}: Found valid DNB match")
+                    # Use combined_score (name + address) if available, otherwise use name score
+                    final_score = match.get('combined_score', match['score'])
+                    logger.warning(f"📍 MATCHING PATH: match_overlapping_diploma_course → dnb → {match['method']} for '{college_name[:50]}' in {state} (score: {final_score:.2f})")
+                    
+                    # ============================================================================
+                    # EXPLAINABLE AI (XAI): Generate explanation for match
+                    # ============================================================================
+                    self._generate_xai_for_match(
+                        match['candidate'], final_score, match['method'],
+                        normalized_college, normalized_address, normalized_state,
+                        name_score=match.get('score', final_score),
+                        address_score=match.get('address_score', 0.0),
+                        state_score=1.0 if normalized_state else 0.0,
+                        overlap_score=match.get('overlap_score', 0.7),
+                        path_name='overlapping_diploma'
+                    )
+                    
+                    return match['candidate'], final_score, match['method']
+                else:
+                    logger.info(f"  Validation failed for {match['candidate']['name'][:50]}")
+
+        # STRICT MODE: Only return validated matches
+        # If validation failed, require manual review for accuracy
+        logger.warning(f"DIPLOMA course {course_name}: Manual review required - no validated match found")
+        logger.info(f"  Found {len(medical_matches) if medical_matches else 0} MEDICAL candidates but none passed validation")
+        logger.info(f"  Found {len(dnb_matches) if dnb_matches else 0} DNB candidates but none passed validation")
+        logger.warning(f"📍 MATCHING PATH: match_overlapping_diploma_course → no_match for '{college_name[:50]}' in {state}")
+        return None, 0.0, "manual_review_required"
+    
+    def match_medical_only_diploma_course(self, college_name, state, address, course_name):
+        """Match medical-only DIPLOMA courses with HYBRID hierarchical filtering and DNB fallback
+        
+        HYBRID APPROACH FLOW:
+        1. SHORTLIST 1: STATE + COURSE filtering (union)
+        2. SHORTLIST 2: COLLEGE NAME filtering
+        3. ADDRESS Pre-Filtering
+        4. Composite Key Validation
+        """
+        # Check if path is enabled in config
+        path_enabled = self.config.get('matching_paths', {}).get('enable_medical_only_diploma', True)
+        if not path_enabled:
+            logger.warning(f"⚠️  PATH DISABLED: match_medical_only_diploma_course() - returning no match")
+            return None, 0.0, 'path_disabled'
+        
+        normalized_college = self.normalize_text(college_name)
+        normalized_state = self.normalize_text(state)
+        normalized_address = self.normalize_text(address)
+        
+        # Try MEDICAL first (all strategies)
+        # SHORTLIST 1: Get filtered MEDICAL candidates using get_college_pool
+        medical_state_candidates = self.get_college_pool(course_type='medical', state=state)
+
+        if not medical_state_candidates:
+            # Fallback without state filtering
+            medical_state_candidates = self.get_college_pool(course_type='medical')
+        
+        # SHORTLIST 2 + ADDRESS Pre-Filtering + Composite Key Validation
+        # This implements the hybrid approach: NAME → ADDRESS → VALIDATION
+        medical_matches = self.pass3_college_name_matching(normalized_college, medical_state_candidates, normalized_state, normalized_address)
+        
+        if medical_matches:
+            # Validate each MEDICAL match
+            for match in medical_matches:
+                if self.validate_college_course_stream_match(match['candidate'], 'medical', course_name):
+                    # Use combined_score (name + address) if available, otherwise use name score
+                    final_score = match.get('combined_score', match['score'])
+                    logger.warning(f"📍 MATCHING PATH: match_medical_only_diploma_course → medical → {match['method']} for '{college_name[:50]}' in {state} (score: {final_score:.2f})")
+                    
+                    # ============================================================================
+                    # EXPLAINABLE AI (XAI): Generate explanation for match
+                    # ============================================================================
+                    self._generate_xai_for_match(
+                        match['candidate'], final_score, match['method'],
+                        normalized_college, normalized_address, normalized_state,
+                        name_score=match.get('score', final_score),
+                        address_score=match.get('address_score', 0.0),
+                        state_score=1.0 if normalized_state else 0.0,
+                        overlap_score=match.get('overlap_score', 0.7),
+                        path_name='medical_only_diploma'
+                    )
+                    
+                    return match['candidate'], final_score, match['method']
+        
+        # Fallback to DNB only after ALL MEDICAL strategies fail
+        logger.info(f"Medical-only DIPLOMA course {course_name}: All MEDICAL strategies failed, trying DNB fallback")
+
+        # SHORTLIST 1: Get filtered DNB candidates using get_college_pool
+        dnb_state_candidates = self.get_college_pool(course_type='dnb', state=state)
+
+        if not dnb_state_candidates:
+            # Fallback without state filtering
+            dnb_state_candidates = self.get_college_pool(course_type='dnb')
+        
+        # SHORTLIST 2 + ADDRESS Pre-Filtering + Composite Key Validation
+        # This implements the hybrid approach: NAME → ADDRESS → VALIDATION
+        dnb_matches = self.pass3_college_name_matching(normalized_college, dnb_state_candidates, normalized_state, normalized_address)
+        
+        if dnb_matches:
+            # Validate each DNB match
+            for match in dnb_matches:
+                if self.validate_college_course_stream_match(match['candidate'], 'dnb', course_name):
+                    # Use combined_score (name + address) if available, otherwise use name score
+                    final_score = match.get('combined_score', match['score'])
+                    logger.warning(f"📍 MATCHING PATH: match_medical_only_diploma_course → dnb → {match['method']} for '{college_name[:50]}' in {state} (score: {final_score:.2f})")
+                    
+                    # ============================================================================
+                    # EXPLAINABLE AI (XAI): Generate explanation for match
+                    # ============================================================================
+                    self._generate_xai_for_match(
+                        match['candidate'], final_score, match['method'],
+                        normalized_college, normalized_address, normalized_state,
+                        name_score=match.get('score', final_score),
+                        address_score=match.get('address_score', 0.0),
+                        state_score=1.0 if normalized_state else 0.0,
+                        overlap_score=match.get('overlap_score', 0.7),
+                        path_name='medical_only_diploma'
+                    )
+                    
+                    return match['candidate'], final_score, match['method']
+        
+        logger.warning(f"📍 MATCHING PATH: match_medical_only_diploma_course → no_match for '{college_name[:50]}' in {state}")
+        return None, 0.0, "no_match"
+    
+    def match_regular_course(self, college_name, state, course_type, address, course_name):
+        """Match regular courses with HYBRID hierarchical filtering
+
+        HYBRID APPROACH FLOW:
+        1. SHORTLIST 1: STATE + COURSE filtering (union) - uses get_college_pool()
+        2. SHORTLIST 2: COLLEGE NAME filtering - filters by name first
+        3. ADDRESS Pre-Filtering - filters by address keywords (safety)
+        4. Composite Key Validation - validates college = name + address
+
+        Uses config.yaml course patterns to auto-detect stream from course_name.
+        """
+        # Check if path is enabled in config
+        path_enabled = self.config.get('matching_paths', {}).get('enable_regular_course', True)
+        if not path_enabled:
+            logger.warning(f"⚠️  PATH DISABLED: match_regular_course() - returning no match")
+            return None, 0.0, 'path_disabled'
+        
+        normalized_college = self.normalize_text(college_name)
+        normalized_state = self.normalize_text(state)
+        normalized_address = self.normalize_text(address)
+
+        # SHORTLIST 1: STATE + COURSE filtering (union)
+        # Automatically detects stream (medical/dental/dnb) from course name using config.yaml
+        candidates = self.get_college_pool(
+            state=state,
+            course_type=course_type,
+            course_name=course_name  # Auto-detect stream from course
+        )
+
+        if not candidates:
+            # Fallback: Try without state filtering
+            candidates = self.get_college_pool(
+                course_type=course_type,
+                course_name=course_name
+            )
+
+        if not candidates:
+            return None, 0.0, "invalid_course_type"
+
+        state_candidates = candidates  # SHORTLIST 1: STATE + COURSE filtered
+        
+        # SHORTLIST 2 + ADDRESS Pre-Filtering + Composite Key Validation
+        # This function now implements the hybrid approach:
+        # 1. SHORTLIST 2: COLLEGE NAME filtering (first)
+        # 2. ADDRESS Pre-Filtering (safety)
+        # 3. Composite Key Validation (final check)
+        college_matches = self.pass3_college_name_matching(normalized_college, state_candidates, normalized_state, normalized_address)
+
+        if not college_matches:
+            logger.warning(f"📍 MATCHING PATH: match_regular_course → no_match for '{college_name[:50]}' in {state}")
+            return None, 0.0, "no_match"
+
+        # ========== COMPOSITE KEY VALIDATION (FINAL CHECK) ==========
+        # This validates the composite key: college = college name + address
+        # This prevents false matches where different physical colleges get same ID
+        # Example: "Government Medical College" in Bangalore vs Mysore (different addresses!)
+
+        # Check if address validation is enabled
+        enable_validation = self.config.get('matching', {}).get('enable_address_validation', True)
+        min_score = self.config.get('matching', {}).get('min_address_score', 0.3)
+
+        if normalized_address and enable_validation:
+            # MANDATORY composite key validation for ALL matches
+            # Validates that college name + address match correctly
+            validated_matches = self.validate_address_for_matches(college_matches, normalized_address, min_address_score=min_score, normalized_college=normalized_college)
+
+            if not validated_matches:
+                # NO matches passed address validation - reject ALL
+                logger.warning(f"⚠️  All {len(college_matches)} name matches REJECTED due to address mismatch")
+                return None, 0.0, "address_validation_failed"
+
+            # Use validated matches only
+            college_matches = validated_matches
+            logger.info(f"✅ {len(validated_matches)} matches passed address validation")
+
+        # If only one match remaining after validation, return it
+        if len(college_matches) == 1:
+            match = college_matches[0]
+            # Use combined_score if available (name + address), otherwise use name score
+            final_score = match.get('combined_score', match['score'])
+            logger.warning(f"📍 MATCHING PATH: match_regular_course → {match['method']}_address_validated (single match) for '{college_name[:50]}' in {state} (score: {final_score:.2f})")
+            
+            # ============================================================================
+            # EXPLAINABLE AI (XAI): Generate explanation for match
+            # ============================================================================
+            self._generate_xai_for_match(
+                match['candidate'], final_score, f"{match['method']}_address_validated",
+                normalized_college, normalized_address, normalized_state,
+                name_score=match.get('score', final_score),
+                address_score=match.get('address_score', 0.0),
+                state_score=1.0 if normalized_state else 0.0,
+                overlap_score=match.get('overlap_score', 0.7),
+                path_name='regular_course'
+            )
+            
+            return match['candidate'], final_score, f"{match['method']}_address_validated"
+
+        # PASS 4: Address-based disambiguation for multiple validated matches
+        if len(college_matches) > 1 and normalized_address:
+            disambiguated = self.pass4_address_disambiguation(college_matches, normalized_address, normalized_college)
+            if disambiguated:
+                logger.warning(f"📍 MATCHING PATH: match_regular_course → pass4_disambiguation → {disambiguated['method']} for '{college_name[:50]}' in {state} (score: {disambiguated['score']:.2f})")
+                
+                # ============================================================================
+                # EXPLAINABLE AI (XAI): Generate explanation for match
+                # ============================================================================
+                self._generate_xai_for_match(
+                    disambiguated['candidate'], disambiguated['score'], disambiguated['method'],
+                    normalized_college, normalized_address, normalized_state,
+                    name_score=disambiguated.get('name_score', disambiguated['score']),
+                    address_score=disambiguated.get('address_score', 0.0),
+                    state_score=1.0 if normalized_state else 0.0,
+                    overlap_score=disambiguated.get('overlap_score', 0.7),
+                    path_name='regular_course'
+                )
+                
+                return disambiguated['candidate'], disambiguated['score'], disambiguated['method']
+
+        # Return the best match from validated matches
+        # Use combined_score (name + address) as primary criterion, fallback to name score
+        best_match = max(college_matches, key=lambda x: x.get('combined_score', x['score']))
+        final_score = best_match.get('combined_score', best_match['score'])
+        logger.warning(f"📍 MATCHING PATH: match_regular_course → {best_match['method']}_address_validated (best of {len(college_matches)}) for '{college_name[:50]}' in {state} (score: {final_score:.2f})")
+        
+        # ============================================================================
+        # EXPLAINABLE AI (XAI): Generate explanation for match
+        # ============================================================================
+        self._generate_xai_for_match(
+            best_match['candidate'], final_score, f"{best_match['method']}_address_validated",
+            normalized_college, normalized_address, normalized_state,
+            name_score=best_match.get('score', final_score),
+            address_score=best_match.get('address_score', 0.0),
+            state_score=1.0 if normalized_state else 0.0,
+            overlap_score=best_match.get('overlap_score', 0.7),
+            path_name='regular_course'
+        )
+        
+        return best_match['candidate'], final_score, f"{best_match['method']}_address_validated"
     
     def extract_primary_name(self, college_name):
         """Extract primary name from college name with secondary name in brackets"""
@@ -7188,46 +7585,29 @@ class AdvancedSQLiteMatcher:
 
     def get_college_stream(self, college_id):
         """Determine which stream (medical/dental/dnb) a college belongs to"""
-        try:
-            # Query the database directly to handle lazy-loaded data
-            import sqlite3
-            conn = sqlite3.connect(self.master_db_path)
-            cursor = conn.cursor()
-
-            # Check medical colleges
-            cursor.execute("SELECT college_type FROM medical_colleges WHERE id = ?", (college_id,))
-            if cursor.fetchone():
-                conn.close()
+        # Check medical colleges
+        for college in self.master_data['medical']['colleges']:
+            if college['id'] == college_id:
                 return 'medical'
-
-            # Check dental colleges
-            cursor.execute("SELECT college_type FROM dental_colleges WHERE id = ?", (college_id,))
-            if cursor.fetchone():
-                conn.close()
+        
+        # Check dental colleges
+        for college in self.master_data['dental']['colleges']:
+            if college['id'] == college_id:
                 return 'dental'
-
-            # Check DNB colleges
-            cursor.execute("SELECT college_type FROM dnb_colleges WHERE id = ?", (college_id,))
-            if cursor.fetchone():
-                conn.close()
+        
+        # Check DNB colleges
+        for college in self.master_data['dnb']['colleges']:
+            if college['id'] == college_id:
                 return 'dnb'
-
-            conn.close()
-            return None
-        except Exception as e:
-            logger.warning(f"Error getting college stream for {college_id}: {e}")
-            return None
+        
+        return None
 
     def validate_college_course_stream_match(self, college_match, course_type, course_name=''):
         """Validate that college and course belong to the same stream with three-tier DIPLOMA handling"""
         if not college_match:
             return False
 
-        # Handle both 'college_id' (from cascading matcher) and 'id' (from other sources)
-        college_id = college_match.get('college_id') or college_match.get('id')
-        if not college_id:
-            return False
-        college_stream = self.get_college_stream(college_id)
+        college_stream = self.get_college_stream(college_match['id'])
         if not college_stream:
             return False
 
@@ -7430,13 +7810,9 @@ class AdvancedSQLiteMatcher:
 
     @perf_monitor.track_time("match_college_ultra_optimized")
     def match_college_ultra_optimized(self, record):
-        """Match college using CASCADING HIERARCHICAL MATCHER (Core Engine).
+        """Match college using pre-normalized fields and DB-prefiltered pool.
 
-        Delegates to IntegratedCascadingMatcher which provides:
-        - 3-stage cascading approach (Hierarchical → RapidFuzz → Ensemble)
-        - Course classification (medical/dental/dnb/diploma)
-        - Stream routing with DNB/overlapping course handling
-        - Expected accuracy: ~97.93% with 0 false matches
+        Expects record to contain normalized_* columns and course_type.
         """
         # Check if path is enabled in config
         path_enabled = self.config.get('matching_paths', {}).get('enable_ultra_optimized', True)
@@ -7448,16 +7824,667 @@ class AdvancedSQLiteMatcher:
             address = record.get('address', '')
             course_name = record.get('course_name', '')
             return self.match_college_enhanced(college_name, state, course_type, address, course_name)
+        
+        normalized_college = record.get('normalized_college_name') or self.normalize_text(record.get('college_name', ''))
+        normalized_state = record.get('normalized_state') or self.normalize_state(record.get('state', ''))
+        normalized_address = record.get('normalized_address') or self.normalize_text(record.get('address', ''))
+        course_type = (record.get('course_type') or '').lower()
+        course_name = record.get('normalized_course_name') or self.normalize_text(record.get('course_name', ''))
 
-        # CASCADE MATCHING ONLY FOR BULK OPERATIONS via match_and_link_database_driven()
-        # For individual record matching, use enhanced method below
-        college_name = record.get('college_name', '')
-        state = record.get('state', '')
-        course_type = record.get('course_type', '')
-        address = record.get('address', '')
-        course_name = record.get('course_name', '')
-        return self.match_college_enhanced(college_name, state, course_type, address, course_name)
+        # Resolve course_id (cache)
+        course_id = self.get_course_id_by_name(course_name)
 
+        # Apply advanced blocking if enabled (reduces candidates from 200 → 5-10)
+        if self.enable_advanced_blocking and self._advanced_blocker:
+            candidates = self._advanced_blocker.get_candidates(record)
+            if not candidates:
+                # Fallback to database query if blocking returns empty
+                candidates = self.get_college_pool_ultra_optimized(
+                    state=normalized_state,
+                    course_type=course_type if course_type in ['medical', 'dental', 'dnb'] else None,
+                    course_name=course_name,
+                    limit=200
+                )
+        else:
+            # Standard database query
+            candidates = self.get_college_pool_ultra_optimized(
+                state=normalized_state,
+                course_type=course_type if course_type in ['medical', 'dental', 'dnb'] else None,
+                course_name=course_name,
+                limit=200
+            )
+
+        # PHASE 2: Apply Multi-Stage Filter (reduces candidates 5-10x: ~200 → 10-20)
+        if self.enable_multi_stage_filter and self.multi_stage_filter and len(candidates) > 10:
+            candidates_before = len(candidates)
+            candidates = self.multi_stage_filter.stage2_blocking(
+                input_text=normalized_college,
+                candidates=candidates,
+                location=normalized_state
+            )
+            candidates_after = len(candidates)
+
+            # Log reduction for monitoring
+            if candidates_before > 0:
+                reduction_ratio = candidates_after / candidates_before
+                logger.debug(f"Multi-stage filter: {candidates_before} → {candidates_after} ({reduction_ratio:.1%} kept)")
+
+                # Track statistics for performance monitoring
+                if hasattr(self.multi_stage_filter, 'stats'):
+                    self.multi_stage_filter.stats['total_reductions'] = \
+                        self.multi_stage_filter.stats.get('total_reductions', 0) + 1
+                    self.multi_stage_filter.stats['avg_reduction'] = \
+                        (self.multi_stage_filter.stats.get('avg_reduction', 0.5) * 0.9 + reduction_ratio * 0.1)
+
+        # Apply validation strictness based on config
+        # strict: Require BOTH state_college_link AND state_course_college_link_text evidence
+        # moderate: Require state_college_link, prefer state_course_college_link_text
+        # lenient: Require state_college_link only
+        
+        seat_college_ids = None
+        if course_id and normalized_state:
+            seat_college_ids = self.get_college_ids_from_seat_link(normalized_state, course_id)
+            
+            if self.validation_strictness == 'strict':
+                # Strict: Only consider colleges that have seat evidence
+                if seat_college_ids:
+                    idset = set(seat_college_ids)
+                    candidates = [c for c in candidates if c.get('id') in idset]
+                else:
+                    # No seat evidence - reject all candidates
+                    return None, 0.0, 'no_seat_evidence_strict'
+            elif self.validation_strictness == 'moderate':
+                # Moderate: Prefer colleges with seat evidence
+                if seat_college_ids:
+                    idset = set(seat_college_ids)
+                    # Reorder: seat evidence first
+                    with_evidence = [c for c in candidates if c.get('id') in idset]
+                    without_evidence = [c for c in candidates if c.get('id') not in idset]
+                    candidates = with_evidence + without_evidence
+            # lenient: Use all candidates, just validate state_college_link
+
+        # Early exit if no candidates
+        if not candidates:
+            return None, 0.0, 'no_candidates'
+
+        # ========================================================================
+        # SHORTLIST 2: PARALLEL FILTERING
+        # ========================================================================
+        # Filter candidates by college name AND address in PARALLEL
+        # Then find intersection to get common colleges
+        # This makes the composite key explicit: college = college name + address
+        # Example: "GOVERNMENT DENTAL COLLEGE" + "KOTTAYAM" → intersection of name and address filters
+        # 
+        # Flow: COLLEGE NAME (parallel) + ADDRESS (parallel) → INTERSECTION → COMPOSITE KEY VALIDATION
+        # ========================================================================
+        
+        is_generic_name_check = self.is_generic_college_name(normalized_college)
+        original_candidates = candidates  # Save original for parallel filtering
+        
+        # ========================================================================
+        # 1) COLLEGE NAME FILTERING (PARALLEL)
+        # ========================================================================
+        name_filtered_candidates = []
+        
+        logger.debug(f"🔍 SHORTLIST 2 (1/2): Filtering {len(candidates)} candidates by college name: '{normalized_college[:50]}...'")
+        
+        for candidate in candidates:
+            candidate_name = self.normalize_text(candidate.get('name', ''))
+            candidate_normalized = candidate.get('normalized_name', '')
+            
+            # CRITICAL: If normalized_name is empty or different, use normalized name from name field
+            # This ensures we always compare normalized versions
+            if not candidate_normalized or candidate_normalized != candidate_name:
+                candidate_normalized = candidate_name
+            
+            # Strategy 1: Exact match
+            name_matches = (
+                normalized_college == candidate_name or
+                normalized_college == candidate_normalized
+            )
+            
+            # DEBUG: Log for specific colleges that are failing
+            debug_college = 'GSL' in normalized_college.upper() or 'RAJAS' in normalized_college.upper() or 'RIMS' in normalized_college.upper()
+            if debug_college:
+                logger.debug(f"🔍 NAME MATCH CHECK: '{normalized_college}' vs '{candidate_name}' (normalized_name: '{candidate_normalized}') - Match: {name_matches}, ID: {candidate.get('id')}")
+            
+            # Strategy 2: Primary name match
+            if not name_matches:
+                primary_name, _ = self.extract_primary_name(candidate.get('name', ''))
+                normalized_primary = self.normalize_text(primary_name)
+                name_matches = normalized_college == normalized_primary
+            
+            # Strategy 3: Fuzzy match (for typos/variations)
+            if not name_matches:
+                fuzzy_score = fuzz.ratio(normalized_college, candidate_name) / 100.0
+                if fuzzy_score >= self.config['matching']['thresholds'].get('fuzzy_match', 0.85):
+                    # Additional check: word overlap to prevent bad fuzzy matches
+                    query_words = set(normalized_college.split())
+                    candidate_words = set(candidate_name.split())
+                    common_words = query_words & candidate_words
+                    all_words = query_words | candidate_words
+                    word_overlap = len(common_words) / len(all_words) if all_words else 0.0
+                    
+                    if word_overlap >= 0.5:  # At least 50% word overlap
+                        name_matches = True
+            
+            if name_matches:
+                name_filtered_candidates.append(candidate)
+                logger.debug(f"✅ NAME MATCH: '{candidate_name[:50]}...' (ID: {candidate.get('id')})")
+        
+        name_filtered_count = len(name_filtered_candidates)
+        logger.info(f"📍 SHORTLIST 2 (1/2): College name filtering: {len(candidates)} → {name_filtered_count} candidates")
+        
+        # ========================================================================
+        # 2) ADDRESS FILTERING (PARALLEL - MORE LENIENT)
+        # ========================================================================
+        # IMPORTANT: Address filtering runs in PARALLEL with name filtering
+        # Both filters operate on the ORIGINAL candidates list (SHORTLIST 1)
+        # Then we find intersection to get common colleges
+        address_filtered_candidates = []
+        
+        if normalized_address and original_candidates:
+            # Extract address keywords from seat data
+            seat_keywords = self.extract_address_keywords(normalized_address)
+            seat_keywords_lower = {kw.lower() for kw in seat_keywords}
+            
+            logger.debug(f"🔍 SHORTLIST 2 (2/2): Filtering {len(original_candidates)} candidates by address: '{normalized_address[:50]}...'")
+            logger.debug(f"   Address keywords: {seat_keywords}")
+            
+            # PARALLEL ADDRESS FILTERING: More lenient to allow partial matches
+            # This runs in parallel with name filtering, then we find intersection
+            for candidate in original_candidates:
+                candidate_address = self.normalize_text(candidate.get('address', ''))
+                
+                if not candidate_address:
+                    # Master college has no address
+                    # CRITICAL: If seat data HAS address but master has NO address, exclude to prevent false matches
+                    # Only include no-address colleges if seat data also has no address
+                    if normalized_address and normalized_address.strip():
+                        # Seat data HAS address but master has NO address
+                        # Exclude to prevent false matches
+                        logger.debug(f"⚠️  ULTRA Path EXCLUDED: Master '{candidate.get('name', '')[:50]}' (ID: {candidate.get('id')}) has no address but seat has '{normalized_address}' - preventing false match")
+                        continue
+                    else:
+                        # Both have no address OR seat data also has no address - safe to include
+                        if not is_generic_name_check:
+                            address_filtered_candidates.append(candidate)
+                            logger.debug(f"⚠️  ULTRA Path INCLUDED: Master '{candidate.get('name', '')[:50]}' (ID: {candidate.get('id')}) has no address, seat also has no address")
+                        # For generic names, skip (no address = can't validate)
+                        continue
+                
+                # Extract address keywords from master data
+                master_keywords = self.extract_address_keywords(candidate_address)
+                master_keywords_lower = {kw.lower() for kw in master_keywords}
+                
+                # Calculate keyword overlap
+                common_keywords = seat_keywords_lower & master_keywords_lower
+                keyword_overlap = len(common_keywords) / len(seat_keywords_lower | master_keywords_lower) if (seat_keywords_lower | master_keywords_lower) else 0.0
+                
+                # DEBUG: Log for specific colleges that are failing
+                debug_college = 'GSL' in normalized_college.upper() or 'RAJAS' in normalized_college.upper() or 'RIMS' in normalized_college.upper()
+                if debug_college:
+                    logger.debug(f"🔍 ULTRA ADDRESS MATCH CHECK: Seat='{normalized_address}' (keywords: {seat_keywords}) vs Master='{candidate_address}' (keywords: {master_keywords}) - Common: {common_keywords}, Overlap: {keyword_overlap:.2f}")
+                
+                # PARALLEL FILTERING: Stricter thresholds (same as pass3_college_name_matching)
+                # Extract city/district for must-match validation
+                seat_city = self._extract_city_from_address(normalized_address)
+                master_city = self._extract_city_from_address(candidate_address)
+                
+                # CRITICAL: City/District must-match for meaningful address validation
+                if seat_city and master_city:
+                    city_match = seat_city.upper() == master_city.upper()
+                    if not city_match:
+                        if debug_college:
+                            logger.debug(f"❌ ULTRA REJECTED: City mismatch - Seat: '{seat_city}' vs Master: '{master_city}' (ID: {candidate.get('id')})")
+                        continue
+                elif seat_city or master_city:
+                    # One has city but other doesn't - for generic names, reject
+                    if is_generic_name_check:
+                        if debug_college:
+                            logger.debug(f"❌ ULTRA REJECTED: Generic name - City missing in one address (Seat: '{seat_city}', Master: '{master_city}') (ID: {candidate.get('id')})")
+                        continue
+                
+                # STRICTER REQUIREMENT: Require 2-3 matching keywords OR 50%+ token overlap
+                min_keywords_required = 2
+                min_overlap_required = 0.5
+                
+                passes_keyword_requirement = len(common_keywords) >= min_keywords_required
+                passes_overlap_requirement = keyword_overlap >= min_overlap_required
+                
+                # Accept if EITHER requirement is met (2+ keywords OR 50%+ overlap)
+                if passes_keyword_requirement or passes_overlap_requirement:
+                    address_filtered_candidates.append(candidate)
+                    if debug_college:
+                        logger.debug(f"✅ ULTRA ADDRESS MATCH: {candidate.get('id')} '{candidate.get('name', '')[:50]}' (overlap={keyword_overlap:.2f}, common={len(common_keywords)})")
+                else:
+                    if debug_college:
+                        logger.debug(f"❌ ULTRA REJECTED: {candidate.get('id')} '{candidate.get('name', '')[:50]}' (overlap={keyword_overlap:.2f}, common={len(common_keywords)}) - Need ≥{min_keywords_required} keywords OR ≥{min_overlap_required:.0%} overlap")
+                    continue
+            
+            address_filtered_count = len(address_filtered_candidates)
+            logger.info(f"📍 SHORTLIST 2 (2/2): Address filtering: {len(original_candidates)} → {address_filtered_count} candidates")
+            
+            # ========================================================================
+            # 3) INTERSECTION: Find common colleges from both filters
+            # ========================================================================
+            name_filtered_ids = {c.get('id') for c in name_filtered_candidates}
+            address_filtered_ids = {c.get('id') for c in address_filtered_candidates}
+            
+            # Find intersection: colleges that match BOTH name AND address
+            common_ids = name_filtered_ids & address_filtered_ids
+            
+            # Build common candidates list (preserve order from name_filtered)
+            common_candidates = [c for c in name_filtered_candidates if c.get('id') in common_ids]
+            
+            intersection_count = len(common_candidates)
+            logger.info(f"📍 SHORTLIST 2 (3/3): Intersection: {name_filtered_count} name matches ∩ {address_filtered_count} address matches = {intersection_count} common candidates")
+            
+            # DEBUG: Log intersection details for failing colleges
+            debug_college = 'GSL' in normalized_college.upper() or 'RAJAS' in normalized_college.upper() or 'RIMS' in normalized_college.upper()
+            if debug_college:
+                name_ids = {c.get('id') for c in name_filtered_candidates}
+                address_ids = {c.get('id') for c in address_filtered_candidates}
+                logger.debug(f"🔍 INTERSECTION DEBUG: Name matches: {name_ids}, Address matches: {address_ids}, Common: {common_ids}")
+                if name_filtered_count > 0:
+                    logger.debug(f"🔍 NAME FILTERED: {[c.get('id') + ':' + c.get('name', '')[:40] for c in name_filtered_candidates[:5]]}")
+                if address_filtered_count > 0:
+                    logger.debug(f"🔍 ADDRESS FILTERED: {[c.get('id') + ':' + c.get('address', '')[:40] for c in address_filtered_candidates[:5]]}")
+            
+            if intersection_count == 0:
+                logger.warning(f"⚠️  No common candidates found: {name_filtered_count} name matches ∩ {address_filtered_count} address matches = 0")
+                if debug_college:
+                    logger.warning(f"🔍 DEBUG: College='{normalized_college}', Address='{normalized_address}', State='{normalized_state}'")
+                # CRITICAL FIX: Do NOT fallback to name-filtered candidates!
+                # If address is provided and there's no intersection, it means the address doesn't match
+                # Using name-filtered candidates will cause FALSE MATCHES
+                if normalized_address and address_filtered_count == 0:
+                    # Address was provided but no candidates matched the address
+                    logger.warning(f"❌ ULTRA Path REJECTED: Address '{normalized_address}' found no matches in master data")
+                    return None, 0.0, 'address_not_found'
+                elif normalized_address and name_filtered_count > 0 and address_filtered_count > 0:
+                    # Both filters returned results but no intersection
+                    # This means the name matches but address doesn't - FALSE MATCH!
+                    logger.warning(f"❌ ULTRA Path REJECTED: Name matched {name_filtered_count} colleges, address matched {address_filtered_count} colleges, but ZERO intersection")
+                    logger.warning(f"   This suggests the college name exists in master data but with a DIFFERENT address")
+                    return None, 0.0, 'no_intersection_different_address'
+                elif name_filtered_count > 0:
+                    # CRITICAL FIX: Only use fallback if NO address is provided
+                    # If address is provided but intersection is 0, REJECT to prevent false matches
+                    if normalized_address and normalized_address.strip():
+                        # Address was provided but no intersection - REJECT
+                        logger.warning(f"❌ ULTRA Path REJECTED: Address '{normalized_address}' provided but ZERO intersection")
+                        logger.warning(f"   College = College Name + Address (composite key) - both must match")
+                        return None, 0.0, 'no_intersection_with_address'
+                    else:
+                        # No address provided - safe to use name-filtered candidates
+                        logger.info(f"⚠️  ULTRA Path Fallback: No address provided - Using {name_filtered_count} name-filtered candidates")
+                        common_candidates = name_filtered_candidates
+                else:
+                    return None, 0.0, 'no_intersection'
+            
+            # Use common candidates for matching
+            candidates = common_candidates
+        else:
+            # No address provided - use all name-filtered candidates
+            if name_filtered_count == 0:
+                logger.warning(f"⚠️  All {len(original_candidates)} candidates REJECTED by college name filtering - no matches possible")
+                return None, 0.0, 'name_filter_rejected_all'
+            
+            if is_generic_name_check:
+                logger.warning(f"⚠️  Generic college '{normalized_college}' has NO address - using {name_filtered_count} name-filtered candidates")
+            else:
+                logger.debug(f"⚠️  No address provided - using {name_filtered_count} name-filtered candidates")
+            
+            # Use name-filtered candidates
+            candidates = name_filtered_candidates
+
+        # Helper: strict state-college validation using link table
+        def is_valid_state_link(col):
+            if not col or not col.get('id'):
+                return False
+            # Use normalized state for validation
+            state_to_check = normalized_state or record.get('state') or ''
+            ok, _ = self.validate_state_college_link(state_to_check, col.get('id'))
+            
+            # For strict/moderate modes, also check seat evidence if available
+            if ok and self.validation_strictness in ['strict', 'moderate'] and seat_college_ids:
+                if col.get('id') not in seat_college_ids:
+                    # College exists in state but no seat evidence - downgrade in moderate mode
+                    if self.validation_strictness == 'strict':
+                        return False  # Reject in strict mode
+                    # In moderate mode, we still allow it (just prefer those with evidence)
+            
+            return ok
+
+        # Address validation configuration
+        addr_config = self.config.get('validation', {}).get('address_validation', {})
+        addr_enabled = addr_config.get('enabled', True)
+        require_for_single = addr_config.get('require_for_single_candidate', True)
+        require_for_generic = addr_config.get('require_for_generic_names', True)
+        is_generic_name = self.is_generic_college_name(normalized_college)
+        
+        # Early exit strategies over a much smaller pool
+        # 1) Exact normalized name match
+        for c in candidates:
+            if normalized_college == (c.get('normalized_name') or '').upper():
+                if is_valid_state_link(c):
+                    # Address validation gate
+                    # CRITICAL: For generic names, require STRICT address validation
+                    if addr_enabled and (require_for_single and len(candidates) == 1) or (require_for_generic and is_generic_name):
+                        is_addr_valid, addr_score, addr_reason = self.validate_address_match(
+                            normalized_address,
+                            self.normalize_text(c.get('address', '')),
+                            normalized_college,
+                            'exact'
+                        )
+                        
+                        # For generic names, require HIGH address similarity (≥0.6)
+                        if is_generic_name:
+                            if not is_addr_valid or addr_score < 0.6:
+                                logger.debug(f"Exact match rejected (generic name): {addr_reason} for {normalized_college} (addr_score={addr_score:.2f} < 0.6)")
+                                continue
+                        else:
+                            if not is_addr_valid:
+                                # Address validation failed - continue to next candidate
+                                logger.debug(f"Exact match rejected: {addr_reason} for {normalized_college}")
+                                continue
+                        
+                        # Calculate combined score
+                        final_score, min_threshold = self.calculate_combined_score(1.0, addr_score, 'exact')
+                        if final_score >= min_threshold:
+                            college_name = record.get('college_name', normalized_college)
+                            state = record.get('state', normalized_state)
+                            logger.warning(f"📍 MATCHING PATH: ultra_optimized → exact_match_address_validated for '{college_name[:50]}' in {state} (score: {final_score:.2f})")
+                            
+                            # ============================================================================
+                            # EXPLAINABLE AI (XAI): Generate explanation for match
+                            # ============================================================================
+                            self._generate_xai_for_match(
+                                c, final_score, 'exact_match_address_validated',
+                                normalized_college, normalized_address, normalized_state,
+                                name_score=1.0, address_score=addr_score, state_score=1.0 if normalized_state else 0.0,
+                                overlap_score=1.0, path_name='ultra_optimized'
+                            )
+                            
+                            return c, final_score, f'exact_match_address_validated'
+                        else:
+                            logger.debug(f"Exact match rejected: combined score {final_score:.2f} < {min_threshold:.2f}")
+                            continue
+                    else:
+                        # No address validation required, but still calculate combined score if addresses available
+                        if normalized_address and c.get('address'):
+                            addr_score = self.calculate_keyword_overlap(
+                                self.extract_address_keywords(normalized_address),
+                                self.extract_address_keywords(self.normalize_text(c.get('address', '')))
+                            )
+                            final_score, _ = self.calculate_combined_score(1.0, addr_score, 'exact')
+                            college_name = record.get('college_name', normalized_college)
+                            state = record.get('state', normalized_state)
+                            logger.warning(f"📍 MATCHING PATH: ultra_optimized → exact_match for '{college_name[:50]}' in {state} (score: {final_score:.2f})")
+                            return c, final_score, 'exact_match'
+                        else:
+                            college_name = record.get('college_name', normalized_college)
+                            state = record.get('state', normalized_state)
+                            logger.warning(f"📍 MATCHING PATH: ultra_optimized → exact_match for '{college_name[:50]}' in {state} (score: 1.00)")
+                            return c, 1.0, 'exact_match'
+
+        # 2) Primary name exact match
+        for c in candidates:
+            primary, _ = self.extract_primary_name(c.get('name', ''))
+            if normalized_college == self.normalize_text(primary):
+                if is_valid_state_link(c):
+                    # Address validation gate
+                    # CRITICAL: For generic names, require STRICT address validation
+                    if addr_enabled and (require_for_single and len(candidates) == 1) or (require_for_generic and is_generic_name):
+                        is_addr_valid, addr_score, addr_reason = self.validate_address_match(
+                            normalized_address,
+                            self.normalize_text(c.get('address', '')),
+                            normalized_college,
+                            'primary'
+                        )
+                        
+                        # For generic names, require HIGH address similarity (≥0.6)
+                        if is_generic_name:
+                            if not is_addr_valid or addr_score < 0.6:
+                                logger.debug(f"Primary match rejected (generic name): {addr_reason} for {normalized_college} (addr_score={addr_score:.2f} < 0.6)")
+                                continue
+                        else:
+                            if not is_addr_valid:
+                                logger.debug(f"Primary match rejected: {addr_reason} for {normalized_college}")
+                                continue
+                        
+                        # Calculate combined score
+                        final_score, min_threshold = self.calculate_combined_score(0.98, addr_score, 'primary')
+                        if final_score >= min_threshold:
+                            college_name = record.get('college_name', normalized_college)
+                            state = record.get('state', normalized_state)
+                            logger.warning(f"📍 MATCHING PATH: ultra_optimized → primary_name_match_address_validated for '{college_name[:50]}' in {state} (score: {final_score:.2f})")
+                            
+                            # ============================================================================
+                            # EXPLAINABLE AI (XAI): Generate explanation for match
+                            # ============================================================================
+                            self._generate_xai_for_match(
+                                c, final_score, 'primary_name_match_address_validated',
+                                normalized_college, normalized_address, normalized_state,
+                                name_score=0.98, address_score=addr_score, state_score=1.0 if normalized_state else 0.0,
+                                overlap_score=0.95, path_name='ultra_optimized'
+                            )
+                            
+                            return c, final_score, f'primary_name_match_address_validated'
+                        else:
+                            logger.debug(f"Primary match rejected: combined score {final_score:.2f} < {min_threshold:.2f}")
+                            continue
+                    else:
+                        # No address validation required
+                        if normalized_address and c.get('address'):
+                            addr_score = self.calculate_keyword_overlap(
+                                self.extract_address_keywords(normalized_address),
+                                self.extract_address_keywords(self.normalize_text(c.get('address', '')))
+                            )
+                            final_score, _ = self.calculate_combined_score(0.98, addr_score, 'primary')
+                            college_name = record.get('college_name', normalized_college)
+                            state = record.get('state', normalized_state)
+                            logger.warning(f"📍 MATCHING PATH: ultra_optimized → primary_name_match for '{college_name[:50]}' in {state} (score: {final_score:.2f})")
+                            return c, final_score, 'primary_name_match'
+                        else:
+                            college_name = record.get('college_name', normalized_college)
+                            state = record.get('state', normalized_state)
+                            logger.warning(f"📍 MATCHING PATH: ultra_optimized → primary_name_match for '{college_name[:50]}' in {state} (score: 0.98)")
+                            return c, 0.98, 'primary_name_match'
+
+        # 3) Prefix match (for sufficiently long inputs)
+        if len(normalized_college) >= 10:
+            best = None
+            best_score = 0.0
+            for c in candidates:
+                cand_name = c.get('normalized_name') or ''
+                if cand_name.startswith(normalized_college):
+                    coverage_ratio = len(normalized_college) / max(1, len(cand_name))
+                    base_score = min(0.6 + coverage_ratio * 0.3, 0.9)
+                    
+                    # Address-aware scoring (combined score)
+                    if normalized_address and c.get('address'):
+                        master_addr = self.normalize_text(c.get('address'))
+                        kw1 = self.extract_address_keywords(normalized_address)
+                        kw2 = self.extract_address_keywords(master_addr)
+                        addr_score = self.calculate_keyword_overlap(kw1, kw2)
+                        
+                        # Calculate combined score
+                        combined, min_threshold = self.calculate_combined_score(base_score, addr_score, 'prefix')
+                        
+                        # Address validation gate for single candidate or generic names
+                        # CRITICAL: For generic names, require STRICT address validation
+                        if addr_enabled and (require_for_single and len(candidates) == 1) or (require_for_generic and is_generic_name):
+                            is_addr_valid, addr_score_check, addr_reason = self.validate_address_match(
+                                normalized_address, master_addr, normalized_college, 'prefix'
+                            )
+                            
+                            # For generic names, require HIGH address similarity (≥0.6)
+                            if is_generic_name:
+                                if not is_addr_valid or addr_score_check < 0.6:
+                                    logger.debug(f"Prefix match rejected (generic name): {addr_reason} for {normalized_college} (addr_score={addr_score_check:.2f} < 0.6)")
+                                    continue
+                            else:
+                                if not is_addr_valid:
+                                    logger.debug(f"Prefix match rejected: {addr_reason} for {normalized_college}")
+                                    continue
+                        
+                        score = combined
+                    else:
+                        addr_score = 0.0
+                        score = base_score
+                    
+                    if score > best_score and is_valid_state_link(c):
+                        # Check minimum threshold
+                        _, min_threshold = self.calculate_combined_score(base_score, addr_score if normalized_address else 0.0, 'prefix')
+                        if score >= min_threshold:
+                            best = c
+                            best_score = score
+            if best is not None:
+                college_name = record.get('college_name', normalized_college)
+                state = record.get('state', normalized_state)
+                logger.warning(f"📍 MATCHING PATH: ultra_optimized → prefix_match for '{college_name[:50]}' in {state} (score: {best_score:.2f})")
+                
+                # ============================================================================
+                # EXPLAINABLE AI (XAI): Generate explanation for match
+                # ============================================================================
+                self._generate_xai_for_match(
+                    best, best_score, 'prefix_match',
+                    normalized_college, normalized_address, normalized_state,
+                    name_score=best_score, state_score=1.0 if normalized_state else 0.0,
+                    overlap_score=0.7, path_name='ultra_optimized'
+                )
+                
+                return best, best_score, 'prefix_match'
+
+        # 4) Fuzzy match only if pool is small
+        if len(candidates) <= 100:
+            best = None
+            best_score = 0.0
+            
+            # Pre-compute domain embeddings if enabled and available
+            query_embedding = None
+            candidate_embeddings = {}
+            if self.enable_domain_embeddings and self._domain_embeddings:
+                try:
+                    if self._domain_embeddings.is_fine_tuned:
+                        # Encode query college name
+                        query_embedding = self._domain_embeddings.encode([normalized_college])
+                        if query_embedding is not None and len(query_embedding) > 0:
+                            query_embedding = query_embedding[0] if isinstance(query_embedding, list) else query_embedding
+                            
+                            # Pre-compute embeddings for top candidates
+                            candidate_names = [c.get('normalized_name') or '' for c in candidates[:50]]
+                            if candidate_names:
+                                candidate_embs = self._domain_embeddings.encode(candidate_names)
+                                if candidate_embs is not None:
+                                    for i, c in enumerate(candidates[:50]):
+                                        if i < len(candidate_embs):
+                                            candidate_embeddings[c.get('id')] = candidate_embs[i]
+                except Exception as e:
+                    logger.debug(f"Domain embedding encoding failed: {e}")
+            
+            for c in candidates:
+                cand_name = c.get('normalized_name') or ''
+                sim = fuzz.ratio(normalized_college, cand_name) / 100
+                
+                # Add domain embedding similarity boost if available
+                embedding_boost = 0.0
+                if query_embedding is not None and c.get('id') in candidate_embeddings:
+                    try:
+                        cand_emb = candidate_embeddings[c.get('id')]
+                        # Cosine similarity
+                        if isinstance(query_embedding, np.ndarray) and isinstance(cand_emb, np.ndarray):
+                            dot_product = np.dot(query_embedding, cand_emb)
+                            norm_query = np.linalg.norm(query_embedding)
+                            norm_cand = np.linalg.norm(cand_emb)
+                            if norm_query > 0 and norm_cand > 0:
+                                embedding_sim = dot_product / (norm_query * norm_cand)
+                                # Scale to 0-1 and use as boost (max 10% boost)
+                                embedding_boost = max(0.0, embedding_sim) * 0.1
+                                logger.debug(f"Embedding similarity: {embedding_sim:.3f}, boost: {embedding_boost:.3f}")
+                    except Exception as e:
+                        logger.debug(f"Embedding similarity calculation failed: {e}")
+                
+                # Combine fuzzy score with embedding boost
+                sim_with_embedding = min(1.0, sim + embedding_boost)
+                
+                if is_valid_state_link(c):
+                    # Address-aware scoring for fuzzy matches
+                    if normalized_address and c.get('address'):
+                        master_addr = self.normalize_text(c.get('address'))
+                        kw1 = self.extract_address_keywords(normalized_address)
+                        kw2 = self.extract_address_keywords(master_addr)
+                        addr_score = self.calculate_keyword_overlap(kw1, kw2)
+                        
+                        # Calculate combined score (using embedding-enhanced similarity)
+                        combined, min_threshold = self.calculate_combined_score(sim_with_embedding, addr_score, 'fuzzy')
+                        
+                        # Address validation gate for single candidate or generic names
+                        # CRITICAL: For generic names, require STRICT address validation
+                        if addr_enabled and (require_for_single and len(candidates) == 1) or (require_for_generic and is_generic_name):
+                            is_addr_valid, addr_score_check, addr_reason = self.validate_address_match(
+                                normalized_address, master_addr, normalized_college, 'fuzzy'
+                            )
+                            
+                            # For generic names, require HIGH address similarity (≥0.6)
+                            if is_generic_name:
+                                if not is_addr_valid or addr_score_check < 0.6:
+                                    logger.debug(f"Fuzzy match rejected (generic name): {addr_reason} for {normalized_college} (addr_score={addr_score_check:.2f} < 0.6)")
+                                    continue
+                            else:
+                                if not is_addr_valid:
+                                    logger.debug(f"Fuzzy match rejected: {addr_reason} for {normalized_college}")
+                                    continue
+                        
+                        final_score = combined
+                    else:
+                        addr_score = 0.0
+                        final_score = sim_with_embedding
+                    
+                    if final_score > best_score:
+                        # Check minimum thresholds
+                        fuzzy_threshold = self.config['matching']['thresholds'].get('fuzzy_match', 0.5)
+                        _, combined_threshold = self.calculate_combined_score(sim_with_embedding, addr_score if normalized_address else 0.0, 'fuzzy')
+                        if final_score >= max(fuzzy_threshold, combined_threshold):
+                            best = c
+                            best_score = final_score
+            
+            # Apply GNN boost if enabled (adds 5-10% score boost based on graph context)
+            if best and self.enable_gnn_matching and self._gnn_matcher:
+                try:
+                    gnn_result = self._gnn_matcher.match_with_graph_context(
+                        normalized_college, normalized_state, course_name
+                    )
+                    if gnn_result and gnn_result.get('graph_boost'):
+                        best_score = min(1.0, best_score + gnn_result['graph_boost'])
+                        logger.debug(f"GNN boost applied: +{gnn_result['graph_boost']:.3f} (final: {best_score:.3f})")
+                except Exception as e:
+                    logger.warning(f"GNN matching failed: {e}")
+                            
+            if best and best_score >= self.config['matching']['thresholds'].get('fuzzy_match', 0.5):
+                college_name = record.get('college_name', normalized_college)
+                state = record.get('state', normalized_state)
+                logger.warning(f"📍 MATCHING PATH: ultra_optimized → fuzzy_match for '{college_name[:50]}' in {state} (score: {best_score:.2f})")
+                
+                # ============================================================================
+                # EXPLAINABLE AI (XAI): Generate explanation for match
+                # ============================================================================
+                self._generate_xai_for_match(
+                    best, best_score, 'fuzzy_match',
+                    normalized_college, normalized_address, normalized_state,
+                    name_score=best_score, state_score=1.0 if normalized_state else 0.0,
+                    overlap_score=0.6, path_name='ultra_optimized'
+                )
+                
+                return best, best_score, 'fuzzy_match'
+
+        college_name = record.get('college_name', normalized_college)
+        state = record.get('state', normalized_state)
+        logger.warning(f"📍 MATCHING PATH: ultra_optimized → no_match for '{college_name[:50]}' in {state}")
+        return None, 0.0, 'no_match'
+    
     def get_stream_matcher(self):
         """Get or create stream matcher instance."""
         if not self._stream_matcher:
@@ -7859,150 +8886,27 @@ class AdvancedSQLiteMatcher:
         else:
             logger.debug("No records updated with aliases")
 
-    # ==================== CASCADING HIERARCHICAL MATCHER WRAPPER ====================
-    def match_cascading_hierarchical(self, table_name='seat_data', use_modern_ux=True):
-        """✅ PRIMARY MATCHING PATH: Cascading Hierarchical Ensemble
-
-        This is the primary matching engine that replaces old Tier 1/2/3 matching logic.
-
-        Architecture:
-        - STAGE 1: Pure Hierarchical (State → Course Stream → College Name → Address)
-        - STAGE 2: Hierarchical + RapidFuzz Fallback (on unmatched from Stage 1)
-        - STAGE 3: Hierarchical + Full Ensemble Fallback (on unmatched from Stage 2)
-
-        Features:
-        - State → STREAM → COURSE → COLLEGE NAME + ADDRESS (composite key) hierarchy
-        - No cross-state false matches
-        - 85.58% accuracy on 16,280 records
-        - Config-aware DIPLOMA course stream filtering (dnb_only, overlapping, medical_only)
-        - Execution time: ~1 second
-
-        Args:
-            table_name: Name of the seat data table (default: 'seat_data')
-            use_modern_ux: Enable modern UI with progress bars (default: True)
-
-        Returns:
-            dict: Results with matched count, accuracy, execution time, etc.
-        """
-        import logging as logging_module
-
-        # Setup logging for modern UX
-        if use_modern_ux:
-            root_logger = logging_module.getLogger()
-            handlers_to_remove = [h for h in root_logger.handlers if isinstance(h, logging_module.StreamHandler)]
-            for handler in handlers_to_remove:
-                if hasattr(handler, 'stream') and handler.stream in [__import__('sys').stdout, __import__('sys').stderr]:
-                    root_logger.removeHandler(handler)
-            root_logger.setLevel(logging_module.WARNING)
-
-        # Get database paths from config
-        db_path = f"{self.config['database']['sqlite_path']}/{self.config['database']['seat_data_db']}"
-        master_path = self.master_db_path
-
-        # Initialize and run cascading matcher
-        if not CASCADING_MATCHER_AVAILABLE:
-            logger.error("CascadingHierarchicalEnsembleMatcher not available!")
-            return {'final_matched': 0, 'accuracy': 0, 'error': 'Cascading matcher not available'}
-
-        matcher = CascadingHierarchicalEnsembleMatcher(db_path, master_path)
-        results = matcher.match_all_records_cascading(table_name)
-
-        return results
-
     # ==================== DB-DRIVEN BULK MATCH (SET-BASED) ====================
-    def match_and_link_database_driven(self, table_name='seat_data', use_modern_ux=True):
-        """Hybrid Matching Strategy: Cascading Hierarchical + Legacy Fallback
+    def match_and_link_database_driven(self, table_name='seat_data'):
+        """3-Tier Hybrid Database-Driven Matching Strategy.
 
-        STAGE 1: Cascading Hierarchical Ensemble (PRIMARY PATH)
-        - Pure hierarchical matching: 85.58% accuracy on 16,280 records
-        - State → Course Stream → College Name → Address (composite key) hierarchy
-        - No false cross-state matches
-        - Fast execution: ~1 second
-        - Config-aware DIPLOMA course stream filtering
-
-        STAGE 2-3: Legacy matching (FALLBACK for unmatched records, future enhancement)
-        - For records that fail cascading matching
-        - Can implement RapidFuzz/Transformer fallbacks later
+        Tier 1: SQL-only fast path for exact matches (60-70% of records)
+        Tier 2: Hybrid SQL + Python for prefix/fuzzy matches (20-30% of records)
+        Tier 3: Fallback to ultra_optimized for complex cases (5-10% of records)
 
         Features:
-        - Modern UX with progress bars, colors, and real-time stats
+        - Course evidence filtering via state_course_college_link_text
         - Validation strictness enforcement
         - Address disambiguation with keyword overlap
+        - Multiple matching strategies (exact, primary, prefix, fuzzy)
+        - Address-aware scoring
+        - Early exit optimization
+        - Caching integration
         - Address validation gate
         - Alias-aware matching (applies aliases before matching)
-
-        Args:
-            table_name: Name of the seat data table (default: 'seat_data')
-            use_modern_ux: Enable modern UI with progress bars (default: True)
         """
-        import time
-        import logging as logging_module
-        from rich.panel import Panel
-        from rich.table import Table as RichTable
-        from rich.text import Text
-
-        start_time = time.time()
         db_path = f"{self.config['database']['sqlite_path']}/{self.config['database']['seat_data_db']}"
         master_path = self.master_db_path
-
-        # ========== STAGE 1: CASCADING HIERARCHICAL (PRIMARY) ==========
-        logger.info("STAGE 1: Running Cascading Hierarchical Ensemble Matcher...")
-        cascading_results = self.match_cascading_hierarchical(table_name, use_modern_ux)
-
-        if cascading_results and 'final_matched' in cascading_results:
-            logger.info(f"✅ Cascading Matcher Complete:")
-            logger.info(f"   Matched: {cascading_results.get('final_matched', 0):,} ({cascading_results.get('accuracy', 0):.2f}%)")
-            logger.info(f"   Unmatched: {cascading_results.get('final_unmatched', 0):,}")
-            logger.info(f"   Time: {cascading_results.get('execution_time', 0):.1f}s")
-
-            # Return cascading matcher results as primary matching path
-            return cascading_results
-
-        # ========== FALLBACK: LEGACY MATCHING (if cascading fails) ==========
-        # For now, cascading matcher handles all matching
-        # Legacy tiers can be enabled later for Stage 2 & 3 fallbacks
-        logger.warning("⚠️  Cascading matcher failed, falling back to legacy matching...")
-
-        # ========== LOGGING CONFIGURATION ==========
-        # When modern UX is enabled, suppress console logging to avoid clutter
-        if use_modern_ux:
-            # Remove all console handlers (StreamHandlers) from logger
-            root_logger = logging_module.getLogger()
-            handlers_to_remove = [h for h in root_logger.handlers if isinstance(h, logging_module.StreamHandler)]
-            for handler in handlers_to_remove:
-                # Only remove if it's writing to stdout/stderr, keep file handlers
-                if hasattr(handler, 'stream') and handler.stream in [__import__('sys').stdout, __import__('sys').stderr]:
-                    root_logger.removeHandler(handler)
-            # Set root logger to WARNING to suppress INFO/DEBUG from submodules
-            root_logger.setLevel(logging_module.WARNING)
-
-        # ========== MODERN UX: STARTUP ==========
-        if use_modern_ux:
-            console.print()
-            header_text = Text()
-            header_text.append("🚀 ", style="bold cyan")
-            header_text.append("College & Course Matching Pipeline", style="bold cyan")
-            header_text.append(" ✨", style="bold cyan")
-            console.print(Panel(header_text, border_style="cyan", padding=(1, 2)))
-            console.print()
-
-            # Quick stats
-            conn_quick = sqlite3.connect(db_path)
-            total_recs = conn_quick.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
-            matched_before = conn_quick.execute(f"SELECT COUNT(*) FROM {table_name} WHERE master_college_id IS NOT NULL").fetchone()[0]
-            conn_quick.close()
-
-            stats_panel = RichTable.grid(padding=(0, 2))
-            stats_panel.add_row("[cyan]📊 Total Records[/cyan]", f"[bold yellow]{total_recs:,}[/bold yellow]")
-            stats_panel.add_row("[green]✓ Pre-Matched[/green]", f"[bold green]{matched_before:,}[/bold green]")
-            stats_panel.add_row("[magenta]⏳ Waiting[/magenta]", f"[bold magenta]{total_recs - matched_before:,}[/bold magenta]")
-            console.print(stats_panel)
-            console.print()
-
-            # Configuration status
-            config_status = "✓ Clean" if not self.config.get('features', {}).get('log_xai_explanations', False) else "⚠ Verbose"
-            console.print(f"[dim]Configuration: {config_status} Mode[/dim]")
-            console.print()
 
         # Attach master to seat connection to run cross-db joins safely
         conn = sqlite3.connect(db_path)
@@ -8012,8 +8916,6 @@ class AdvancedSQLiteMatcher:
 
             # PASS 1: Match WITHOUT aliases first (identify truly matched records)
             # Aliases will be applied ONLY for unmatched records in PASS 2
-            if use_modern_ux:
-                console.print("[cyan]🎯 PASS 1: Original names matching (3 tiers)[/cyan]")
             logger.info("PASS 1: Matching with ORIGINAL names (no aliases yet)...")
 
             # ========================================
@@ -8121,11 +9023,10 @@ class AdvancedSQLiteMatcher:
                 seat_address = row.get('normalized_address') or ''
                 master_address = row.get('master_college_address') or ''
                 college_name = row.get('normalized_college_name') or ''
-                normalized_state = row.get('normalized_state') or ''
-
+                
                 # Check if college name is generic (exists in multiple locations)
                 is_generic = self.is_generic_college_name(college_name)
-
+                
                 # If seat data has address, validate it matches master address
                 if seat_address and seat_address.strip():
                     if master_address and master_address.strip():
@@ -8133,44 +9034,28 @@ class AdvancedSQLiteMatcher:
                         seat_keywords = self.extract_address_keywords(seat_address)
                         master_keywords = self.extract_address_keywords(master_address)
                         common_keywords = set(kw.lower() for kw in seat_keywords) & set(kw.lower() for kw in master_keywords)
-
+                        
                         # Calculate keyword overlap for scoring
                         keyword_overlap = len(common_keywords) / len(seat_keywords | master_keywords) if (seat_keywords | master_keywords) else 0.0
-
+                        
                         # CRITICAL: For generic names, require STRICTER address matching
                         # Generic names like "GOVERNMENT DENTAL COLLEGE" exist in multiple locations
                         # and MUST have matching addresses to be considered the same college
-                        # ROOT CAUSE FIX: Check if college has multiple campuses (same name, different addresses in master data)
-                        # If yes, REQUIRE EXACT address match (not just keyword overlap)
-                        college_id_from_row = row.get('master_college_id', '')
-                        is_multi_campus_college = self._is_multi_campus_college(college_name, normalized_state)
-
-                        if is_generic or is_multi_campus_college:
-                            # For generic/multi-campus names: Require at least 1 common keyword
-                            # AND reasonable overlap to prevent false matches
-                            # For multi-campus colleges, prioritize exact address matches (100% overlap)
-                            if len(common_keywords) < 1:
-                                logger.debug(f"Tier 1 exact match REJECTED (generic/multi-campus): '{college_name}' - address mismatch (seat: '{seat_address}', master: '{master_address}', common: {len(common_keywords)}, overlap: {keyword_overlap:.2f})")
-                                continue
-
-                            # For multi-campus colleges, prefer exact/near-exact matches
-                            # Penalize non-matching addresses heavily
-                            if is_multi_campus_college and keyword_overlap < 0.5:
-                                logger.debug(f"Tier 1 exact match REJECTED (multi-campus): '{college_name}' - low address overlap (seat: '{seat_address}', master: '{master_address}', overlap: {keyword_overlap:.2f}, needs >=0.5)")
+                        if is_generic:
+                            # For generic names: Require EXACT keyword match (at least 1 common keyword)
+                            # AND minimum overlap to ensure addresses actually match
+                            # This prevents "KOTTAYAM" from matching "ALAPPUZHA" just because they're both in Kerala
+                            if len(common_keywords) < 1 or keyword_overlap < 0.2:
+                                logger.debug(f"Tier 1 exact match REJECTED (generic): '{college_name}' - address mismatch (seat: '{seat_address}', master: '{master_address}', common: {len(common_keywords)}, overlap: {keyword_overlap:.2f})")
                                 continue
                         else:
                             # For specific names: Require at least 1 common keyword
                             if len(common_keywords) == 0:
                                 logger.debug(f"Tier 1 exact match REJECTED: '{college_name}' - address mismatch (seat: '{seat_address}', master: '{master_address}')")
                                 continue
-
+                        
                         # Calculate address score for ranking (if multiple matches pass validation)
-                        # For exact matches, give maximum score; for partial matches, use overlap
-                        if seat_keywords == master_keywords:
-                            # Exact address match (e.g., "KOTTAYAM" == "KOTTAYAM")
-                            address_score = 1.0
-                        else:
-                            address_score = keyword_overlap
+                        address_score = keyword_overlap
                     else:
                         # Master has no address but seat has address - reject to prevent false match
                         logger.debug(f"Tier 1 exact match REJECTED: '{college_name}' - master has no address but seat has '{seat_address}'")
@@ -8183,20 +9068,15 @@ class AdvancedSQLiteMatcher:
                     address_score = 1.0  # Perfect score when no address to validate
                 
                 # Store match with address score for ranking
-                # CRITICAL: If multiple matches for same seat_id, keep the one with highest address score
-                # This is essential for multi-campus colleges like "GOVERNMENT DENTAL COLLEGE"
-                # where the same name exists in multiple locations with different addresses
+                # If multiple matches for same seat_id, keep the one with highest address score
                 if seat_id not in validated_exact_matches:
                     validated_exact_matches[seat_id] = {
                         'id': seat_id,
                         'master_college_id': row['master_college_id'],
                         'master_course_id': row['master_course_id'],
-                        'address_score': address_score,
-                        'debug_master_address': master_address  # For debugging
+                        'address_score': address_score
                     }
-
-                    logger.debug(f"🔵 STORING MATCH (new): seat_id={seat_id[:30]}..., master_college_id={row['master_college_id']}, address_score={address_score:.2f}, master_address='{master_address}'")
-
+                    
                     # ============================================================================
                     # EXPLAINABLE AI (XAI): Generate explanation for match
                     # ============================================================================
@@ -8220,21 +9100,14 @@ class AdvancedSQLiteMatcher:
                             path_name='database_driven_tier1'
                         )
                 else:
-                    # If we already have a match for this seat_id, update if we have a better address score
-                    # CRITICAL: Must use >= to pick the best match when there are multiple with same score
-                    # For example, "GOVERNMENT DENTAL COLLEGE" in KOTTAYAM should match to DEN0095 (KOTTAYAM)
-                    # not DEN0098 (TRIVANDRUM) even if they have the same initial score
-                    if address_score >= validated_exact_matches[seat_id]['address_score']:
-                        logger.debug(f"🔴 UPDATING MATCH (better score): seat_id={seat_id[:30]}..., old={validated_exact_matches[seat_id]['master_college_id']} (score={validated_exact_matches[seat_id]['address_score']:.2f}), new={row['master_college_id']} (score={address_score:.2f}), master_address='{master_address}'")
+                    # If we already have a match for this seat_id, keep the one with higher address score
+                    if address_score > validated_exact_matches[seat_id]['address_score']:
                         validated_exact_matches[seat_id] = {
                             'id': seat_id,
                             'master_college_id': row['master_college_id'],
                             'master_course_id': row['master_course_id'],
-                            'address_score': address_score,
-                            'debug_master_address': master_address  # For debugging
+                            'address_score': address_score
                         }
-                    else:
-                        logger.debug(f"⚫ SKIPPING MATCH (lower score): seat_id={seat_id[:30]}..., current={row['master_college_id']} (score={address_score:.2f}) < stored={validated_exact_matches[seat_id]['master_college_id']} (score={validated_exact_matches[seat_id]['address_score']:.2f}), master_address='{master_address}'")
             
             # Convert dict to list (one match per seat_id)
             validated_exact_matches = list(validated_exact_matches.values())
@@ -8818,63 +9691,7 @@ class AdvancedSQLiteMatcher:
             logger.info(f"  Tier 2 (Hybrid): {tier2_matched_count} records")
             logger.info(f"  Tier 3 (Fallback): {tier3_matched_count} records")
             logger.info(f"  Total matched: {matched}/{total} ({matched/total*100:.1f}%)")
-
-            # ========== MODERN UX: COMPLETION ==========
-            if use_modern_ux:
-                elapsed = time.time() - start_time
-                new_matches = matched - matched_before
-
-                console.print()
-                console.print(Panel.fit("[bold green]✅ Matching Complete![/bold green]", border_style="green"))
-                console.print()
-
-                # Results table
-                results_table = RichTable(title="📈 Final Results", show_header=True, header_style="bold cyan")
-                results_table.add_column("Metric", style="cyan")
-                results_table.add_column("Count", justify="right", style="green")
-                results_table.add_column("Percentage", justify="right", style="yellow")
-
-                results_table.add_row("Total Records", f"{total:,}", "100%")
-                results_table.add_row("✓ Matched", f"{matched:,}", f"{(matched/total*100):.2f}%")
-                results_table.add_row("⏳ Unmatched", f"{total-matched:,}", f"{((total-matched)/total*100):.2f}%")
-
-                console.print(results_table)
-                console.print()
-
-                # Improvements
-                if new_matches > 0:
-                    improvement_bar = "█" * min(int(new_matches / 100), 30)
-                    console.print(f"[green]✨ New Matches: {new_matches:,} records {improvement_bar}[/green]")
-                else:
-                    console.print("[dim]ℹ️  No new matches in this run[/dim]")
-
-                console.print()
-
-                # Performance metrics
-                hours = int(elapsed // 3600)
-                minutes = int((elapsed % 3600) // 60)
-                seconds = int(elapsed % 60)
-
-                time_str = ""
-                if hours > 0:
-                    time_str = f"{hours}h {minutes}m {seconds}s"
-                elif minutes > 0:
-                    time_str = f"{minutes}m {seconds}s"
-                else:
-                    time_str = f"{seconds}s"
-
-                speed = total / elapsed if elapsed > 0 else 0
-
-                metrics = RichTable.grid(padding=(0, 2))
-                metrics.add_row("[cyan]⏱️  Execution Time[/cyan]", f"[bold]{time_str}[/bold]")
-                metrics.add_row("[cyan]📊 Processing Speed[/cyan]", f"[bold yellow]{speed:.0f} rec/s[/bold yellow]")
-                metrics.add_row("[cyan]💾 Matched[/cyan]", f"[bold green]{matched:,} / {total:,}[/bold green]")
-                console.print(metrics)
-
-                console.print()
-                console.print("[dim]📖 Check logs/ directory for detailed information[/dim]")
-                console.print()
-
+            
             return {
                 'total_records': total,
                 'matched_records': matched,
@@ -9380,6 +10197,7 @@ class AdvancedSQLiteMatcher:
         conn.close()
 
         # ==================== SUMMARY ====================
+        console.print("\n[bold]═" * 80 + "[/bold]")
         if results['passed']:
             console.print("\n[green]✅ ALL INTEGRITY CHECKS PASSED![/green]")
             console.print("[green]   Your data has no false matches - each college_id maps to one physical location[/green]\n")
@@ -13491,33 +14309,6 @@ class AdvancedSQLiteMatcher:
         # Check for any exact matches
         return len(seat_location_keywords.intersection(master_location_keywords)) > 0
     
-    def _extract_city_from_address(self, address):
-        """Extract city name from address."""
-        if not address:
-            return ''
-        
-        # Common city patterns
-        address_upper = address.upper()
-        city_keywords = ['CITY', 'DISTRICT', 'TALUK', 'TALUKA', 'VILLAGE']
-        
-        # Try to find city before these keywords
-        for keyword in city_keywords:
-            idx = address_upper.find(keyword)
-            if idx > 0:
-                # Get text before keyword
-                before = address_upper[:idx].strip()
-                # Take last word as city
-                words = before.split()
-                if words:
-                    return words[-1]
-        
-        # Fallback: return first word of address
-        words = address_upper.split()
-        if words:
-            return words[0] if len(words[0]) > 3 else ''
-        
-        return ''
-    
     def extract_address_keywords(self, address):
         """Extract meaningful keywords from address
         
@@ -13555,17 +14346,14 @@ class AdvancedSQLiteMatcher:
             words = re.split(r'[\s.@]+', part)
             
             # Filter out common words
-            # CRITICAL: Do NOT exclude direction words (NORTH, SOUTH, EAST, WEST, CENTRAL)
-            # These are essential for distinguishing different locations of same college
-            # Example: "SOUTH ANDAMAN" vs "NORTH ANDAMAN" - removing SOUTH causes false matches!
             excluded_terms = {
                 'THE', 'AND', 'OF', 'IN', 'AT', 'TO', 'FOR', 'WITH', 'BY', 'FROM', 'NEAR',
                 'DISTRICT', 'HOSPITAL', 'COLLEGE', 'INSTITUTE', 'MEDICAL', 'DENTAL',
                 'ROAD', 'STREET', 'AVENUE', 'LANE', 'MARG', 'BLOCK', 'SECTOR',
                 'PHASE', 'FLAT', 'FLOOR', 'TALUK', 'MANDAL', 'POST', 'OFFICE',
-                'PIN', 'CODE', 'PINCODE', 'ZIP', 'INDIA', 'BHARAT',
-                'RURAL', 'URBAN', 'CITY', 'TOWN', 'VILLAGE', 'AREA', 'COLONY', 'NAGAR', 'PUR', 'GARH'
-                # Removed: 'NORTH', 'SOUTH', 'EAST', 'CENTRAL', 'WEST' - these distinguish locations!
+                'PIN', 'CODE', 'PINCODE', 'ZIP', 'INDIA', 'BHARAT', 'NORTH',
+                'SOUTH', 'EAST', 'CENTRAL', 'WEST', 'RURAL', 'URBAN', 'CITY',
+                'TOWN', 'VILLAGE', 'AREA', 'COLONY', 'NAGAR', 'PUR', 'GARH'
             }
             
             # Extract meaningful words
@@ -13650,58 +14438,6 @@ class AdvancedSQLiteMatcher:
             logger.warning(f"  Is Generic: {is_generic}")
         
         return is_generic
-
-    def _is_multi_campus_college(self, college_name, state):
-        """Check if a college has multiple campuses (same name, different addresses) in master data.
-
-        CRITICAL FIX: For colleges with multiple campuses like "GOVERNMENT DENTAL COLLEGE",
-        we need stricter address matching to prevent matching different campuses incorrectly.
-
-        Args:
-            college_name: Normalized college name
-            state: Normalized state name
-
-        Returns:
-            bool: True if college has multiple campuses in the given state
-        """
-        if not college_name or not state:
-            return False
-
-        # Check if we have a cache for this
-        cache_key = f"{college_name}_{state}"
-        if not hasattr(self, '_multi_campus_cache'):
-            self._multi_campus_cache = {}
-
-        if cache_key in self._multi_campus_cache:
-            return self._multi_campus_cache[cache_key]
-
-        try:
-            # Count colleges with same name but different addresses in given state
-            # This requires accessing the master data
-            query = """
-            SELECT COUNT(DISTINCT c.id) as college_count
-            FROM colleges c
-            JOIN state_college_link scl ON scl.college_id = c.id
-            JOIN states s ON s.id = scl.state_id
-            WHERE c.normalized_name = ?
-            AND s.normalized_name = ?
-            """
-
-            result = pd.read_sql(query, self.master_conn, params=(college_name, state))
-            college_count = result['college_count'].iloc[0] if len(result) > 0 else 0
-
-            # If more than 1 college with same name, it's multi-campus
-            is_multi_campus = college_count > 1
-            self._multi_campus_cache[cache_key] = is_multi_campus
-
-            if is_multi_campus:
-                logger.debug(f"🏢 MULTI-CAMPUS COLLEGE DETECTED: '{college_name}' in {state} has {college_count} campuses")
-
-            return is_multi_campus
-        except Exception as e:
-            logger.debug(f"Error checking multi-campus status: {e}")
-            # Default to False if we can't check
-            return False
 
     def validate_address_match(self, seat_address, master_address, college_name='', match_type='exact'):
         """Validate address match with configurable threshold.
@@ -13933,24 +14669,11 @@ class AdvancedSQLiteMatcher:
         
         # Apply aliases
         course_name = self.apply_aliases(course_name, 'course')
-
+        
         # Normalize input
         normalized_course = self.normalize_text(course_name)
-
-        # Get candidates - either from cache or load from database
-        if 'courses' in self.master_data.get('courses', {}):
-            candidates = self.master_data['courses']['courses']
-        else:
-            # Lazy load courses from database if not in memory
-            try:
-                import sqlite3
-                conn = sqlite3.connect(self.master_db_path)
-                candidates_df = pd.read_sql("SELECT id, name, normalized_name FROM courses", conn)
-                conn.close()
-                candidates = candidates_df.to_dict('records')
-            except Exception as e:
-                logger.warning(f"Could not load courses from database: {e}")
-                return None, 0.0, "course_load_error"
+        
+        candidates = self.master_data['courses']['courses']
         
         best_match = None
         best_score = 0.0
@@ -14136,8 +14859,8 @@ class AdvancedSQLiteMatcher:
                 'course_name': course_name,
                 'state': state,
                 'address': address,
-                'master_college_id': college_match.get('college_id') or college_match.get('id') if college_match else None,
-                'master_course_id': course_match.get('id') if course_match else None,
+                'master_college_id': college_match['id'] if college_match else None,
+                'master_course_id': course_match['id'] if course_match else None,
                 'college_match_score': college_score,
                 'course_match_score': course_score,
                 'college_match_method': college_method,
@@ -14389,104 +15112,6 @@ class AdvancedSQLiteMatcher:
         
         # Convert results to DataFrame
         results_df = pd.DataFrame(all_results)
-        
-        # ========================================================================
-        # CRITICAL: Validate college_id + address uniqueness (composite key)
-        # ========================================================================
-        # College = College Name + Address (unique identifier)
-        # If the same college_id is assigned to records with different addresses,
-        # this is a FALSE MATCH and should be rejected
-        # ========================================================================
-        console.print(f"[cyan]🔍 Validating college_id + address uniqueness (composite key)...[/cyan]")
-        
-        # Build a map of college_id -> set of addresses
-        college_id_to_addresses = {}
-        address_conflicts = []
-        
-        for idx, row in results_df.iterrows():
-            college_id = row.get('master_college_id')
-            address = row.get('address', '') or row.get('normalized_address', '')
-            address_normalized = self.normalize_text(address) if address else ''
-            
-            if college_id and pd.notna(college_id):
-                if college_id not in college_id_to_addresses:
-                    college_id_to_addresses[college_id] = set()
-                
-                if address_normalized:
-                    college_id_to_addresses[college_id].add(address_normalized)
-        
-        # Check for conflicts: same college_id with different addresses
-        for college_id, addresses in college_id_to_addresses.items():
-            if len(addresses) > 1:
-                # This college_id has multiple different addresses - FALSE MATCH!
-                address_conflicts.append({
-                    'college_id': college_id,
-                    'addresses': list(addresses),
-                    'count': len(addresses)
-                })
-        
-        # Reject matches where college_id has conflicting addresses
-        if address_conflicts:
-            console.print(f"[yellow]⚠️  Found {len(address_conflicts)} college_id(s) with conflicting addresses:[/yellow]")
-            for conflict in address_conflicts:
-                console.print(f"[yellow]   • {conflict['college_id']}: {conflict['count']} different addresses[/yellow]")
-                for addr in conflict['addresses'][:5]:  # Show first 5
-                    console.print(f"[yellow]      - {addr[:50]}[/yellow]")
-            
-            # Get master data addresses for conflicting college_ids
-            conflicting_college_ids = {c['college_id'] for c in address_conflicts}
-            master_addresses = {}  # college_id -> normalized master address
-            
-            for college_type in ['medical', 'dental', 'dnb']:
-                for college in self.master_data.get(college_type, {}).get('colleges', []):
-                    college_id = college.get('id')
-                    if college_id and college_id in conflicting_college_ids:
-                        master_address = self.normalize_text(college.get('address', ''))
-                        if master_address:
-                            master_addresses[college_id] = master_address
-            
-            # Reject matches where address doesn't match master data address
-            rejected_count = 0
-            
-            for idx, row in results_df.iterrows():
-                college_id = row.get('master_college_id')
-                if college_id and college_id in conflicting_college_ids:
-                    # Get the address for this record
-                    address = row.get('address', '') or row.get('normalized_address', '')
-                    address_normalized = self.normalize_text(address) if address else ''
-                    
-                    # Get master data address for this college_id
-                    master_address = master_addresses.get(college_id, '')
-                    
-                    # Validate address match
-                    if master_address and address_normalized:
-                        # Check if addresses match using keyword overlap
-                        seat_keywords = self.extract_address_keywords(address_normalized)
-                        master_keywords = self.extract_address_keywords(master_address)
-                        common_keywords = seat_keywords & master_keywords
-                        keyword_overlap = len(common_keywords) / len(seat_keywords | master_keywords) if (seat_keywords | master_keywords) else 0.0
-                        
-                        # Require at least 2 common keywords OR 50%+ overlap
-                        if len(common_keywords) < 2 and keyword_overlap < 0.5:
-                            # Address doesn't match - REJECT this match
-                            results_df.at[idx, 'master_college_id'] = None
-                            results_df.at[idx, 'college_match_score'] = 0
-                            results_df.at[idx, 'college_match_method'] = 'rejected_address_conflict'
-                            results_df.at[idx, 'is_linked'] = False
-                            rejected_count += 1
-                    elif master_address and not address_normalized:
-                        # Master has address but seat doesn't - REJECT for generic names
-                        college_name = row.get('college_name', '') or row.get('normalized_college_name', '')
-                        if college_name and self.is_generic_college_name(self.normalize_text(college_name)):
-                            results_df.at[idx, 'master_college_id'] = None
-                            results_df.at[idx, 'college_match_score'] = 0
-                            results_df.at[idx, 'college_match_method'] = 'rejected_address_conflict'
-                            results_df.at[idx, 'is_linked'] = False
-                            rejected_count += 1
-            
-            console.print(f"[red]❌ Rejected {rejected_count} matches due to address conflicts (college = college name + address)[/red]")
-        else:
-            console.print(f"[green]✅ All college_id assignments are unique (college = college name + address)[/green]")
         
         # Ensure all required columns are present before saving
         results_df = self._ensure_dataframe_columns(results_df, table_name)
@@ -17840,20 +18465,6 @@ class AdvancedSQLiteMatcher:
         """
         logger.info(f"Importing Excel: {excel_path}")
 
-        # Handle directory input - find Excel files inside
-        excel_path_obj = Path(excel_path)
-        if excel_path_obj.is_dir():
-            excel_files = list(excel_path_obj.glob('*.xlsx')) + list(excel_path_obj.glob('*.xls'))
-            if not excel_files:
-                console.print(f"[red]❌ No Excel files found in {excel_path}[/red]")
-                return 0
-            console.print(f"[cyan]Found {len(excel_files)} Excel files in directory[/cyan]")
-            total_imported = 0
-            for excel_file in excel_files:
-                console.print(f"[cyan]Processing: {excel_file.name}[/cyan]")
-                total_imported += self.import_excel_to_db(str(excel_file), enable_dedup, clear_before_import)
-            return total_imported
-
         # Check incremental processing
         if self.is_file_processed(excel_path):
             console.print(f"[yellow]⏭️  Skipping {Path(excel_path).name} (already processed)[/yellow]")
@@ -18338,7 +18949,7 @@ class AdvancedSQLiteMatcher:
                         address,
                         row.COURSE
                     )
-                    college_id = (college_match.get('college_id') or college_match.get('id')) if college_match else None
+                    college_id = college_match['id'] if college_match else None
 
                     # Debug logging removed - matching is working correctly
 
@@ -20469,27 +21080,451 @@ class AdvancedSQLiteMatcher:
         state: str,
         course_type: str,
         address: str = '',
-        course_name: str = ''
+        course_name: str = '',
+        threshold: float = 0.7
     ):
-        """AI-Enhanced college matching using CASCADING MATCHER.
+        """
+        AI-Enhanced college matching (uses Transformers, Vector Search, Multi-field)
 
-        Cascading matcher includes AI/Transformer features in Stage 3.
+        Falls back to traditional matching if AI features unavailable
+
+        Returns:
+            (matched_college, score, method_used)
         """
         # Check if path is enabled in config
         path_enabled = self.config.get('matching_paths', {}).get('enable_ai_enhanced', True)
         if not path_enabled:
-            logger.warning(f"⚠️  PATH DISABLED: match_college_ai_enhanced()")
-            return None, 0.0, 'path_disabled'
+            logger.warning(f"⚠️  PATH DISABLED: match_college_ai_enhanced() - falling back to match_college_enhanced()")
+            return self.match_college_enhanced(college_name, state, course_type, address, course_name)
+        
+        if not self.enable_advanced_features or not self._transformer_matcher:
+            return self.match_college_enhanced(college_name, state, course_type, address, course_name)
 
-        # Delegate to cascading matcher (includes AI features in Stage 3)
-        return self.match_college_enhanced(
-            college_name=college_name,
-            state=state,
-            course_type=course_type,
-            address=address,
-            course_name=course_name
-        )
+        # Normalize college name BEFORE AI matching to expand abbreviations (ESIC → EMPLOYEES STATE INSURANCE CORPORATION)
+        college_name_normalized = self.normalize_text(college_name)
+        normalized_address = self.normalize_text(address) if address else ''
 
+        # Get candidates
+        candidates = self.get_college_pool(course_type=course_type, state=state)
+        if not candidates:
+            return None, 0.0, "no_candidates"
+
+        # ========================================================================
+        # SHORTLIST 2: PARALLEL FILTERING (BEFORE AI MATCHING)
+        # ========================================================================
+        # Filter candidates by college name AND address in PARALLEL
+        # Then find intersection to get common colleges
+        # This prevents false matches where different addresses match to the same college ID
+        # Example: "GOVERNMENT DENTAL COLLEGE" + "KOTTAYAM" → intersection of name and address filters
+        # 
+        # Flow: COLLEGE NAME (parallel) + ADDRESS (parallel) → INTERSECTION → AI MATCHING → ADDRESS VALIDATION
+        # ========================================================================
+        
+            is_generic = self.is_generic_college_name(college_name_normalized)
+        original_candidates = candidates  # Save original for parallel filtering
+        
+        # ========================================================================
+        # 1) COLLEGE NAME FILTERING (PARALLEL)
+        # ========================================================================
+        # Filter by college name first to get all colleges with matching name
+        # This is done before AI matching to reduce the candidate pool
+        name_filtered_candidates = []
+        
+        logger.debug(f"🔍 AI Path (1/2): Filtering {len(candidates)} candidates by college name: '{college_name_normalized[:50]}...'")
+        
+        for candidate in candidates:
+            candidate_name = self.normalize_text(candidate.get('name', ''))
+            candidate_normalized = candidate.get('normalized_name', '')
+            
+            # CRITICAL: If normalized_name is empty or different, use normalized name from name field
+            # This ensures we always compare normalized versions
+            if not candidate_normalized or candidate_normalized != candidate_name:
+                candidate_normalized = candidate_name
+            
+            # Strategy 1: Exact match
+            name_matches = (
+                college_name_normalized == candidate_name or
+                college_name_normalized == candidate_normalized
+            )
+            
+            # DEBUG: Log for specific colleges that are failing
+            if 'GSL' in college_name_normalized.upper() or 'RAJAS' in college_name_normalized.upper() or 'RIMS' in college_name_normalized.upper():
+                logger.debug(f"🔍 AI NAME MATCH CHECK: '{college_name_normalized}' vs '{candidate_name}' (normalized_name: '{candidate_normalized}') - Match: {name_matches}")
+            
+            # Strategy 2: Primary name match
+            if not name_matches:
+                primary_name, _ = self.extract_primary_name(candidate.get('name', ''))
+                normalized_primary = self.normalize_text(primary_name)
+                name_matches = college_name_normalized == normalized_primary
+            
+            # Strategy 3: Fuzzy match (for typos/variations)
+            if not name_matches:
+                fuzzy_score = fuzz.ratio(college_name_normalized, candidate_name) / 100.0
+                if fuzzy_score >= self.config['matching']['thresholds'].get('fuzzy_match', 0.85):
+                    # Additional check: word overlap to prevent bad fuzzy matches
+                    query_words = set(college_name_normalized.split())
+                    candidate_words = set(candidate_name.split())
+                    common_words = query_words & candidate_words
+                    all_words = query_words | candidate_words
+                    word_overlap = len(common_words) / len(all_words) if all_words else 0.0
+                    
+                    if word_overlap >= 0.5:  # At least 50% word overlap
+                        name_matches = True
+            
+            if name_matches:
+                name_filtered_candidates.append(candidate)
+                logger.debug(f"✅ NAME MATCH: '{candidate_name[:50]}...' (ID: {candidate.get('id')})")
+        
+        name_filtered_count = len(name_filtered_candidates)
+        logger.info(f"📍 AI Path (1/2): College name filtering: {len(candidates)} → {name_filtered_count} candidates")
+        
+        # ========================================================================
+        # 2) ADDRESS FILTERING (PARALLEL - MORE LENIENT)
+        # ========================================================================
+        # IMPORTANT: Address filtering runs in PARALLEL with name filtering
+        # Both filters operate on the ORIGINAL candidates list (SHORTLIST 1)
+        # Then we find intersection to get common colleges
+        address_filtered_candidates = []
+        
+        if normalized_address and original_candidates:
+            # Extract address keywords from seat data
+            seat_keywords = self.extract_address_keywords(normalized_address)
+            seat_keywords_lower = {kw.lower() for kw in seat_keywords}
+            
+            logger.debug(f"🔍 AI Path (2/2): Filtering {len(original_candidates)} candidates by address: '{normalized_address[:50]}...'")
+            
+            # PARALLEL ADDRESS FILTERING: More lenient to allow partial matches
+            # This runs in parallel with name filtering, then we find intersection
+            for candidate in original_candidates:
+                candidate_address = self.normalize_text(candidate.get('address', ''))
+                
+                if not candidate_address:
+                    # Master college has no address
+                    # CRITICAL: If seat data HAS address but master has NO address, exclude to prevent false matches
+                    # Only include no-address colleges if seat data also has no address
+                    if normalized_address and normalized_address.strip():
+                        # Seat data HAS address but master has NO address
+                        # Exclude to prevent false matches
+                        logger.debug(f"⚠️  AI Path EXCLUDED: Master '{candidate.get('name', '')[:50]}' (ID: {candidate.get('id')}) has no address but seat has '{normalized_address}' - preventing false match")
+                        continue
+                    else:
+                        # Both have no address OR seat data also has no address - safe to include
+                        if not is_generic:
+                            address_filtered_candidates.append(candidate)
+                            logger.debug(f"⚠️  AI Path INCLUDED: Master '{candidate.get('name', '')[:50]}' (ID: {candidate.get('id')}) has no address, seat also has no address")
+                        # For generic names, skip (no address = can't validate)
+                        continue
+                
+                # Extract address keywords from master data
+                master_keywords = self.extract_address_keywords(candidate_address)
+                master_keywords_lower = {kw.lower() for kw in master_keywords}
+                
+                # Calculate keyword overlap
+                common_keywords = seat_keywords_lower & master_keywords_lower
+                keyword_overlap = len(common_keywords) / len(seat_keywords_lower | master_keywords_lower) if (seat_keywords_lower | master_keywords_lower) else 0.0
+                
+                # PARALLEL FILTERING: Stricter thresholds (same as pass3_college_name_matching)
+                # Extract city/district for must-match validation
+                seat_city = self._extract_city_from_address(normalized_address)
+                master_city = self._extract_city_from_address(candidate_address)
+                
+                # CRITICAL: City/District must-match for meaningful address validation
+                if seat_city and master_city:
+                    city_match = seat_city.upper() == master_city.upper()
+                    if not city_match:
+                        logger.debug(f"❌ AI REJECTED: City mismatch - Seat: '{seat_city}' vs Master: '{master_city}' (ID: {candidate.get('id')})")
+                        continue
+                elif seat_city or master_city:
+                    # One has city but other doesn't - for generic names, reject
+                    if is_generic:
+                        logger.debug(f"❌ AI REJECTED: Generic name - City missing in one address (Seat: '{seat_city}', Master: '{master_city}') (ID: {candidate.get('id')})")
+                        continue
+                
+                # STRICTER REQUIREMENT: Require 2-3 matching keywords OR 50%+ token overlap
+                min_keywords_required = 2
+                min_overlap_required = 0.5
+                
+                passes_keyword_requirement = len(common_keywords) >= min_keywords_required
+                passes_overlap_requirement = keyword_overlap >= min_overlap_required
+                
+                # Accept if EITHER requirement is met (2+ keywords OR 50%+ overlap)
+                if passes_keyword_requirement or passes_overlap_requirement:
+                    address_filtered_candidates.append(candidate)
+                    logger.debug(f"✅ AI ADDRESS MATCH: {candidate.get('id')} (overlap={keyword_overlap:.2f}, common={len(common_keywords)})")
+                else:
+                    logger.debug(f"❌ AI REJECTED: {candidate.get('id')} (overlap={keyword_overlap:.2f}, common={len(common_keywords)}) - Need ≥{min_keywords_required} keywords OR ≥{min_overlap_required:.0%} overlap")
+                    continue
+            
+            address_filtered_count = len(address_filtered_candidates)
+            logger.info(f"📍 AI Path (2/2): Address filtering: {len(original_candidates)} → {address_filtered_count} candidates")
+            
+            # ========================================================================
+            # 3) INTERSECTION: Find common colleges from both filters
+            # ========================================================================
+            name_filtered_ids = {c.get('id') for c in name_filtered_candidates}
+            address_filtered_ids = {c.get('id') for c in address_filtered_candidates}
+            
+            # Find intersection: colleges that match BOTH name AND address
+            common_ids = name_filtered_ids & address_filtered_ids
+            
+            # Build common candidates list (preserve order from name_filtered)
+            common_candidates = [c for c in name_filtered_candidates if c.get('id') in common_ids]
+            
+            intersection_count = len(common_candidates)
+            logger.info(f"📍 AI Path (3/3): Intersection: {name_filtered_count} name matches ∩ {address_filtered_count} address matches = {intersection_count} common candidates")
+            
+            # DEBUG: Log intersection details for failing colleges
+            debug_college = 'GSL' in college_name_normalized.upper() or 'RAJAS' in college_name_normalized.upper() or 'RIMS' in college_name_normalized.upper()
+            if debug_college:
+                name_ids = {c.get('id') for c in name_filtered_candidates}
+                address_ids = {c.get('id') for c in address_filtered_candidates}
+                logger.debug(f"🔍 AI INTERSECTION DEBUG: Name matches: {name_ids}, Address matches: {address_ids}, Common: {common_ids}")
+                if name_filtered_count > 0:
+                    logger.debug(f"🔍 AI NAME FILTERED: {[c.get('id') + ':' + c.get('name', '')[:40] for c in name_filtered_candidates[:5]]}")
+                if address_filtered_count > 0:
+                    logger.debug(f"🔍 AI ADDRESS FILTERED: {[c.get('id') + ':' + c.get('address', '')[:40] for c in address_filtered_candidates[:5]]}")
+            
+            if intersection_count == 0:
+                logger.warning(f"⚠️  AI Path: No common candidates found: {name_filtered_count} name matches ∩ {address_filtered_count} address matches = 0")
+                if debug_college:
+                    logger.warning(f"🔍 AI DEBUG: College='{college_name_normalized}', Address='{normalized_address}', State='{state}'")
+                # CRITICAL FIX: Do NOT fallback to name-filtered candidates!
+                # If address is provided and there's no intersection, it means the address doesn't match
+                # Using name-filtered candidates will cause FALSE MATCHES
+                if address_normalized and address_filtered_count == 0:
+                    # Address was provided but no candidates matched the address
+                    logger.warning(f"❌ AI Path REJECTED: Address '{address_normalized}' found no matches in master data")
+                    return None, 0.0, "address_not_found"
+                elif address_normalized and name_filtered_count > 0 and address_filtered_count > 0:
+                    # Both filters returned results but no intersection
+                    # This means the name matches but address doesn't - FALSE MATCH!
+                    logger.warning(f"❌ AI Path REJECTED: Name matched {name_filtered_count} colleges, address matched {address_filtered_count} colleges, but ZERO intersection")
+                    logger.warning(f"   This suggests the college name exists in master data but with a DIFFERENT address")
+                    return None, 0.0, "no_intersection_different_address"
+                elif name_filtered_count > 0:
+                    # CRITICAL FIX: Only use fallback if NO address is provided
+                    # If address is provided but intersection is 0, REJECT to prevent false matches
+                    if normalized_address and normalized_address.strip():
+                        # Address was provided but no intersection - REJECT
+                        logger.warning(f"❌ AI Path REJECTED: Address '{normalized_address}' provided but ZERO intersection")
+                        logger.warning(f"   College = College Name + Address (composite key) - both must match")
+                        return None, 0.0, "no_intersection_with_address"
+                    else:
+                        # No address provided - safe to use name-filtered candidates
+                        logger.info(f"⚠️  AI Path Fallback: No address provided - Using {name_filtered_count} name-filtered candidates")
+                        common_candidates = name_filtered_candidates
+                else:
+                    logger.warning(f"⚠️  AI Path: All {len(original_candidates)} candidates REJECTED by parallel filtering - no matches possible")
+                    return None, 0.0, "parallel_filter_rejected_all"
+            
+            # Use common candidates for AI matching
+            candidates = common_candidates
+        else:
+            # No address provided - use all name-filtered candidates
+            if name_filtered_count == 0:
+                logger.warning(f"⚠️  AI Path: All {len(original_candidates)} candidates REJECTED by college name filtering - no matches possible")
+                return None, 0.0, "name_filter_rejected_all"
+            
+            if is_generic:
+                logger.warning(f"⚠️  AI Path: Generic college '{college_name_normalized}' has NO address - using {name_filtered_count} name-filtered candidates")
+            else:
+                logger.debug(f"⚠️  AI Path: No address provided - using {name_filtered_count} name-filtered candidates")
+            
+            # Use name-filtered candidates
+            candidates = name_filtered_candidates
+        
+        # Try Transformer matching first (with normalized name and address-filtered candidates)
+        try:
+            match, score, method = self._transformer_matcher.match_college_enhanced(
+                college_name_normalized, candidates, state, threshold, combine_with_fuzzy=True
+            )
+            if match and score >= threshold:
+                # CRITICAL: Validate address match after AI matching
+                if normalized_address:
+                    candidate_address = match.get('address', '')
+                    if candidate_address:
+                        # Validate address match
+                        addr_score = self.validate_address_match(
+                            normalized_address,
+                            candidate_address,
+                            college_name_normalized
+                        )
+                        is_valid, addr_score_val, reason = addr_score
+                        
+                        if not is_valid:
+                            logger.debug(f"AI Match REJECTED: Address mismatch (addr_score={addr_score_val:.2f}, reason={reason})")
+                            match = None
+                            score = 0.0
+                        else:
+                            logger.info(f"AI Match: {college_name} -> {match['name']} ({score:.2%}, addr_score={addr_score_val:.2f})")
+                            
+                            # ============================================================================
+                            # EXPLAINABLE AI (XAI): Generate explanation for match
+                            # ============================================================================
+                            self._generate_xai_for_match(
+                                match, score, f'ai_transformer_{method}_address_validated',
+                                college_name_normalized, normalized_address, state,
+                                name_score=score, address_score=addr_score_val, state_score=1.0 if state else 0.0,
+                                overlap_score=0.8, path_name='ai_enhanced'
+                            )
+                            
+                            return match, score, f"ai_transformer_{method}_address_validated"
+                    else:
+                        # No master address - allow if exact name match
+                        if score >= 0.95:
+                            logger.info(f"AI Match: {college_name} -> {match['name']} ({score:.2%}, no master address)")
+                            
+                            # ============================================================================
+                            # EXPLAINABLE AI (XAI): Generate explanation for match
+                            # ============================================================================
+                            self._generate_xai_for_match(
+                                match, score, f'ai_transformer_{method}_no_address',
+                                college_name_normalized, normalized_address, state,
+                                name_score=score, address_score=1.0, state_score=1.0 if state else 0.0,
+                                overlap_score=0.8, path_name='ai_enhanced'
+                            )
+                            
+                            return match, score, f"ai_transformer_{method}_no_address"
+                        else:
+                            logger.debug(f"AI Match REJECTED: No master address and score too low ({score:.2%})")
+                            match = None
+                            score = 0.0
+                else:
+                    # No seat address - allow match
+                    logger.info(f"AI Match: {college_name} -> {match['name']} ({score:.2%}, no seat address)")
+                    
+                    # ============================================================================
+                    # EXPLAINABLE AI (XAI): Generate explanation for match
+                    # ============================================================================
+                    self._generate_xai_for_match(
+                        match, score, f'ai_transformer_{method}',
+                        college_name_normalized, normalized_address, state,
+                        name_score=score, address_score=0.0, state_score=1.0 if state else 0.0,
+                        overlap_score=0.8, path_name='ai_enhanced'
+                    )
+                    
+                    return match, score, f"ai_transformer_{method}"
+        except Exception as e:
+            logger.warning(f"Transformer matching failed: {e}")
+
+        # Try Vector search (with normalized name and address-filtered candidates)
+        if self._vector_engine and self._vector_engine.index.ntotal > 0:
+            try:
+                results = self._vector_engine.hybrid_search(college_name_normalized, k=1, state_filter=state)
+                if results:
+                    match, score, details = results[0]
+                    if score >= threshold:
+                        # CRITICAL: Validate address match after AI matching
+                        if normalized_address:
+                            candidate_address = match.get('address', '')
+                            if candidate_address:
+                                # Validate address match
+                                addr_score = self.validate_address_match(
+                                    normalized_address,
+                                    candidate_address,
+                                    college_name_normalized
+                                )
+                                is_valid, addr_score_val, reason = addr_score
+                                
+                                if not is_valid:
+                                    logger.debug(f"AI Vector Match REJECTED: Address mismatch (addr_score={addr_score_val:.2f}, reason={reason})")
+                                    match = None
+                                    score = 0.0
+                                else:
+                                    logger.info(f"AI Vector Match: {college_name} -> {match['name']} ({score:.2%}, addr_score={addr_score_val:.2f})")
+                                    
+                                    # ============================================================================
+                                    # EXPLAINABLE AI (XAI): Generate explanation for match
+                                    # ============================================================================
+                                    self._generate_xai_for_match(
+                                        match, score, f'ai_vector_{details}_address_validated',
+                                        college_name_normalized, normalized_address, state,
+                                        name_score=score, address_score=addr_score_val, state_score=1.0 if state else 0.0,
+                                        overlap_score=0.8, path_name='ai_enhanced'
+                                    )
+                                    
+                                    return match, score, f"ai_vector_{details}_address_validated"
+                            else:
+                                # No master address - allow if exact name match
+                                if score >= 0.95:
+                                    logger.info(f"AI Vector Match: {college_name} -> {match['name']} ({score:.2%}, no master address)")
+                                    
+                                    # ============================================================================
+                                    # EXPLAINABLE AI (XAI): Generate explanation for match
+                                    # ============================================================================
+                                    self._generate_xai_for_match(
+                                        match, score, f'ai_vector_{details}_no_address',
+                                        college_name_normalized, normalized_address, state,
+                                        name_score=score, address_score=1.0, state_score=1.0 if state else 0.0,
+                                        overlap_score=0.8, path_name='ai_enhanced'
+                                    )
+                                    
+                                    return match, score, f"ai_vector_{details}_no_address"
+                                else:
+                                    logger.debug(f"AI Vector Match REJECTED: No master address and score too low ({score:.2%})")
+                                    match = None
+                                    score = 0.0
+                        else:
+                            # No seat address - allow match
+                            logger.info(f"AI Vector Match: {college_name} -> {match['name']} ({score:.2%}, no seat address)")
+                            
+                            # ============================================================================
+                            # EXPLAINABLE AI (XAI): Generate explanation for match
+                            # ============================================================================
+                            self._generate_xai_for_match(
+                                match, score, f'ai_vector_{details}',
+                                college_name_normalized, normalized_address, state,
+                                name_score=score, address_score=0.0, state_score=1.0 if state else 0.0,
+                                overlap_score=0.8, path_name='ai_enhanced'
+                            )
+                            
+                            return match, score, f"ai_vector_{details}"
+            except Exception as e:
+                logger.warning(f"Vector search failed: {e}")
+
+        # Fallback to traditional with stricter threshold
+        match, score, method = self.match_college_enhanced(college_name, state, course_type, address, course_name)
+
+        # If using fuzzy fallback, apply stricter validation to avoid bad matches
+        if match and 'fuzzy' in method.lower():
+            # Additional validation: check token overlap to avoid completely wrong matches
+            # Example: "SDU MEDICAL COLLEGE" should NOT match "MYSORE MEDICAL COLLEGE"
+            # Even though both have "MEDICAL COLLEGE", "SDU" != "MYSORE"
+
+            query_tokens = set(college_name_normalized.split())
+            match_tokens = set(self.normalize_text(match['name']).split())
+
+            # Calculate token overlap (Jaccard similarity)
+            common_tokens = query_tokens & match_tokens
+            all_tokens = query_tokens | match_tokens
+            token_overlap = len(common_tokens) / len(all_tokens) if all_tokens else 0
+
+            # Require at least 40% token overlap OR 85% fuzzy score
+            if token_overlap < 0.4 and score < 0.85:
+                # Only log if verbose_overlap is enabled
+                if self.config.get('logging', {}).get('verbose_overlap', False):
+                    logger.warning(f"Rejecting fuzzy match - insufficient overlap: {college_name_normalized} -> {match['name']}")
+                    logger.warning(f"  Score: {score:.2%}, Token overlap: {token_overlap:.2%}, Original: {college_name}")
+                    logger.warning(f"  Query tokens: {query_tokens}")
+                    logger.warning(f"  Match tokens: {match_tokens}")
+                    logger.warning(f"  Common: {common_tokens}")
+                else:
+                    # Concise logging
+                    logger.debug(f"Rejected: {college_name_normalized} -> {match['name']} (overlap: {token_overlap:.1%}, score: {score:.1%})")
+                return None, 0.0, "rejected_insufficient_overlap"
+
+            # Reject low-confidence fuzzy matches
+            if score < 0.85:
+                # Only log if verbose_matching is enabled
+                if self.config.get('logging', {}).get('verbose_matching', False):
+                    logger.warning(f"Rejecting low-confidence fuzzy match: {college_name_normalized} -> {match['name']} ({score:.2%})")
+                    logger.warning(f"  Original: {college_name}")
+                else:
+                    # Concise logging
+                    logger.debug(f"Rejected: {college_name} (score: {score:.1%})")
+                return None, 0.0, "rejected_low_confidence_fuzzy"
+
+        return match, score, method
 
     def build_vector_index_for_colleges(self, force_rebuild=False):
         """Build vector search index for faster AI matching"""
@@ -23029,71 +24064,6 @@ class EnsembleMatcher:
         ensemble_results.sort(key=lambda x: x['score'], reverse=True)
 
         return ensemble_results
-
-    # ==================== INTEGRATED CASCADING MATCHER WRAPPER METHODS ====================
-    # These methods provide the primary interface to the new cascading hierarchical matcher
-
-    def match_college_cascading(
-        self,
-        college_name: str,
-        state: str,
-        course_name: str,
-        address: str = None
-    ) -> Optional[Dict]:
-        """
-        Match college using integrated cascading hierarchical ensemble matcher
-
-        This is the PRIMARY matching method with the improved 3-stage cascading approach:
-        - Stage 1: Pure hierarchical matching (97.80% baseline)
-        - Stage 2: Hierarchical + RapidFuzz fallback
-        - Stage 3: Hierarchical + Full Ensemble fallback (Transformers, TF-IDF)
-
-        Parameters:
-        -----------
-        college_name: str - College name from seat data
-        state: str - State/UT (normalized)
-        course_name: str - Course name (used for stream detection and type classification)
-        address: str - Address for validation
-
-        Returns:
-        --------
-        Dict with college_id, college_name, address, state
-        or None if no match found
-        """
-        # Cascading matcher for individual records would be inefficient
-        # Use match_and_link_database_driven() for batch processing instead
-        return None
-
-    def match_all_records_cascading(self, table_name: str = 'seat_data') -> Dict:
-        """
-        Match all records using integrated cascading hierarchical matcher
-
-        This batch processing method uses the cascading 3-stage approach on all records:
-        - Efficiently handles course classification (medical/dental/dnb/diploma/unknown)
-        - Stream routing (medical/dental/dnb college tables)
-        - DNB/overlapping course detection
-        - Fallback logic (medicine→dnb for overlapping, dnb-only for specific courses)
-
-        Parameters:
-        -----------
-        table_name: str - Seat data table name (default: 'seat_data')
-
-        Returns:
-        --------
-        Dict with 'matched', 'unmatched', 'accuracy', 'false_matches'
-        """
-        try:
-            # Use cascading matcher as primary path
-            return self.match_cascading_hierarchical(table_name, use_modern_ux=True)
-        except Exception as e:
-            logger.error(f"Error in cascading batch match: {e}")
-            return {
-                'total': 0,
-                'matched': 0,
-                'unmatched': 0,
-                'accuracy': 0.0,
-                'false_matches': 0
-            }
 
 # ============================================================================
 # END OF NEW ADVANCED FEATURES
