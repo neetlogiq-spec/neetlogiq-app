@@ -8242,11 +8242,19 @@ class AdvancedSQLiteMatcher:
         )
 
         if not candidates:
-            # Fallback: Try without state filtering
+            # Fallback: Try all states but will validate state in PASS3
+            # CRITICAL: Must pass state parameter explicitly for later validation
             candidates = self.get_college_pool(
+                state=state,  # CRITICAL FIX: Keep state parameter for validation
                 course_type=course_type,
                 course_name=course_name
             )
+            # If still empty, try without state as last resort
+            if not candidates:
+                candidates = self.get_college_pool(
+                    course_type=course_type,
+                    course_name=course_name
+                )
 
         if not candidates:
             return None, 0.0, "invalid_course_type"
@@ -13803,12 +13811,21 @@ class AdvancedSQLiteMatcher:
                                 logger.debug(f"❌ REJECTED {match['candidate']['id']}: EXACT MATCH (specific name) but address mismatch (addr={addr_score:.2f} < {min_address_score:.2f}) - DIFFERENT college")
                                 continue
                     
+                    # ===== CRITICAL STATE VALIDATION FILTER =====
+                    # REJECT any match with state_score < 0.7 (wrong state)
+                    # This prevents false matches to colleges in different states
+                    # Example: Seat from KARNATAKA should NOT match college from MAHARASHTRA
+                    if state_score < 0.7 and state_score > 0:
+                        # Non-zero state_score means we tried to match state but failed
+                        logger.debug(f"❌ REJECTED {match['candidate']['id']}: WRONG STATE (state_score={state_score:.2f} < 0.7)")
+                        continue
+
                     # Rule 1: High ensemble score (>0.75) - accept regardless of individual scores
                     if ensemble_score >= 0.75:
                         filtered_matches.append(match)
                         logger.debug(f"✅ ACCEPTED {match['candidate']['id']}: High ensemble score {ensemble_score:.2f}")
                         continue
-                    
+
                     # Rule 2: Good name + good state + good address overlap
                     # Example: 90% name + 100% state + 60% address = strong match
                     if name_score >= 0.85 and state_score >= 0.9 and addr_score >= 0.6:
@@ -13816,29 +13833,32 @@ class AdvancedSQLiteMatcher:
                         logger.debug(f"✅ ACCEPTED {match['candidate']['id']}: Strong name+state+address (name={name_score:.2f}, state={state_score:.2f}, addr={addr_score:.2f})")
                         continue
                     
-                    # Rule 3: High word overlap + good name (handles complex names)
+                    # Rule 3: High word overlap + good name + acceptable state
                     # Example: "DR R N COOPER..." with many overlapping words
-                    if overlap_score >= 0.5 and name_score >= 0.75:
+                    # CRITICAL: Now requires acceptable state (state_score >= 0.5 if state info available)
+                    if overlap_score >= 0.5 and name_score >= 0.75 and (state_score >= 0.5 or state_score == 0):
                         filtered_matches.append(match)
-                        logger.debug(f"✅ ACCEPTED {match['candidate']['id']}: High word overlap (overlap={overlap_score:.2f}, name={name_score:.2f})")
+                        logger.debug(f"✅ ACCEPTED {match['candidate']['id']}: High word overlap (overlap={overlap_score:.2f}, name={name_score:.2f}, state={state_score:.2f})")
                         continue
-                    
+
                     # Rule 4: Perfect state match + good name + good address
                     # Example: Specific names with matching location
                     if state_score == 1.0 and name_score >= 0.8 and addr_score >= 0.5:
                         filtered_matches.append(match)
                         logger.debug(f"✅ ACCEPTED {match['candidate']['id']}: Perfect state + good name + address (name={name_score:.2f}, addr={addr_score:.2f})")
                         continue
-                    
-                    # Rule 5: Very high name score (>0.95) + any address match
+
+                    # Rule 5: Very high name score (>0.95) + any address match + acceptable state
                     # This handles cases where name is almost perfect but address might be slightly different
-                    if name_score >= 0.95 and addr_score >= min_address_score:
+                    # CRITICAL: Now requires acceptable state (state_score >= 0.5 if state info available)
+                    if name_score >= 0.95 and addr_score >= min_address_score and (state_score >= 0.5 or state_score == 0):
                         filtered_matches.append(match)
-                        logger.debug(f"✅ ACCEPTED {match['candidate']['id']}: Very high name score (name={name_score:.2f}, addr={addr_score:.2f})")
+                        logger.debug(f"✅ ACCEPTED {match['candidate']['id']}: Very high name score (name={name_score:.2f}, addr={addr_score:.2f}, state={state_score:.2f})")
                         continue
-                    
+
                     # Rule 6: Traditional threshold (for backward compatibility)
-                    if addr_score >= min_address_score:
+                    # CRITICAL: Now requires acceptable state (state_score >= 0.5 if state info available)
+                    if addr_score >= min_address_score and (state_score >= 0.5 or state_score == 0):
                         filtered_matches.append(match)
                         logger.debug(f"✅ ACCEPTED {match['candidate']['id']}: Address score {addr_score:.2f} >= {min_address_score:.2f}")
                         continue
