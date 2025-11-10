@@ -14275,20 +14275,29 @@ class AdvancedSQLiteMatcher:
                                          (results_df['master_college_id'] == '')]
 
                 if len(matched_df) > 0:
-                    # FIXED: Group by (college_id + state + course_id) to avoid dropping valid different-course matches
-                    # CRITICAL: Must include course_id because the same college in same state can offer multiple courses
-                    groupby_cols = ['master_college_id', 'state']
-                    if 'master_course_id' in matched_df.columns:
-                        groupby_cols.append('master_course_id')
+                    # CRITICAL FIX: Group by SEAT RECORD ID ('id'), not by (college_id, state, course_id)
+                    #
+                    # REASON: We want to deduplicate WITHIN each seat record (which might match to
+                    # multiple colleges/courses), NOT across seat records.
+                    #
+                    # WRONG APPROACH (was doing this):
+                    #   - Group all seat records by (college_id, state, course_id)
+                    #   - If 2 different seat records match same college/course, drop one
+                    #   - Result: Legitimate seat records get deleted!
+                    #
+                    # CORRECT APPROACH (now doing this):
+                    #   - Group by seat record ID ('id')
+                    #   - If 1 seat record has multiple matches, keep best, drop rest
+                    #   - Result: Each seat record has exactly 1 match (the best one)
 
-                    grouped = matched_df.groupby(groupby_cols)
+                    grouped = matched_df.groupby('id')
                     duplicates_count = 0
                     rows_to_drop = []
 
-                    for group_key, group in grouped:
+                    for record_id, group in grouped:
                         if len(group) > 1:
-                            # Multiple matches for same college in same state - FALSE MATCHES!
-                            # Keep the one with highest score, drop others
+                            # One seat record matched to multiple colleges/courses - FALSE MATCHES!
+                            # Keep the match with highest college score, drop others
                             score_col = 'college_match_score' if 'college_match_score' in group.columns else 'score'
                             if score_col in group.columns:
                                 best_idx = group[score_col].idxmax()
@@ -14297,18 +14306,21 @@ class AdvancedSQLiteMatcher:
                                 duplicates_count += len(worst_indices)
 
                                 # Log the deduplication action
-                                best_score = group.loc[best_idx, score_col]
-                                # group_key can be (college_id, state) or (college_id, state, course_id)
-                                if isinstance(group_key, tuple):
-                                    college_id = group_key[0]
-                                    state = group_key[1]
-                                    course_info = f", course={group_key[2]}" if len(group_key) > 2 else ""
-                                else:
-                                    college_id = group_key
-                                    state = ""
-                                    course_info = ""
-                                logger.warning(f"🔄 DEDUPLICATION: college_id={college_id} in state={state}{course_info}")
-                                logger.warning(f"   Found {len(group)} matches, keeping best (score={best_score:.2f}), dropping {len(worst_indices)} false matches")
+                                best_match = group.loc[best_idx]
+                                worst_matches = group.loc[worst_indices]
+                                best_score = best_match[score_col]
+                                best_college = best_match.get('master_college_id', '?')
+                                best_state = best_match.get('state', '?')
+
+                                logger.debug(f"🔄 DEDUPLICATION: Seat record id={record_id}")
+                                logger.debug(f"   Had {len(group)} matches, keeping best:")
+                                logger.debug(f"     ✅ Best: college={best_college}, state={best_state}, score={best_score:.2f}")
+                                for idx in worst_indices:
+                                    dropped = group.loc[idx]
+                                    dropped_college = dropped.get('master_college_id', '?')
+                                    dropped_state = dropped.get('state', '?')
+                                    dropped_score = dropped[score_col]
+                                    logger.debug(f"     ❌ Dropped: college={dropped_college}, state={dropped_state}, score={dropped_score:.2f}")
 
                     if duplicates_count > 0:
                         console.print(f"[yellow]⚠️  DEDUPLICATION: Removing {duplicates_count} false matches (same college_id matched to different addresses)[/yellow]")
@@ -14453,16 +14465,13 @@ class AdvancedSQLiteMatcher:
                                                  (results_df['master_college_id'] == '')]
 
                         if len(matched_df) > 0:
-                            # FIXED: Include master_course_id in grouping to avoid dropping valid different-course matches
-                            groupby_cols = ['master_college_id', 'state']
-                            if 'master_course_id' in matched_df.columns:
-                                groupby_cols.append('master_course_id')
-
-                            grouped = matched_df.groupby(groupby_cols)
+                            # CRITICAL FIX: Group by SEAT RECORD ID ('id'), not by (college_id, state, course_id)
+                            # Same logic as PASS 1 deduplication
+                            grouped = matched_df.groupby('id')
                             duplicates_count = 0
                             rows_to_drop = []
 
-                            for group_key, group in grouped:
+                            for record_id, group in grouped:
                                 if len(group) > 1:
                                     score_col = 'college_match_score' if 'college_match_score' in group.columns else 'score'
                                     if score_col in group.columns:
