@@ -256,3 +256,4 @@ psql -U kashyapanand -d seat_data -c "COPY seat_data TO STDOUT WITH CSV HEADER;"
 psql -U kashyapanand -d seat_data -c "COPY seat_data FROM STDIN WITH CSV HEADER;" < seat_data.csv
 ```
 
+

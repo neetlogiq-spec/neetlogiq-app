@@ -27,7 +27,10 @@ from datetime import datetime
 import traceback
 import yaml
 import os
+import multiprocessing as mp
+from tqdm import tqdm
 from rapidfuzz import fuzz, process
+from typing import Optional, List, Dict
 
 # Try to import transformer models for Stage 3
 try:
@@ -37,21 +40,19 @@ except ImportError:
     TRANSFORMER_AVAILABLE = False
     logger.warning("sentence-transformers not available - Stage 3 will be disabled")
 
-logging.basicConfig(level=logging.WARNING, format='%(message)s')  # Changed from INFO to WARNING
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
 
 class CascadingHierarchicalEnsembleMatcher:
     """Implements clean 3-stage cascading hierarchical matching with config-aware DIPLOMA handling"""
 
-    def __init__(self, seat_db_path='data/sqlite/seat_data.db', master_db_path='data/sqlite/master_data.db', config_path='config.yaml', verbose=False):
+    def __init__(self, seat_db_path='data/sqlite/seat_data.db', master_db_path='data/sqlite/master_data.db', config_path='config.yaml'):
         self.seat_db_path = seat_db_path
         self.master_db_path = master_db_path
         self.config = self._load_config(config_path)
         self.diploma_dnb_only = set(self.config.get('diploma_courses', {}).get('dnb_only', []))
         self.diploma_overlapping = set(self.config.get('diploma_courses', {}).get('overlapping', []))
-        # Verbose mode: False = clean progress bars, True = detailed logging
-        self.verbose = verbose or self.config.get('logging', {}).get('verbose_matching', False)
 
     def _load_config(self, config_path):
         """Load configuration from YAML file"""
@@ -94,6 +95,39 @@ class CascadingHierarchicalEnsembleMatcher:
         )
         """
 
+    def optimize_batch_size(self, total_records: int, cpu_count: Optional[int] = None) -> int:
+        """
+        Dynamically calculate optimal batch size based on dataset size and CPU count.
+
+        Args:
+            total_records: Total number of records to process
+            cpu_count: Number of CPUs (auto-detected if None)
+
+        Returns:
+            Optimal batch size for processing
+
+        Strategy:
+            - Small datasets (<1000): Process in single batch
+            - Medium datasets (1000-100K): 1000-10000 per batch
+            - Large datasets (>100K): 50000 per batch
+        """
+        if cpu_count is None:
+            cpu_count = mp.cpu_count()
+
+        if total_records < 1000:
+            # Small dataset: single batch
+            return total_records
+        elif total_records < 100000:
+            # Medium dataset: optimize for parallelism
+            batch_size = min(10000, max(1000, total_records // cpu_count))
+            logger.info(f"  ℹ️  Optimized batch size: {batch_size:,} (for {total_records:,} records on {cpu_count} CPUs)")
+            return batch_size
+        else:
+            # Large dataset: larger batches to reduce overhead
+            batch_size = 50000
+            logger.info(f"  ℹ️  Using large batch size: {batch_size:,} (for {total_records:,} records)")
+            return batch_size
+
     def match_all_records_cascading(self, table_name='seat_data'):
         """Run the complete 3-stage cascading pipeline
 
@@ -103,28 +137,12 @@ class CascadingHierarchicalEnsembleMatcher:
 
         The matcher automatically detects the data type and preserves all fields.
         """
-        from rich.console import Console
-        from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
-        from rich.panel import Panel
-        from rich.table import Table as RichTable
 
-        console = Console()
-
-        # Show header only in verbose mode
-        if self.verbose:
-            print("\n" + "="*100)
-            print("🎯 CASCADING HIERARCHICAL ENSEMBLE MATCHER")
-            print(f"   TABLE: {table_name} | PRIMARY MATCHING SYSTEM")
-            print("="*100)
-            print()
-        else:
-            # Clean modern header
-            console.print()
-            console.print(Panel.fit(
-                "[bold cyan]🎯 Cascading Hierarchical Matcher[/bold cyan]\n"
-                f"[dim]Processing {table_name}[/dim]",
-                border_style="cyan"
-            ))
+        print("\n" + "="*100)
+        print("🎯 CASCADING HIERARCHICAL ENSEMBLE MATCHER")
+        print(f"   TABLE: {table_name} | PRIMARY MATCHING SYSTEM")
+        print("="*100)
+        print()
 
         results = {
             'total': 0,
@@ -148,101 +166,46 @@ class CascadingHierarchicalEnsembleMatcher:
         conn.close()
 
         try:
-            # Create progress bar for clean UX
-            with Progress(
-                SpinnerColumn(),
-                TextColumn("[progress.description]{task.description}"),
-                BarColumn(),
-                TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-                TextColumn("•"),
-                TextColumn("[cyan]{task.fields[status]}"),
-                TimeElapsedColumn(),
-                console=console,
-                transient=False
-            ) as progress:
+            # ===== STAGE 1: Pure Hierarchical =====
+            print("STAGE 1: Pure Hierarchical Matching")
+            print("-" * 100)
+            self._run_stage_1(table_name, 'none')
+            results['stage1']['matched'] = self._count_matched(table_name)
+            results['stage1']['percentage'] = (results['stage1']['matched'] / results['total']) * 100
 
-                # ===== STAGE 1: Pure Hierarchical =====
-                task1 = progress.add_task(
-                    "[cyan]Stage 1: Pure Hierarchical",
-                    total=100,
-                    status="Starting..."
-                )
+            print(f"  ✓ Matched: {results['stage1']['matched']:,} ({results['stage1']['percentage']:.2f}%)")
+            print()
 
-                if self.verbose:
-                    print("STAGE 1: Pure Hierarchical Matching")
-                    print("-" * 100)
+            # ===== STAGE 2: Hierarchical + RapidFuzz =====
+            print("STAGE 2: Hierarchical + RapidFuzz Fallback")
+            print("-" * 100)
+            unmatched_stage1 = results['total'] - results['stage1']['matched']
+            self._run_stage_2(table_name, 'rapidfuzz')
+            results['stage2']['matched'] = self._count_matched(table_name)
+            stage2_additional = results['stage2']['matched'] - results['stage1']['matched']
+            results['stage2']['percentage'] = (results['stage2']['matched'] / results['total']) * 100
 
-                self._run_stage_1(table_name, 'none')
-                results['stage1']['matched'] = self._count_matched(table_name)
-                results['stage1']['percentage'] = (results['stage1']['matched'] / results['total']) * 100
+            print(f"  ✓ Additional Matched: {stage2_additional:,}")
+            print(f"  ✓ Total Matched: {results['stage2']['matched']:,} ({results['stage2']['percentage']:.2f}%)")
+            print()
 
-                progress.update(task1, completed=100, status=f"✓ {results['stage1']['matched']:,} matched ({results['stage1']['percentage']:.1f}%)")
+            # ===== STAGE 3: Hierarchical + Full Ensemble =====
+            print("STAGE 3: Hierarchical + Full Ensemble Fallback")
+            print("-" * 100)
+            unmatched_stage2 = results['total'] - results['stage2']['matched']
+            self._run_stage_3(table_name, 'ensemble')
+            results['stage3']['matched'] = self._count_matched(table_name)
+            stage3_additional = results['stage3']['matched'] - results['stage2']['matched']
+            results['stage3']['percentage'] = (results['stage3']['matched'] / results['total']) * 100
 
-                if self.verbose:
-                    print(f"  ✓ Matched: {results['stage1']['matched']:,} ({results['stage1']['percentage']:.2f}%)")
-                    print()
+            print(f"  ✓ Additional Matched: {stage3_additional:,}")
+            print(f"  ✓ Total Matched: {results['stage3']['matched']:,} ({results['stage3']['percentage']:.2f}%)")
+            print()
 
-                # ===== STAGE 2: Hierarchical + RapidFuzz =====
-                unmatched_stage1 = results['total'] - results['stage1']['matched']
-                task2 = progress.add_task(
-                    "[yellow]Stage 2: + RapidFuzz",
-                    total=100,
-                    status=f"Processing {unmatched_stage1:,} unmatched..."
-                )
-
-                if self.verbose:
-                    print("STAGE 2: Hierarchical + RapidFuzz Fallback")
-                    print("-" * 100)
-
-                self._run_stage_2(table_name, 'rapidfuzz')
-                results['stage2']['matched'] = self._count_matched(table_name)
-                stage2_additional = results['stage2']['matched'] - results['stage1']['matched']
-                results['stage2']['percentage'] = (results['stage2']['matched'] / results['total']) * 100
-
-                progress.update(task2, completed=100, status=f"✓ +{stage2_additional:,} matched")
-
-                if self.verbose:
-                    print(f"  ✓ Additional Matched: {stage2_additional:,}")
-                    print(f"  ✓ Total Matched: {results['stage2']['matched']:,} ({results['stage2']['percentage']:.2f}%)")
-                    print()
-
-                # ===== STAGE 3: Hierarchical + Full Ensemble =====
-                unmatched_stage2 = results['total'] - results['stage2']['matched']
-                task3 = progress.add_task(
-                    "[magenta]Stage 3: + Transformers",
-                    total=100,
-                    status=f"Processing {unmatched_stage2:,} unmatched..."
-                )
-
-                if self.verbose:
-                    print("STAGE 3: Hierarchical + Full Ensemble Fallback")
-                    print("-" * 100)
-
-                self._run_stage_3(table_name, 'ensemble')
-                results['stage3']['matched'] = self._count_matched(table_name)
-                stage3_additional = results['stage3']['matched'] - results['stage2']['matched']
-                results['stage3']['percentage'] = (results['stage3']['matched'] / results['total']) * 100
-
-                progress.update(task3, completed=100, status=f"✓ +{stage3_additional:,} matched")
-
-                if self.verbose:
-                    print(f"  ✓ Additional Matched: {stage3_additional:,}")
-                    print(f"  ✓ Total Matched: {results['stage3']['matched']:,} ({results['stage3']['percentage']:.2f}%)")
-                    print()
-
-                # ===== VALIDATION =====
-                task4 = progress.add_task(
-                    "[green]Validation",
-                    total=100,
-                    status="Checking integrity..."
-                )
-
-                if self.verbose:
-                    print("VALIDATION: Data Integrity Checks")
-                    print("-" * 100)
-
-                violations = self._validate_matches(table_name)
-                progress.update(task4, completed=100, status=f"✓ {violations} violations found")
+            # ===== VALIDATION =====
+            print("VALIDATION: Data Integrity Checks")
+            print("-" * 100)
+            violations = self._validate_matches(table_name)
 
             results['final_matched'] = results['stage3']['matched']
             results['final_unmatched'] = results['total'] - results['final_matched']
@@ -253,81 +216,23 @@ class CascadingHierarchicalEnsembleMatcher:
             results['execution_time'] = (end_time - start_time).total_seconds()
 
             # ===== SUMMARY =====
-            if self.verbose:
-                print()
-                print("="*100)
-                print("📊 CASCADING HIERARCHICAL ENSEMBLE - FINAL RESULTS")
-                print("="*100)
-                print()
-                print(f"Total Records:        {results['total']:,}")
-                print()
-                print(f"Stage 1 (Pure):       {results['stage1']['matched']:,} ({results['stage1']['percentage']:.2f}%)")
-                print(f"Stage 2 (+ Fuzzy):    {results['stage2']['matched']:,} ({results['stage2']['percentage']:.2f}%) [+{stage2_additional:,}]")
-                print(f"Stage 3 (+ Ensemble): {results['stage3']['matched']:,} ({results['stage3']['percentage']:.2f}%) [+{stage3_additional:,}]")
-                print()
-                print(f"✅ Final Matched:     {results['final_matched']:,} ({results['accuracy']:.2f}%)")
-                print(f"⏳ Unmatched:         {results['final_unmatched']:,}")
-                print(f"❌ False Matches:     {results['false_matches']}")
-                print()
-                print(f"⏱️  Execution Time:    {results['execution_time']:.1f} seconds")
-                print("="*100)
-            else:
-                # Clean modern summary table
-                console.print()
-                summary_table = RichTable(title="📊 Matching Results", show_header=True, header_style="bold cyan", border_style="cyan")
-                summary_table.add_column("Stage", style="cyan", width=20)
-                summary_table.add_column("Matched", justify="right", style="green")
-                summary_table.add_column("Accuracy", justify="right", style="yellow")
-                summary_table.add_column("Additional", justify="right", style="magenta")
-
-                summary_table.add_row(
-                    "Total Records",
-                    f"{results['total']:,}",
-                    "",
-                    ""
-                )
-                summary_table.add_row("", "", "", "")  # Separator
-                summary_table.add_row(
-                    "Stage 1 (Hierarchical)",
-                    f"{results['stage1']['matched']:,}",
-                    f"{results['stage1']['percentage']:.1f}%",
-                    ""
-                )
-                summary_table.add_row(
-                    "Stage 2 (+ RapidFuzz)",
-                    f"{results['stage2']['matched']:,}",
-                    f"{results['stage2']['percentage']:.1f}%",
-                    f"+{stage2_additional:,}"
-                )
-                summary_table.add_row(
-                    "Stage 3 (+ Transformers)",
-                    f"{results['stage3']['matched']:,}",
-                    f"{results['stage3']['percentage']:.1f}%",
-                    f"+{stage3_additional:,}"
-                )
-                summary_table.add_row("", "", "", "")  # Separator
-                summary_table.add_row(
-                    "[bold green]✅ Final Matched",
-                    f"[bold green]{results['final_matched']:,}",
-                    f"[bold green]{results['accuracy']:.1f}%",
-                    ""
-                )
-                summary_table.add_row(
-                    "[bold yellow]⏳ Unmatched",
-                    f"[bold yellow]{results['final_unmatched']:,}",
-                    "",
-                    ""
-                )
-                summary_table.add_row(
-                    f"[bold {'red' if violations > 0 else 'green'}]{'❌' if violations > 0 else '✅'} Violations",
-                    f"[bold {'red' if violations > 0 else 'green'}]{violations}",
-                    "",
-                    ""
-                )
-
-                console.print(summary_table)
-                console.print(f"\n[dim]⏱️  Execution Time: {results['execution_time']:.1f}s[/dim]")
-                console.print()
+            print()
+            print("="*100)
+            print("📊 CASCADING HIERARCHICAL ENSEMBLE - FINAL RESULTS")
+            print("="*100)
+            print()
+            print(f"Total Records:        {results['total']:,}")
+            print()
+            print(f"Stage 1 (Pure):       {results['stage1']['matched']:,} ({results['stage1']['percentage']:.2f}%)")
+            print(f"Stage 2 (+ Fuzzy):    {results['stage2']['matched']:,} ({results['stage2']['percentage']:.2f}%) [+{stage2_additional:,}]")
+            print(f"Stage 3 (+ Ensemble): {results['stage3']['matched']:,} ({results['stage3']['percentage']:.2f}%) [+{stage3_additional:,}]")
+            print()
+            print(f"✅ Final Matched:     {results['final_matched']:,} ({results['accuracy']:.2f}%)")
+            print(f"⏳ Unmatched:         {results['final_unmatched']:,}")
+            print(f"❌ False Matches:     {results['false_matches']}")
+            print()
+            print(f"⏱️  Execution Time:    {results['execution_time']:.1f} seconds")
+            print("="*100)
 
             return results
 
@@ -419,15 +324,44 @@ class CascadingHierarchicalEnsembleMatcher:
             conn.close()
 
     def _run_stage_2(self, table_name, fallback_method):
-        """STAGE 2: Hierarchical + RapidFuzz - RapidFuzz fuzzy matching for college names and addresses"""
+        """STAGE 2: Hierarchical + RapidFuzz - RapidFuzz fuzzy matching with batch processing"""
         conn = sqlite3.connect(self.seat_db_path)
 
         try:
-            # First ensure states and courses are matched (they should be from Stage 1)
             cur = conn.cursor()
             cur.execute("ATTACH DATABASE ? AS mdb", (self.master_db_path,))
 
-            # Get unmatched records with matched state and course
+            # Count total unmatched records first
+            count_query = f"""
+            SELECT COUNT(*) FROM {table_name}
+            WHERE master_state_id IS NOT NULL
+              AND master_course_id IS NOT NULL
+              AND master_college_id IS NULL
+              AND normalized_college_name IS NOT NULL
+              AND normalized_address IS NOT NULL
+            """
+            cur.execute(count_query)
+            total_unmatched = cur.fetchone()[0]
+
+            if total_unmatched == 0:
+                logger.info("  ✓ No unmatched records for Stage 2")
+                return
+
+            # Calculate optimal batch size
+            batch_size = self.optimize_batch_size(total_unmatched)
+            logger.info(f"  ℹ️  Processing {total_unmatched:,} unmatched records with RapidFuzz (batch size: {batch_size:,})...")
+
+            # Get all candidate colleges with their details (including composite_college_key)
+            candidates_query = """
+            SELECT c.id, c.name, c.normalized_name, c.composite_college_key, scl.address, scl.state_id, sccl.stream, sccl.course_id
+            FROM mdb.colleges c
+            JOIN mdb.state_college_link scl ON c.id = scl.college_id
+            JOIN mdb.state_course_college_link sccl ON c.id = sccl.college_id AND scl.state_id = sccl.state_id
+            """
+            candidates = pd.read_sql(candidates_query, conn)
+            logger.info(f"  ℹ️  Loaded {len(candidates):,} candidate colleges")
+
+            matches_found = 0
             unmatched_query = f"""
             SELECT
                 id, normalized_state, normalized_college_name, normalized_address,
@@ -438,85 +372,92 @@ class CascadingHierarchicalEnsembleMatcher:
               AND master_college_id IS NULL
               AND normalized_college_name IS NOT NULL
               AND normalized_address IS NOT NULL
+            ORDER BY id
             """
-            unmatched_records = pd.read_sql(unmatched_query, conn)
+            cur.execute(unmatched_query)
 
-            if len(unmatched_records) == 0:
-                logger.info("  ✓ No unmatched records for Stage 2")
-                return
+            # Process records in batches with progress tracking
+            with tqdm(total=total_unmatched, desc="  Stage 2 RapidFuzz", ncols=80) as pbar:
+                while True:
+                    batch_rows = cur.fetchmany(batch_size)
+                    if not batch_rows:
+                        break
 
-            logger.info(f"  ℹ️  Processing {len(unmatched_records):,} unmatched records with RapidFuzz...")
+                    # Convert rows to dicts
+                    batch = []
+                    for row in batch_rows:
+                        batch.append({
+                            'id': row[0],
+                            'normalized_state': row[1],
+                            'normalized_college_name': row[2],
+                            'normalized_address': row[3],
+                            'normalized_course_name': row[4],
+                            'course_type': row[5],
+                            'master_state_id': row[6],
+                            'master_course_id': row[7]
+                        })
 
-            # Get all candidate colleges with their details (including composite_college_key)
-            candidates_query = """
-            SELECT c.id, c.name, c.normalized_name, c.composite_college_key, scl.address, scl.state_id, sccl.stream, sccl.course_id
-            FROM mdb.colleges c
-            JOIN mdb.state_college_link scl ON c.id = scl.college_id
-            JOIN mdb.state_course_college_link sccl ON c.id = sccl.college_id AND scl.state_id = sccl.state_id
-            """
-            candidates = pd.read_sql(candidates_query, conn)
+                    # Process batch
+                    batch_matches = 0
+                    for record in batch:
+                        state_id = record['master_state_id']
+                        course_id = record['master_course_id']
+                        college_name = record['normalized_college_name']
+                        address = record['normalized_address']
+                        course_type = record['course_type']
 
-            matches_found = 0
+                        # Filter candidates by state and course
+                        state_candidates = candidates[
+                            (candidates['state_id'] == state_id) &
+                            (candidates['course_id'] == course_id)
+                        ]
 
-            # Process each unmatched record
-            for idx, record in unmatched_records.iterrows():
-                state_id = record['master_state_id']
-                course_id = record['master_course_id']
-                college_name = record['normalized_college_name']
-                address = record['normalized_address']
-                course_type = record['course_type']
+                        if len(state_candidates) == 0:
+                            continue
 
-                # Filter candidates by state and course
-                state_candidates = candidates[
-                    (candidates['state_id'] == state_id) &
-                    (candidates['course_id'] == course_id)
-                ]
+                        # Filter by stream compatibility
+                        stream_filter = self._get_stream_filter_for_course_type(course_type)
+                        state_candidates = state_candidates[state_candidates['stream'].isin(stream_filter)]
 
-                if len(state_candidates) == 0:
-                    continue
+                        if len(state_candidates) == 0:
+                            continue
 
-                # Filter by stream compatibility
-                stream_filter = self._get_stream_filter_for_course_type(course_type)
-                state_candidates = state_candidates[state_candidates['stream'].isin(stream_filter)]
+                        # Try RapidFuzz matching on college names (80%+ threshold)
+                        best_match = None
+                        best_score = 0
 
-                if len(state_candidates) == 0:
-                    continue
+                        for _, candidate in state_candidates.iterrows():
+                            # Extract name portion from composite_college_key (before first comma)
+                            composite_key = candidate.get('composite_college_key', '')
+                            candidate_name = composite_key.split(',')[0] if composite_key else candidate['normalized_name']
 
-                # Try RapidFuzz matching on college names (80%+ threshold)
-                best_match = None
-                best_score = 0
+                            # Fuzzy match college name
+                            name_score = fuzz.token_set_ratio(college_name, candidate_name) / 100.0
 
-                for _, candidate in state_candidates.iterrows():
-                    # Extract name portion from composite_college_key (before first comma)
-                    # This ensures we match against distinct colleges even with same name
-                    composite_key = candidate.get('composite_college_key', '')
-                    candidate_name = composite_key.split(',')[0] if composite_key else candidate['normalized_name']
+                            if name_score >= 0.80:  # 80% threshold for college name
+                                # Also check address similarity (75%+ threshold)
+                                addr_score = fuzz.token_set_ratio(address, candidate['address'] or '') / 100.0
 
-                    # Fuzzy match college name
-                    name_score = fuzz.token_set_ratio(college_name, candidate_name) / 100.0
+                                if addr_score >= 0.75:  # 75% threshold for address
+                                    combined_score = (name_score * 0.6) + (addr_score * 0.4)
 
-                    if name_score >= 0.80:  # 80% threshold for college name
-                        # Also check address similarity (75%+ threshold)
-                        addr_score = fuzz.token_set_ratio(address, candidate['address'] or '') / 100.0
+                                    if combined_score > best_score:
+                                        best_score = combined_score
+                                        best_match = candidate['id']
 
-                        if addr_score >= 0.75:  # 75% threshold for address
-                            combined_score = (name_score * 0.6) + (addr_score * 0.4)  # 60% name, 40% address
+                        # Update if match found
+                        if best_match:
+                            cur.execute(f"""
+                            UPDATE {table_name}
+                            SET master_college_id = ?
+                            WHERE id = ?
+                            """, (best_match, record['id']))
+                            batch_matches += 1
 
-                            if combined_score > best_score:
-                                best_score = combined_score
-                                best_match = candidate['id']
+                    conn.commit()
+                    matches_found += batch_matches
+                    pbar.update(len(batch))
 
-                # Update if match found
-                if best_match:
-                    cur = conn.cursor()
-                    cur.execute(f"""
-                    UPDATE {table_name}
-                    SET master_college_id = ?
-                    WHERE id = ?
-                    """, (best_match, record['id']))
-                    matches_found += 1
-
-            conn.commit()
             logger.info(f"  ✓ Stage 2 RapidFuzz: {matches_found:,} additional matches")
 
         except Exception as e:
@@ -543,7 +484,7 @@ class CascadingHierarchicalEnsembleMatcher:
             return ['MEDICAL']
 
     def _run_stage_3(self, table_name, fallback_method):
-        """STAGE 3: Hierarchical + Transformer Embeddings - Semantic similarity matching"""
+        """STAGE 3: Hierarchical + Transformer Embeddings with batch processing"""
         if not TRANSFORMER_AVAILABLE:
             logger.warning("  ⚠️  sentence-transformers not available - Stage 3 skipped")
             return
@@ -554,25 +495,25 @@ class CascadingHierarchicalEnsembleMatcher:
             cur = conn.cursor()
             cur.execute("ATTACH DATABASE ? AS mdb", (self.master_db_path,))
 
-            # Get unmatched records with matched state and course
-            unmatched_query = f"""
-            SELECT
-                id, normalized_state, normalized_college_name, normalized_address,
-                normalized_course_name, course_type, master_state_id, master_course_id
-            FROM {table_name}
+            # Count total unmatched records first
+            count_query = f"""
+            SELECT COUNT(*) FROM {table_name}
             WHERE master_state_id IS NOT NULL
               AND master_course_id IS NOT NULL
               AND master_college_id IS NULL
               AND normalized_college_name IS NOT NULL
               AND normalized_address IS NOT NULL
             """
-            unmatched_records = pd.read_sql(unmatched_query, conn)
+            cur.execute(count_query)
+            total_unmatched = cur.fetchone()[0]
 
-            if len(unmatched_records) == 0:
+            if total_unmatched == 0:
                 logger.info("  ✓ No unmatched records for Stage 3")
                 return
 
-            logger.info(f"  ℹ️  Processing {len(unmatched_records):,} unmatched records with Transformers...")
+            # Calculate optimal batch size
+            batch_size = self.optimize_batch_size(total_unmatched)
+            logger.info(f"  ℹ️  Processing {total_unmatched:,} unmatched records with Transformers (batch size: {batch_size:,})...")
 
             # Initialize transformer model (lightweight model for speed)
             try:
@@ -589,83 +530,120 @@ class CascadingHierarchicalEnsembleMatcher:
             JOIN mdb.state_course_college_link sccl ON c.id = sccl.college_id AND scl.state_id = sccl.state_id
             """
             candidates = pd.read_sql(candidates_query, conn)
+            logger.info(f"  ℹ️  Loaded {len(candidates):,} candidate colleges")
 
             matches_found = 0
+            unmatched_query = f"""
+            SELECT
+                id, normalized_state, normalized_college_name, normalized_address,
+                normalized_course_name, course_type, master_state_id, master_course_id
+            FROM {table_name}
+            WHERE master_state_id IS NOT NULL
+              AND master_course_id IS NOT NULL
+              AND master_college_id IS NULL
+              AND normalized_college_name IS NOT NULL
+              AND normalized_address IS NOT NULL
+            ORDER BY id
+            """
+            cur.execute(unmatched_query)
 
-            # Process each unmatched record
-            for idx, record in unmatched_records.iterrows():
-                state_id = record['master_state_id']
-                course_id = record['master_course_id']
-                college_name = record['normalized_college_name']
-                address = record['normalized_address']
-                course_type = record['course_type']
+            # Process records in batches with progress tracking
+            with tqdm(total=total_unmatched, desc="  Stage 3 Transformers", ncols=80) as pbar:
+                while True:
+                    batch_rows = cur.fetchmany(batch_size)
+                    if not batch_rows:
+                        break
 
-                # Filter candidates by state and course
-                state_candidates = candidates[
-                    (candidates['state_id'] == state_id) &
-                    (candidates['course_id'] == course_id)
-                ]
+                    # Convert rows to dicts
+                    batch = []
+                    for row in batch_rows:
+                        batch.append({
+                            'id': row[0],
+                            'normalized_state': row[1],
+                            'normalized_college_name': row[2],
+                            'normalized_address': row[3],
+                            'normalized_course_name': row[4],
+                            'course_type': row[5],
+                            'master_state_id': row[6],
+                            'master_course_id': row[7]
+                        })
 
-                if len(state_candidates) == 0:
-                    continue
+                    # Process batch
+                    batch_matches = 0
+                    for record in batch:
+                        state_id = record['master_state_id']
+                        course_id = record['master_course_id']
+                        college_name = record['normalized_college_name']
+                        address = record['normalized_address']
+                        course_type = record['course_type']
 
-                # Filter by stream compatibility
-                stream_filter = self._get_stream_filter_for_course_type(course_type)
-                state_candidates = state_candidates[state_candidates['stream'].isin(stream_filter)]
+                        # Filter candidates by state and course
+                        state_candidates = candidates[
+                            (candidates['state_id'] == state_id) &
+                            (candidates['course_id'] == course_id)
+                        ]
 
-                if len(state_candidates) == 0:
-                    continue
+                        if len(state_candidates) == 0:
+                            continue
 
-                # Compute embeddings for the input record
-                input_text = f"{college_name} {address}"
-                input_embedding = model.encode(input_text, convert_to_tensor=True)
+                        # Filter by stream compatibility
+                        stream_filter = self._get_stream_filter_for_course_type(course_type)
+                        state_candidates = state_candidates[state_candidates['stream'].isin(stream_filter)]
 
-                best_match = None
-                best_score = 0
+                        if len(state_candidates) == 0:
+                            continue
 
-                # Compare with candidate embeddings
-                for _, candidate in state_candidates.iterrows():
-                    # Extract name portion from composite_college_key (before first comma)
-                    # This ensures we match against distinct colleges even with same name
-                    composite_key = candidate.get('composite_college_key', '')
-                    candidate_name = composite_key.split(',')[0] if composite_key else candidate['normalized_name']
+                        # Compute embeddings for the input record
+                        input_text = f"{college_name} {address}"
+                        input_embedding = model.encode(input_text, convert_to_tensor=True)
 
-                    candidate_text = f"{candidate_name} {candidate['address'] or ''}"
-                    candidate_embedding = model.encode(candidate_text, convert_to_tensor=True)
+                        best_match = None
+                        best_score = 0
 
-                    # Compute cosine similarity
-                    similarity = util.cos_sim(input_embedding, candidate_embedding).item()
+                        # Compare with candidate embeddings
+                        for _, candidate in state_candidates.iterrows():
+                            # Extract name portion from composite_college_key (before first comma)
+                            composite_key = candidate.get('composite_college_key', '')
+                            candidate_name = composite_key.split(',')[0] if composite_key else candidate['normalized_name']
 
-                    # Name matching threshold: 70%
-                    name_similarity = util.cos_sim(
-                        model.encode(college_name, convert_to_tensor=True),
-                        model.encode(candidate_name, convert_to_tensor=True)
-                    ).item()
+                            candidate_text = f"{candidate_name} {candidate['address'] or ''}"
+                            candidate_embedding = model.encode(candidate_text, convert_to_tensor=True)
 
-                    # Address matching threshold: 60%
-                    addr_similarity = util.cos_sim(
-                        model.encode(address, convert_to_tensor=True),
-                        model.encode(candidate['address'] or '', convert_to_tensor=True)
-                    ).item()
+                            # Compute cosine similarity
+                            similarity = util.cos_sim(input_embedding, candidate_embedding).item()
 
-                    if name_similarity >= 0.70 and addr_similarity >= 0.60:
-                        combined_score = (name_similarity * 0.6) + (addr_similarity * 0.4)
+                            # Name matching threshold: 70%
+                            name_similarity = util.cos_sim(
+                                model.encode(college_name, convert_to_tensor=True),
+                                model.encode(candidate_name, convert_to_tensor=True)
+                            ).item()
 
-                        if combined_score > best_score:
-                            best_score = combined_score
-                            best_match = candidate['id']
+                            # Address matching threshold: 60%
+                            addr_similarity = util.cos_sim(
+                                model.encode(address, convert_to_tensor=True),
+                                model.encode(candidate['address'] or '', convert_to_tensor=True)
+                            ).item()
 
-                # Update if match found
-                if best_match:
-                    cur = conn.cursor()
-                    cur.execute(f"""
-                    UPDATE {table_name}
-                    SET master_college_id = ?
-                    WHERE id = ?
-                    """, (best_match, record['id']))
-                    matches_found += 1
+                            if name_similarity >= 0.70 and addr_similarity >= 0.60:
+                                combined_score = (name_similarity * 0.6) + (addr_similarity * 0.4)
 
-            conn.commit()
+                                if combined_score > best_score:
+                                    best_score = combined_score
+                                    best_match = candidate['id']
+
+                        # Update if match found
+                        if best_match:
+                            cur.execute(f"""
+                            UPDATE {table_name}
+                            SET master_college_id = ?
+                            WHERE id = ?
+                            """, (best_match, record['id']))
+                            batch_matches += 1
+
+                    conn.commit()
+                    matches_found += batch_matches
+                    pbar.update(len(batch))
+
             logger.info(f"  ✓ Stage 3 Transformer: {matches_found:,} additional matches")
 
         except Exception as e:
