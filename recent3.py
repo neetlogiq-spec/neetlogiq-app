@@ -5949,6 +5949,377 @@ class AdvancedSQLiteMatcher:
 
         return result
 
+    # ========== NAMED ENTITY RECOGNITION FOR LOCATIONS ==========
+    # Extracts location entities from addresses using spaCy NER
+
+    def extract_location_entities_ner(self, address):
+        """Extract location entities from address using Named Entity Recognition
+
+        Uses spaCy NLP model to identify named entities (LOC, GPE) in address text.
+        This helps extract actual location names from messy address data.
+
+        Args:
+            address: Raw address string from seat/master data
+
+        Returns:
+            dict: {
+                'location_entities': set of extracted location names,
+                'entity_count': int,
+                'raw_entities': list of (entity_text, entity_type) tuples,
+                'has_locations': bool
+            }
+
+        Examples:
+            "AREA HOSPITAL NEAR YSR STATUE VICTORIAPET ADONI"
+            → {'location_entities': {'VICTORIAPET', 'ADONI'}, 'entity_count': 2}
+
+            "GOVERNMENT MEDICAL COLLEGE BANGALORE KARNATAKA 560001"
+            → {'location_entities': {'BANGALORE', 'KARNATAKA'}, 'entity_count': 2}
+        """
+        location_entities = set()
+        raw_entities = []
+
+        if not address or pd.isna(address):
+            return {
+                'location_entities': location_entities,
+                'entity_count': 0,
+                'raw_entities': raw_entities,
+                'has_locations': False
+            }
+
+        try:
+            # Try to use spaCy NLP pipeline if available
+            nlp_available = False
+
+            # Check if direct nlp model is available
+            if hasattr(self, 'nlp') and self.nlp is not None:
+                nlp = self.nlp
+                nlp_available = True
+            # Check if spacy can be imported
+            elif 'spacy' in globals() or self._try_import_spacy():
+                try:
+                    import spacy
+                    # Try to load the model (cache it for future use)
+                    if not hasattr(self, '_cached_nlp'):
+                        try:
+                            self._cached_nlp = spacy.load('en_core_web_sm')
+                        except OSError:
+                            logger.debug("⚠️  spaCy model 'en_core_web_sm' not installed")
+                            return {
+                                'location_entities': set(),
+                                'entity_count': 0,
+                                'raw_entities': [],
+                                'has_locations': False
+                            }
+
+                    nlp = self._cached_nlp
+                    nlp_available = True
+                except Exception as e:
+                    logger.debug(f"⚠️  Could not load spaCy: {e}")
+
+            if not nlp_available:
+                logger.debug("⚠️  NLP model not available, skipping NER")
+                return {
+                    'location_entities': set(),
+                    'entity_count': 0,
+                    'raw_entities': [],
+                    'has_locations': False
+                }
+
+            # Process address with spaCy
+            doc = nlp(str(address))
+
+            # Extract entities - focus on LOC (location) and GPE (geopolitical entities)
+            entity_types_of_interest = {'LOC', 'GPE', 'FAC'}  # Locations, geopolitical, facilities
+
+            for ent in doc.ents:
+                if ent.label_ in entity_types_of_interest:
+                    location_name = ent.text.upper().strip()
+
+                    # Filter out very short entities (1-2 chars are usually not meaningful)
+                    if len(location_name) >= 3:
+                        location_entities.add(location_name)
+                        raw_entities.append((location_name, ent.label_))
+
+        except Exception as e:
+            logger.debug(f"⚠️  NER error: {e}")
+            # Graceful fallback - return empty results
+
+        return {
+            'location_entities': location_entities,
+            'entity_count': len(location_entities),
+            'raw_entities': raw_entities,
+            'has_locations': len(location_entities) > 0
+        }
+
+    @staticmethod
+    def _try_import_spacy():
+        """Try to import spacy library"""
+        try:
+            import spacy
+            return True
+        except ImportError:
+            return False
+
+    def compare_location_entities(self, master_entities, seat_entities):
+        """Compare location entities extracted from master and seat addresses
+
+        Calculates how well location entities match between two addresses.
+
+        Args:
+            master_entities: dict from extract_location_entities_ner() (master data)
+            seat_entities: dict from extract_location_entities_ner() (seat data)
+
+        Returns:
+            dict: {
+                'master_locs': set of master location entities,
+                'seat_locs': set of seat location entities,
+                'common_entities': set of matching location entities,
+                'master_only': set of entities only in master,
+                'seat_only': set of entities only in seat,
+                'match_score': float (0.0 to 1.0),
+                'match_ratio': float (% of entities that match),
+                'has_exact_match': bool,
+                'entity_confidence_boost': float
+            }
+        """
+        master_locs = master_entities.get('location_entities', set())
+        seat_locs = seat_entities.get('location_entities', set())
+
+        common_entities = master_locs & seat_locs
+        master_only = master_locs - seat_locs
+        seat_only = seat_locs - master_locs
+
+        # Calculate match score
+        if not master_locs and not seat_locs:
+            # Neither has location entities
+            match_score = 0.5  # Neutral - could be match or not
+            match_ratio = 0.0
+        elif not master_locs or not seat_locs:
+            # Only one has location entities
+            match_score = 0.5  # Neutral
+            match_ratio = 0.0
+        else:
+            # Both have location entities
+            # Match ratio = common / total unique entities
+            total_unique = len(master_locs | seat_locs)
+            match_ratio = len(common_entities) / total_unique if total_unique > 0 else 0.0
+
+            # Match score based on match ratio and number of matches
+            if len(common_entities) >= 2:
+                # Multiple matching locations = very reliable
+                match_score = 0.9 + min(0.1, len(common_entities) * 0.05)
+            elif len(common_entities) == 1:
+                # Single matching location = good indicator
+                match_score = 0.75
+            else:
+                # No matches but both have locations = possible mismatch
+                match_score = 0.2
+
+        # Clamp to [0, 1]
+        match_score = min(1.0, max(0.0, match_score))
+
+        # Calculate confidence boost for address matching
+        if len(common_entities) >= 2:
+            entity_confidence_boost = 0.15  # Multiple matches = good boost
+        elif len(common_entities) == 1:
+            entity_confidence_boost = 0.10  # Single match = moderate boost
+        elif len(master_locs) > 0 and len(seat_locs) > 0 and not common_entities:
+            entity_confidence_boost = -0.10  # Both have entities but no match = bad signal
+        else:
+            entity_confidence_boost = 0.0  # No entities to compare
+
+        return {
+            'master_locs': master_locs,
+            'seat_locs': seat_locs,
+            'common_entities': common_entities,
+            'master_only': master_only,
+            'seat_only': seat_only,
+            'match_score': match_score,
+            'match_ratio': match_ratio,
+            'has_exact_match': len(common_entities) > 0,
+            'entity_confidence_boost': entity_confidence_boost
+        }
+
+    # ========== CONFIDENCE LEVEL SYSTEM ==========
+    # Multi-factor confidence scoring for matches
+
+    def calculate_match_confidence_level(self, match, address_score=None, pincode_validation=None,
+                                         entity_comparison=None, college_match_score=None):
+        """Calculate overall confidence level for a match using multiple factors
+
+        Combines multiple validation signals (name, address, pincode, entities, course)
+        to produce a composite confidence level.
+
+        Args:
+            match: Match dict with 'score', 'method' etc.
+            address_score: float (0-100) from address matching
+            pincode_validation: dict from get_pincode_match_boost()
+            entity_comparison: dict from compare_location_entities()
+            college_match_score: float (0-100) from fuzzy name matching
+
+        Returns:
+            dict: {
+                'confidence_level': str (VERY_HIGH, HIGH, MEDIUM, LOW, INVALID),
+                'confidence_score': float (0.0 to 1.0),
+                'breakdown': dict of contributing factors,
+                'reasoning': str explaining the confidence level,
+                'recommendation': str (ACCEPT, REVIEW, REJECT)
+            }
+        """
+        confidence_components = {}
+
+        # 1. NAME MATCH CONFIDENCE
+        name_score = college_match_score if college_match_score is not None else match.get('score', 0.0)
+        if name_score >= 0.95:
+            name_confidence = 0.30  # Exact name match
+        elif name_score >= 0.85:
+            name_confidence = 0.25  # Very good name match
+        elif name_score >= 0.70:
+            name_confidence = 0.20  # Good name match
+        elif name_score >= 0.50:
+            name_confidence = 0.10  # Partial name match
+        else:
+            name_confidence = 0.0   # Poor name match
+
+        confidence_components['name_match'] = {
+            'score': name_score,
+            'weight': 0.30,  # 30% of total confidence
+            'contribution': name_confidence
+        }
+
+        # 2. ADDRESS MATCH CONFIDENCE
+        address_confidence = 0.0
+        if address_score is not None:
+            # Normalize address_score from [0, 100] to [0, 1]
+            normalized_addr_score = min(100, max(0, address_score)) / 100.0
+
+            if normalized_addr_score >= 0.90:
+                address_confidence = 0.25  # Excellent address match
+            elif normalized_addr_score >= 0.70:
+                address_confidence = 0.20  # Good address match
+            elif normalized_addr_score >= 0.50:
+                address_confidence = 0.10  # Partial address match
+            elif normalized_addr_score >= 0.30:
+                address_confidence = 0.05  # Some address keywords match
+            # else: 0.0 for poor address match
+
+        confidence_components['address_match'] = {
+            'score': address_score,
+            'weight': 0.25,  # 25% of total confidence
+            'contribution': address_confidence
+        }
+
+        # 3. PINCODE VALIDATION CONFIDENCE
+        pincode_confidence = 0.0
+        if pincode_validation:
+            if pincode_validation.get('pincode_match'):
+                pincode_confidence = 0.20  # Exact pincode match
+            elif pincode_validation.get('confidence_boost', 0.0) > 0:
+                pincode_confidence = 0.10  # Positive pincode signal
+            elif pincode_validation.get('confidence_boost', 0.0) < 0:
+                pincode_confidence = -0.15  # Negative pincode signal
+
+        confidence_components['pincode_validation'] = {
+            'has_pincode': pincode_validation is not None,
+            'pincode_match': pincode_validation.get('pincode_match', False) if pincode_validation else False,
+            'weight': 0.20,  # 20% of total confidence
+            'contribution': pincode_confidence
+        }
+
+        # 4. LOCATION ENTITY CONFIDENCE
+        entity_confidence = 0.0
+        if entity_comparison:
+            match_score = entity_comparison.get('match_score', 0.5)
+            common_count = len(entity_comparison.get('common_entities', set()))
+
+            if common_count >= 2:
+                entity_confidence = 0.15  # Multiple location entities match
+            elif common_count == 1:
+                entity_confidence = 0.10  # Single location entity matches
+            elif entity_comparison.get('has_exact_match'):
+                entity_confidence = 0.08  # Has matching entities
+            else:
+                entity_confidence = 0.0
+
+        confidence_components['entity_match'] = {
+            'has_entities': entity_comparison is not None,
+            'entity_count': len(entity_comparison.get('common_entities', set())) if entity_comparison else 0,
+            'weight': 0.15,  # 15% of total confidence
+            'contribution': entity_confidence
+        }
+
+        # 5. METHOD/STRATEGY CONFIDENCE
+        method = match.get('method', 'unknown')
+        method_confidence = {
+            'composite_key_exact': 0.10,      # Exact composite key match
+            'address_match': 0.08,             # Address-based match
+            'name_fuzzy': 0.05,                # Fuzzy name match
+            'fallback_ai': 0.02                # AI/embedding fallback
+        }
+        method_contrib = method_confidence.get(method, 0.03)
+
+        confidence_components['method'] = {
+            'method': method,
+            'weight': 0.10,  # 10% of total confidence
+            'contribution': method_contrib
+        }
+
+        # TOTAL CONFIDENCE SCORE
+        total_confidence = (
+            confidence_components['name_match']['contribution'] +
+            confidence_components['address_match']['contribution'] +
+            confidence_components['pincode_validation']['contribution'] +
+            confidence_components['entity_match']['contribution'] +
+            confidence_components['method']['contribution']
+        )
+
+        # Clamp to [0, 1]
+        total_confidence = min(1.0, max(0.0, total_confidence))
+
+        # ASSIGN CONFIDENCE LEVEL
+        if total_confidence >= 0.95:
+            confidence_level = "VERY_HIGH"
+            recommendation = "ACCEPT"
+        elif total_confidence >= 0.85:
+            confidence_level = "HIGH"
+            recommendation = "ACCEPT"
+        elif total_confidence >= 0.70:
+            confidence_level = "MEDIUM"
+            recommendation = "ACCEPT_WITH_CAUTION"
+        elif total_confidence >= 0.50:
+            confidence_level = "LOW"
+            recommendation = "REVIEW"
+        else:
+            confidence_level = "INVALID"
+            recommendation = "REJECT"
+
+        # BUILD REASONING
+        factors = []
+        if confidence_components['name_match']['contribution'] > 0.15:
+            factors.append("strong name match")
+        if confidence_components['address_match']['contribution'] > 0.15:
+            factors.append("strong address match")
+        if pincode_validation and pincode_validation.get('pincode_match'):
+            factors.append("exact pincode match")
+        if entity_comparison and entity_comparison.get('common_entities'):
+            factors.append(f"{len(entity_comparison.get('common_entities', set()))} matching locations")
+        if confidence_components['method']['contribution'] > 0.05:
+            factors.append(f"via {method}")
+
+        if factors:
+            reasoning = "Based on: " + ", ".join(factors)
+        else:
+            reasoning = "Limited validation signals available"
+
+        return {
+            'confidence_level': confidence_level,
+            'confidence_score': round(total_confidence, 3),
+            'breakdown': confidence_components,
+            'reasoning': reasoning,
+            'recommendation': recommendation
+        }
+
     def validate_geography(self, query_address, candidate_address, query_state, candidate_state):
         """Validate geographic match between query and candidate
 
@@ -13628,6 +13999,90 @@ class AdvancedSQLiteMatcher:
 
         return validated_matches
 
+    def enhance_match_with_ner_and_confidence(self, match, seat_address, master_address,
+                                               seat_state, address_score=None, college_match_score=None):
+        """Apply NER, pincode validation, and calculate confidence level for any match
+
+        This is a universal enhancement method that can be used by ANY address matching method.
+        It applies all Phase 1 quick wins (pincode validation, NER, confidence levels) in one call.
+
+        Args:
+            match: Match dictionary
+            seat_address: Raw address from seat data
+            master_address: Raw address from master data
+            seat_state: State from seat data
+            address_score: Optional address score (0-100) to use instead of calculating
+            college_match_score: Optional college name match score (0-1)
+
+        Returns:
+            dict: Enhanced match with all validation data and confidence levels
+        """
+        # Step 1: Apply pincode validation
+        if seat_address and master_address and seat_state:
+            try:
+                match = self.apply_pincode_validation_to_match(
+                    match, seat_address, master_address, seat_state
+                )
+            except Exception as e:
+                logger.debug(f"⚠️  Pincode validation error in enhancement: {e}")
+
+        # Step 2: Apply NER location entity extraction and comparison
+        if seat_address and master_address:
+            try:
+                seat_entities = self.extract_location_entities_ner(seat_address)
+                master_entities = self.extract_location_entities_ner(master_address)
+
+                entity_comparison = self.compare_location_entities(master_entities, seat_entities)
+
+                # Apply entity-based boost to address score
+                if entity_comparison.get('entity_confidence_boost', 0) != 0.0:
+                    original_score = match.get('address_score', address_score or 0)
+                    entity_boost = entity_comparison.get('entity_confidence_boost', 0)
+                    match['address_score'] = max(0, min(100, original_score + entity_boost))
+
+                match['entity_comparison'] = entity_comparison
+
+                if entity_comparison.get('common_entities'):
+                    logger.debug(f"🗺️  LOCATION ENTITIES: {len(entity_comparison['common_entities'])} matching locations")
+
+            except Exception as e:
+                logger.debug(f"⚠️  NER processing error in enhancement: {e}")
+
+        # Step 3: Calculate confidence level
+        try:
+            pincode_validation = match.get('pincode_validation', None)
+            entity_comparison = match.get('entity_comparison', None)
+            calc_address_score = match.get('address_score', address_score)
+            calc_college_score = college_match_score if college_match_score is not None else match.get('score', 0.0)
+
+            confidence_data = self.calculate_match_confidence_level(
+                match,
+                address_score=calc_address_score,
+                pincode_validation=pincode_validation,
+                entity_comparison=entity_comparison,
+                college_match_score=calc_college_score
+            )
+
+            match['confidence'] = confidence_data
+
+            # Log confidence
+            conf_level = confidence_data['confidence_level']
+            conf_score = confidence_data['confidence_score']
+            emoji = {
+                'VERY_HIGH': '🟢',
+                'HIGH': '🟢',
+                'MEDIUM': '🟡',
+                'LOW': '🟡',
+                'INVALID': '🔴'
+            }.get(conf_level, '⚪')
+
+            logger.debug(f"{emoji} CONFIDENCE: {conf_level} ({conf_score:.3f})")
+
+        except Exception as e:
+            logger.debug(f"⚠️  Confidence calculation error in enhancement: {e}")
+
+        return match
+
     def apply_pincode_validation_to_match(self, match, seat_address, master_address, seat_state):
         """Apply pincode validation and boost match confidence if pincodes align
 
@@ -13847,7 +14302,90 @@ class AdvancedSQLiteMatcher:
                     logger.debug(f"⚠️  Pincode validation error: {e}")
                     # Continue without pincode boost if error
 
-        logger.info(f"📍 PASS 4: Address filtering complete: {len(matches)} → {len(filtered_matches)} validated candidates")
+        # ENHANCEMENT: Apply Named Entity Recognition (NER) for location extraction
+        # If NLP model available, extract and compare location entities
+        if seat_address:
+            logger.info(f"📍 PASS 4: Applying NER to extract location entities from {len(filtered_matches)} matches...")
+
+            # Extract location entities from seat data (once)
+            seat_entities = self.extract_location_entities_ner(seat_address)
+
+            for match in filtered_matches:
+                try:
+                    candidate = match.get('candidate', {})
+                    master_address = candidate.get('address', '')
+
+                    # Extract location entities from master data
+                    if master_address:
+                        master_entities = self.extract_location_entities_ner(master_address)
+
+                        # Compare entities and get boost
+                        entity_comparison = self.compare_location_entities(
+                            master_entities,
+                            seat_entities
+                        )
+
+                        # Apply entity-based boost to address score
+                        if entity_comparison.get('entity_confidence_boost', 0) != 0.0:
+                            original_score = match.get('address_score', 0)
+                            entity_boost = entity_comparison.get('entity_confidence_boost', 0)
+                            match['address_score'] = max(0, min(100, original_score + entity_boost))
+
+                        # Store entity matching details for confidence calculation
+                        match['entity_comparison'] = entity_comparison
+
+                        if entity_comparison.get('common_entities'):
+                            logger.debug(f"🗺️  LOCATION ENTITIES: Found {len(entity_comparison['common_entities'])} matching locations: {entity_comparison['common_entities']}")
+
+                except Exception as e:
+                    logger.debug(f"⚠️  NER processing error: {e}")
+                    # Continue without NER if error
+
+        # ENHANCEMENT: Calculate confidence level for each match
+        # Combines all validation signals (name, address, pincode, entities)
+        if len(filtered_matches) > 0:
+            logger.info(f"📍 PASS 4: Calculating confidence levels for {len(filtered_matches)} matches...")
+
+            for match in filtered_matches:
+                try:
+                    candidate = match.get('candidate', {})
+
+                    # Gather validation data
+                    address_score = match.get('address_score', None)
+                    pincode_validation = match.get('pincode_validation', None)
+                    entity_comparison = match.get('entity_comparison', None)
+                    college_match_score = match.get('score', 0.0)
+
+                    # Calculate confidence level
+                    confidence_data = self.calculate_match_confidence_level(
+                        match,
+                        address_score=address_score,
+                        pincode_validation=pincode_validation,
+                        entity_comparison=entity_comparison,
+                        college_match_score=college_match_score
+                    )
+
+                    # Store confidence data in match
+                    match['confidence'] = confidence_data
+
+                    # Log confidence assessment
+                    conf_level = confidence_data['confidence_level']
+                    conf_score = confidence_data['confidence_score']
+                    emoji = {
+                        'VERY_HIGH': '🟢',
+                        'HIGH': '🟢',
+                        'MEDIUM': '🟡',
+                        'LOW': '🟡',
+                        'INVALID': '🔴'
+                    }.get(conf_level, '⚪')
+
+                    logger.debug(f"{emoji} CONFIDENCE: {conf_level} ({conf_score:.3f}) - {confidence_data['reasoning']}")
+
+                except Exception as e:
+                    logger.debug(f"⚠️  Confidence calculation error: {e}")
+                    # Continue without confidence if error
+
+        logger.info(f"📍 PASS 4: Address filtering complete: {len(matches)} → {len(filtered_matches)} validated candidates with confidence scores")
         return filtered_matches
 
     def pass4_address_disambiguation(self, college_matches, normalized_address, normalized_college):
