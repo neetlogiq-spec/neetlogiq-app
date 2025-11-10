@@ -10354,6 +10354,14 @@ class AdvancedSQLiteMatcher:
         db_path = f"{self.config['database']['sqlite_path']}/{self.config['database']['seat_data_db']}"
         conn = sqlite3.connect(db_path)
 
+        # Also open master database for state_college_link validation
+        master_db_path = f"{self.config['database']['sqlite_path']}/{self.config['database']['master_data_db']}"
+        try:
+            master_conn = sqlite3.connect(master_db_path)
+        except Exception as e:
+            logger.warning(f"Could not open master database for state_college_link validation: {e}")
+            master_conn = None
+
         results = {
             'passed': True,
             'violations': [],
@@ -10449,114 +10457,117 @@ class AdvancedSQLiteMatcher:
         console.print("[bold]Check 3: State-College Link Validation[/bold]")
         console.print("[dim]   Constraint: Verify college_id + state_id relationships are valid (using primary keys)[/dim]")
 
-        # IMPROVED VALIDATION: Use state_id + college_id (actual relationships) instead of composite_college_key
-        # This is more accurate because we're validating relationships, not matching text
-        query = """
-            SELECT
-                scl.college_id,
-                scl.state_id,
-                c.id as college_exists,
-                s.id as state_exists,
-                c.state as college_state,
-                s.normalized_name as state_name,
-                COUNT(*) as link_count
-            FROM state_college_link scl
-            LEFT JOIN colleges c ON scl.college_id = c.id
-            LEFT JOIN states s ON scl.state_id = s.id
-            GROUP BY scl.college_id, scl.state_id
-            ORDER BY link_count DESC
-        """
+        if master_conn is None:
+            console.print("[yellow]   ⚠️  Could not validate state_college_link: Master database not available[/yellow]\n")
+        else:
+            # IMPROVED VALIDATION: Use state_id + college_id (actual relationships) instead of composite_college_key
+            # This is more accurate because we're validating relationships, not matching text
+            query = """
+                SELECT
+                    scl.college_id,
+                    scl.state_id,
+                    c.id as college_exists,
+                    s.id as state_exists,
+                    c.state as college_state,
+                    s.normalized_name as state_name,
+                    COUNT(*) as link_count
+                FROM state_college_link scl
+                LEFT JOIN colleges c ON scl.college_id = c.id
+                LEFT JOIN states s ON scl.state_id = s.id
+                GROUP BY scl.college_id, scl.state_id
+                ORDER BY link_count DESC
+            """
 
-        try:
-            df_scl = pd.read_sql(query, conn)
+            try:
+                df_scl = pd.read_sql(query, master_conn)
 
-            if len(df_scl) == 0:
-                console.print("[yellow]   ⚠️  WARNING: state_college_link table is empty[/yellow]\n")
-                results['violations'].append('empty_state_college_link')
-            else:
-                # Validate college_id + state_id relationships
-                missing_colleges = []
-                missing_states = []
-                duplicate_links = []
-                state_mismatches = []
+                if len(df_scl) == 0:
+                    console.print("[yellow]   ⚠️  WARNING: state_college_link table is empty[/yellow]\n")
+                    results['violations'].append('empty_state_college_link')
+                else:
+                    # Validate college_id + state_id relationships
+                    missing_colleges = []
+                    missing_states = []
+                    duplicate_links = []
+                    state_mismatches = []
 
-                for idx, row in df_scl.iterrows():
-                    # Check if college exists
-                    if pd.isna(row['college_exists']):
-                        missing_colleges.append(row['college_id'])
+                    for idx, row in df_scl.iterrows():
+                        # Check if college exists
+                        if pd.isna(row['college_exists']):
+                            missing_colleges.append(row['college_id'])
 
-                    # Check if state exists
-                    if pd.isna(row['state_exists']):
-                        missing_states.append(f"{row['state_id']}")
+                        # Check if state exists
+                        if pd.isna(row['state_exists']):
+                            missing_states.append(f"{row['state_id']}")
 
-                    # Check for duplicate links (same college_id + state_id in state_college_link)
-                    if row['link_count'] > 1:
-                        duplicate_links.append({
-                            'college_id': row['college_id'],
-                            'state_id': row['state_id'],
-                            'count': row['link_count']
-                        })
+                        # Check for duplicate links (same college_id + state_id in state_college_link)
+                        if row['link_count'] > 1:
+                            duplicate_links.append({
+                                'college_id': row['college_id'],
+                                'state_id': row['state_id'],
+                                'count': row['link_count']
+                            })
 
-                    # Check if college's normalized_state matches the linked state
-                    if not pd.isna(row['college_exists']) and row['college_state']:
-                        normalized_college_state = self.normalize_state_name_import(row['college_state'])
-                        if not pd.isna(row['state_exists']) and row['state_name']:
-                            if normalized_college_state and normalized_college_state.upper() != row['state_name'].upper():
-                                state_mismatches.append({
-                                    'college_id': row['college_id'],
-                                    'state_id': row['state_id'],
-                                    'college_state': row['college_state'],
-                                    'linked_state': row['state_name']
-                                })
+                        # Check if college's normalized_state matches the linked state
+                        if not pd.isna(row['college_exists']) and row['college_state']:
+                            normalized_college_state = self.normalize_state_name_import(row['college_state'])
+                            if not pd.isna(row['state_exists']) and row['state_name']:
+                                if normalized_college_state and normalized_college_state.upper() != row['state_name'].upper():
+                                    state_mismatches.append({
+                                        'college_id': row['college_id'],
+                                        'state_id': row['state_id'],
+                                        'college_state': row['college_state'],
+                                        'linked_state': row['state_name']
+                                    })
 
-                # Report results
-                issues_found = missing_colleges or missing_states or duplicate_links or state_mismatches
+                    # Report results
+                    issues_found = missing_colleges or missing_states or duplicate_links or state_mismatches
 
-                if missing_colleges:
-                    results['passed'] = False
-                    results['violations'].append('missing_colleges_in_link')
-                    console.print(f"[red]   ❌ FAILED: {len(missing_colleges)} college IDs in state_college_link do not exist in colleges table[/red]")
-                    for college_id in missing_colleges[:5]:
-                        console.print(f"   • Missing college: {college_id}")
-                    if len(missing_colleges) > 5:
-                        console.print(f"[dim]   ... and {len(missing_colleges) - 5} more[/dim]\n")
+                    if missing_colleges:
+                        results['passed'] = False
+                        results['violations'].append('missing_colleges_in_link')
+                        console.print(f"[red]   ❌ FAILED: {len(missing_colleges)} college IDs in state_college_link do not exist in colleges table[/red]")
+                        for college_id in missing_colleges[:5]:
+                            console.print(f"   • Missing college: {college_id}")
+                        if len(missing_colleges) > 5:
+                            console.print(f"[dim]   ... and {len(missing_colleges) - 5} more[/dim]\n")
 
-                if missing_states:
-                    results['passed'] = False
-                    results['violations'].append('missing_states_in_link')
-                    console.print(f"[red]   ❌ FAILED: {len(missing_states)} state IDs in state_college_link do not exist in states table[/red]")
-                    for state_id in missing_states[:5]:
-                        console.print(f"   • Missing state: {state_id}")
-                    if len(missing_states) > 5:
-                        console.print(f"[dim]   ... and {len(missing_states) - 5} more[/dim]\n")
+                    if missing_states:
+                        results['passed'] = False
+                        results['violations'].append('missing_states_in_link')
+                        console.print(f"[red]   ❌ FAILED: {len(missing_states)} state IDs in state_college_link do not exist in states table[/red]")
+                        for state_id in missing_states[:5]:
+                            console.print(f"   • Missing state: {state_id}")
+                        if len(missing_states) > 5:
+                            console.print(f"[dim]   ... and {len(missing_states) - 5} more[/dim]\n")
 
-                if duplicate_links:
-                    results['passed'] = False
-                    results['violations'].append('duplicate_state_college_links')
-                    console.print(f"[red]   ❌ FAILED: {len(duplicate_links)} college-state relationships have duplicates[/red]")
-                    for dup in duplicate_links[:3]:
-                        console.print(f"   • {dup['college_id']} + {dup['state_id']}: {dup['count']} duplicate records")
-                    if len(duplicate_links) > 3:
-                        console.print(f"[dim]   ... and {len(duplicate_links) - 3} more[/dim]\n")
+                    if duplicate_links:
+                        results['passed'] = False
+                        results['violations'].append('duplicate_state_college_links')
+                        console.print(f"[red]   ❌ FAILED: {len(duplicate_links)} college-state relationships have duplicates[/red]")
+                        for dup in duplicate_links[:3]:
+                            console.print(f"   • {dup['college_id']} + {dup['state_id']}: {dup['count']} duplicate records")
+                        if len(duplicate_links) > 3:
+                            console.print(f"[dim]   ... and {len(duplicate_links) - 3} more[/dim]\n")
 
-                if state_mismatches:
-                    console.print(f"[yellow]   ⚠️  WARNING: {len(state_mismatches)} colleges linked to mismatched states[/yellow]")
-                    for mismatch in state_mismatches[:3]:
-                        console.print(f"   • {mismatch['college_id']}: stored as {mismatch['college_state']} but linked to {mismatch['linked_state']}")
-                    if len(state_mismatches) > 3:
-                        console.print(f"[dim]   ... and {len(state_mismatches) - 3} more[/dim]\n")
+                    if state_mismatches:
+                        console.print(f"[yellow]   ⚠️  WARNING: {len(state_mismatches)} colleges linked to mismatched states[/yellow]")
+                        for mismatch in state_mismatches[:3]:
+                            console.print(f"   • {mismatch['college_id']}: stored as {mismatch['college_state']} but linked to {mismatch['linked_state']}")
+                        if len(state_mismatches) > 3:
+                            console.print(f"[dim]   ... and {len(state_mismatches) - 3} more[/dim]\n")
 
-                if not issues_found:
-                    console.print("[green]   ✅ PASSED: All college_id + state_id relationships are valid[/green]\n")
+                    if not issues_found:
+                        console.print("[green]   ✅ PASSED: All college_id + state_id relationships are valid[/green]\n")
 
-                results['stats']['state_college_link_records'] = len(df_scl)
-                results['stats']['missing_colleges'] = len(missing_colleges)
-                results['stats']['missing_states'] = len(missing_states)
-                results['stats']['duplicate_links'] = len(duplicate_links)
-                results['stats']['state_mismatches'] = len(state_mismatches)
+                    results['stats']['state_college_link_records'] = len(df_scl)
+                    results['stats']['missing_colleges'] = len(missing_colleges)
+                    results['stats']['missing_states'] = len(missing_states)
+                    results['stats']['duplicate_links'] = len(duplicate_links)
+                    results['stats']['state_mismatches'] = len(state_mismatches)
 
-        except Exception as e:
-            console.print(f"[yellow]   ⚠️  Could not validate state_college_link: {e}[/yellow]\n")
+            except Exception as e:
+                console.print(f"[yellow]   ⚠️  Could not validate state_college_link: {e}[/yellow]\n")
 
         # ==================== CHECK 4: Expected row counts ====================
         console.print("[bold]Check 4: Expected Row Counts[/bold]")
@@ -10596,6 +10607,8 @@ class AdvancedSQLiteMatcher:
         results['stats']['link_table_rows'] = sccl_count
 
         conn.close()
+        if master_conn is not None:
+            master_conn.close()
 
         # ==================== SUMMARY ====================
         console.print("\n[bold]═" * 80 + "[/bold]")
@@ -15505,7 +15518,15 @@ class AdvancedSQLiteMatcher:
                             if mask.any():
                                 # Update ALL fields from pass2_row to preserve original data
                                 for col in pass2_row.index:
-                                    results_df.loc[mask, col] = pass2_row[col]
+                                    # CRITICAL FIX: Use safe type conversion to avoid pandas dtype warnings
+                                    if col in results_df.columns:
+                                        target_dtype = results_df[col].dtype
+                                        converted_value = self._safe_convert_value(pass2_row[col], target_dtype)
+                                        results_df.loc[mask, col] = converted_value
+                                    elif col not in results_df.columns:
+                                        # Add missing column only if not excluded
+                                        results_df[col] = None
+                                        results_df.loc[mask, col] = pass2_row[col]
 
                                 # Also explicitly set matching fields
                                 if pass2_row.get('master_college_id'):
@@ -18834,6 +18855,49 @@ class AdvancedSQLiteMatcher:
         except Exception as e:
             logger.warning(f"Error consolidating state aliases: {e}")
             return df
+
+    def _safe_convert_value(self, value, target_dtype):
+        """Safely convert value to target dtype, respecting pandas type requirements
+
+        CRITICAL FIX: Prevents FutureWarning about incompatible dtype assignments
+        when assigning string values to boolean columns, etc.
+        """
+        import numpy as np
+        import pandas as pd
+
+        # Handle None/NaN cases
+        if value is None or (isinstance(value, float) and np.isnan(value)):
+            # Return appropriate null value for dtype
+            if target_dtype == bool or target_dtype == 'bool':
+                return False
+            elif 'float' in str(target_dtype):
+                return np.nan
+            elif 'int' in str(target_dtype):
+                return 0
+            else:
+                return None
+
+        # Handle boolean columns
+        if target_dtype == bool or target_dtype == 'bool':
+            if isinstance(value, str):
+                return value.lower() in ['true', '1', 'yes', 't']
+            return bool(value)
+
+        # Handle numeric columns
+        if 'float' in str(target_dtype):
+            try:
+                return float(value) if value is not None else np.nan
+            except (ValueError, TypeError):
+                return np.nan
+
+        if 'int' in str(target_dtype):
+            try:
+                return int(float(value)) if value is not None else 0
+            except (ValueError, TypeError):
+                return 0
+
+        # For other types, convert directly
+        return value
 
     def _ensure_dataframe_columns(self, df, table_name='seat_data'):
         """Ensure DataFrame has all required columns for seat_data table
