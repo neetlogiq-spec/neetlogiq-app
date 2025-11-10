@@ -15361,22 +15361,23 @@ class AdvancedSQLiteMatcher:
                     #
                     # CORRECT APPROACH (now doing this):
                     #   - Group by seat record ID ('id')
-                    #   - If 1 seat record has multiple matches, keep best, drop rest
-                    #   - Result: Each seat record has exactly 1 match (the best one)
+                    #   - If 1 seat record has multiple matches, keep best match LINKED, unlink rest
+                    #   - Result: All records preserved; each seat record has at most 1 valid match
 
                     grouped = matched_df.groupby('id')
                     duplicates_count = 0
-                    rows_to_drop = []
+                    indices_to_clear = []  # Changed: indices to clear instead of drop
 
                     for record_id, group in grouped:
                         if len(group) > 1:
                             # One seat record matched to multiple colleges/courses - FALSE MATCHES!
-                            # Keep the match with highest college score, drop others
+                            # Keep the match with highest college score, clear master_id for others
+                            # CRITICAL: We don't delete rows - we keep all records, just unlink the bad matches
                             score_col = 'college_match_score' if 'college_match_score' in group.columns else 'score'
                             if score_col in group.columns:
                                 best_idx = group[score_col].idxmax()
                                 worst_indices = [idx for idx in group.index if idx != best_idx]
-                                rows_to_drop.extend(worst_indices)
+                                indices_to_clear.extend(worst_indices)  # Changed: collect for clearing, not dropping
                                 duplicates_count += len(worst_indices)
 
                                 # Log the deduplication action
@@ -15394,13 +15395,20 @@ class AdvancedSQLiteMatcher:
                                     dropped_college = dropped.get('master_college_id', '?')
                                     dropped_state = dropped.get('state', '?')
                                     dropped_score = dropped[score_col]
-                                    logger.debug(f"     ❌ Dropped: college={dropped_college}, state={dropped_state}, score={dropped_score:.2f}")
+                                    logger.debug(f"     ⚠️  Unlinked (not deleted): college={dropped_college}, state={dropped_state}, score={dropped_score:.2f}")
 
                     if duplicates_count > 0:
-                        console.print(f"[yellow]⚠️  DEDUPLICATION: Removing {duplicates_count} false matches (same college_id matched to different addresses)[/yellow]")
-                        matched_df = matched_df.drop(rows_to_drop)
+                        console.print(f"[yellow]⚠️  DEDUPLICATION: Unlinking {duplicates_count} false matches (same college_id matched to different addresses)[/yellow]")
+                        console.print(f"[dim]     → All {duplicates_count} records are preserved with NULL master_college_id[/dim]")
+                        # Changed: Clear master_college_id instead of deleting rows
+                        for idx in indices_to_clear:
+                            matched_df.loc[idx, 'master_college_id'] = None
+                            matched_df.loc[idx, 'master_course_id'] = None
+                            matched_df.loc[idx, 'master_state_id'] = None
+                            matched_df.loc[idx, 'is_linked'] = False
 
                     # Rebuild results_df: matched (deduplicated) + unmatched
+                    # CRITICAL: All rows are preserved now, just with cleared master IDs for bad matches
                     results_df = pd.concat([matched_df, unmatched_df], ignore_index=False)
                     results_df = results_df.sort_index()
 
@@ -15551,7 +15559,7 @@ class AdvancedSQLiteMatcher:
                             # Same logic as PASS 1 deduplication
                             grouped = matched_df.groupby('id')
                             duplicates_count = 0
-                            rows_to_drop = []
+                            indices_to_clear = []  # Changed: indices to clear instead of drop
 
                             for record_id, group in grouped:
                                 if len(group) > 1:
@@ -15559,12 +15567,17 @@ class AdvancedSQLiteMatcher:
                                     if score_col in group.columns:
                                         best_idx = group[score_col].idxmax()
                                         worst_indices = [idx for idx in group.index if idx != best_idx]
-                                        rows_to_drop.extend(worst_indices)
+                                        indices_to_clear.extend(worst_indices)  # Changed: collect for clearing, not dropping
                                         duplicates_count += len(worst_indices)
 
                             if duplicates_count > 0:
-                                logger.warning(f"🔄 PASS 2 DEDUPLICATION: Removing {duplicates_count} false matches")
-                                matched_df = matched_df.drop(rows_to_drop)
+                                logger.warning(f"🔄 PASS 2 DEDUPLICATION: Unlinking {duplicates_count} false matches (preserving all records)")
+                                # Changed: Clear master_college_id instead of deleting rows
+                                for idx in indices_to_clear:
+                                    matched_df.loc[idx, 'master_college_id'] = None
+                                    matched_df.loc[idx, 'master_course_id'] = None
+                                    matched_df.loc[idx, 'master_state_id'] = None
+                                    matched_df.loc[idx, 'is_linked'] = False
                                 results_df = pd.concat([matched_df, unmatched_df], ignore_index=False)
                                 results_df = results_df.sort_index()
 
