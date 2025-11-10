@@ -7483,8 +7483,11 @@ class AdvancedSQLiteMatcher:
         medical_state_candidates = self.get_college_pool(course_type='medical', state=state)
 
         if not medical_state_candidates:
-            # Fallback without state filtering
-            medical_state_candidates = self.get_college_pool(course_type='medical')
+            # CRITICAL FIX: Do NOT fall back to state-less matching!
+            # This causes cross-state false matches (DEN0192 MADHYA PRADESH → KARNATAKA records)
+            # Return empty instead and let AI fallback handle it (smarter algorithm)
+            logger.debug(f"⚠️  No MEDICAL colleges in {state}, not falling back to all-India search")
+            medical_state_candidates = []
         
         # SHORTLIST 2 + ADDRESS Pre-Filtering + Composite Key Validation
         # This implements the hybrid approach: NAME → ADDRESS → VALIDATION
@@ -7513,8 +7516,11 @@ class AdvancedSQLiteMatcher:
         dnb_state_candidates = self.get_college_pool(course_type='dnb', state=state)
 
         if not dnb_state_candidates:
-            # Fallback without state filtering
-            dnb_state_candidates = self.get_college_pool(course_type='dnb')
+            # CRITICAL FIX: Do NOT fall back to state-less matching!
+            # This causes cross-state false matches (DEN0099 RAJASTHAN → KERALA records)
+            # Return empty instead and let AI fallback handle it (smarter algorithm)
+            logger.debug(f"⚠️  No DNB colleges in {state}, not falling back to all-India search")
+            dnb_state_candidates = []
 
         # SHORTLIST 2 + ADDRESS Pre-Filtering + Composite Key Validation
         # This implements the hybrid approach: NAME → ADDRESS → VALIDATION
@@ -7561,8 +7567,11 @@ class AdvancedSQLiteMatcher:
         medical_state_candidates = self.get_college_pool(course_type='medical', state=state)
 
         if not medical_state_candidates:
-            # Fallback without state filtering
-            medical_state_candidates = self.get_college_pool(course_type='medical')
+            # CRITICAL FIX: Do NOT fall back to state-less matching!
+            # This causes cross-state false matches (DEN0192 MADHYA PRADESH → KARNATAKA records)
+            # Return empty instead and let AI fallback handle it (smarter algorithm)
+            logger.debug(f"⚠️  No MEDICAL colleges in {state}, not falling back to all-India search")
+            medical_state_candidates = []
         
         # SHORTLIST 2 + ADDRESS Pre-Filtering + Composite Key Validation
         # This implements the hybrid approach: NAME → ADDRESS → VALIDATION
@@ -7583,8 +7592,11 @@ class AdvancedSQLiteMatcher:
         dnb_state_candidates = self.get_college_pool(course_type='dnb', state=state)
 
         if not dnb_state_candidates:
-            # Fallback without state filtering
-            dnb_state_candidates = self.get_college_pool(course_type='dnb')
+            # CRITICAL FIX: Do NOT fall back to state-less matching!
+            # This causes cross-state false matches (DEN0099 RAJASTHAN → KERALA records)
+            # Return empty instead and let AI fallback handle it (smarter algorithm)
+            logger.debug(f"⚠️  No DNB colleges in {state}, not falling back to all-India search")
+            dnb_state_candidates = []
         
         # SHORTLIST 2 + ADDRESS Pre-Filtering + Composite Key Validation
         # This implements the hybrid approach: NAME → ADDRESS → VALIDATION
