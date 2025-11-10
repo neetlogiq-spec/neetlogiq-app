@@ -3751,6 +3751,18 @@ class AdvancedSQLiteMatcher:
 
         console.print("\n[bold cyan]Importing to database...[/bold cyan]")
         with Progress() as progress:
+            # Create composite_college_key before saving (FORMAT: name, address - raw values, no normalization)
+            task_key = progress.add_task("[cyan]Creating composite keys...", total=len(df))
+            composite_keys = []
+            for idx, row in df.iterrows():
+                # Use RAW name + comma + RAW address format (matches load_master_data and state_college_link)
+                key = f"{row['name']}, {row['address']}" if row['address'] else row['name']
+                composite_keys.append(key)
+                if idx % 100 == 0:
+                    progress.update(task_key, completed=idx)
+            df['composite_college_key'] = composite_keys
+            progress.update(task_key, completed=len(df))
+
             task = progress.add_task("[green]Writing to SQLite...", total=None)
             conn = sqlite3.connect(self.master_db_path)
             df.to_sql('medical_colleges', conn, if_exists=replace_mode, index=False)
@@ -3915,6 +3927,18 @@ class AdvancedSQLiteMatcher:
 
         console.print("\n[bold cyan]Importing to database...[/bold cyan]")
         with Progress() as progress:
+            # Create composite_college_key before saving (FORMAT: name, address - raw values, no normalization)
+            task_key = progress.add_task("[cyan]Creating composite keys...", total=len(df))
+            composite_keys = []
+            for idx, row in df.iterrows():
+                # Use RAW name + comma + RAW address format (matches load_master_data and state_college_link)
+                key = f"{row['name']}, {row['address']}" if row['address'] else row['name']
+                composite_keys.append(key)
+                if idx % 100 == 0:
+                    progress.update(task_key, completed=idx)
+            df['composite_college_key'] = composite_keys
+            progress.update(task_key, completed=len(df))
+
             task = progress.add_task("[green]Writing to SQLite...", total=None)
             conn = sqlite3.connect(self.master_db_path)
             df.to_sql('dental_colleges', conn, if_exists=replace_mode, index=False)
@@ -4079,6 +4103,18 @@ class AdvancedSQLiteMatcher:
 
         console.print("\n[bold cyan]Importing to database...[/bold cyan]")
         with Progress() as progress:
+            # Create composite_college_key before saving (FORMAT: name, address - raw values, no normalization)
+            task_key = progress.add_task("[cyan]Creating composite keys...", total=len(df))
+            composite_keys = []
+            for idx, row in df.iterrows():
+                # Use RAW name + comma + RAW address format (matches load_master_data and state_college_link)
+                key = f"{row['name']}, {row['address']}" if row['address'] else row['name']
+                composite_keys.append(key)
+                if idx % 100 == 0:
+                    progress.update(task_key, completed=idx)
+            df['composite_college_key'] = composite_keys
+            progress.update(task_key, completed=len(df))
+
             task = progress.add_task("[green]Writing to SQLite...", total=None)
             conn = sqlite3.connect(self.master_db_path)
             df.to_sql('dnb_colleges', conn, if_exists=replace_mode, index=False)
@@ -4738,6 +4774,14 @@ class AdvancedSQLiteMatcher:
                         (college_name, address, state, college_id, state_id)
                         VALUES (?, ?, ?, ?, ?)
                     """, link_records)
+
+                # PERMANENT FIX: Populate composite_college_key immediately after insert
+                # This ensures composite_college_key is always populated in state_college_link
+                cursor.execute("""
+                    UPDATE state_college_link
+                    SET composite_college_key = college_name || ', ' || address
+                    WHERE composite_college_key IS NULL OR composite_college_key = ''
+                """)
 
                 conn.commit()
 
@@ -5713,6 +5757,197 @@ class AdvancedSQLiteMatcher:
                 break
 
         return city, district
+
+    def extract_pincode(self, address):
+        """Extract postal code (6-digit PIN) from address string
+
+        Indian postal codes (PIN - Postal Index Number) are 6-digit numbers.
+        They appear anywhere in the address, often at the end or separated.
+
+        Args:
+            address: Address string (raw, from seat/counselling data)
+
+        Returns:
+            str or None: 6-digit pincode if found, None otherwise
+
+        Examples:
+            "AREA HOSPITAL VICTORIAPET ADONI 518301" → "518301"
+            "SADAR HOSPITAL, KASHIPUR, UTTARAKHAND 244713" → "244713"
+            "HOSPITAL WITHOUT PINCODE" → None
+        """
+        if not address or pd.isna(address):
+            return None
+
+        # Convert to string and search for 6-digit sequence
+        address_str = str(address).strip()
+
+        # Match 6-digit number (Indian PIN code)
+        # Can be surrounded by spaces, commas, or at start/end
+        match = re.search(r'\b(\d{6})\b', address_str)
+
+        if match:
+            pincode = match.group(1)
+            # Validate it's a reasonable Indian PIN (100000-999999)
+            pin_int = int(pincode)
+            if 100000 <= pin_int <= 999999:
+                return pincode
+
+        return None
+
+    def get_state_pincode_ranges(self):
+        """Return valid pincode ranges for Indian states
+
+        Based on official Indian postal code ranges.
+        Format: state_name -> list of (start_pin, end_pin) tuples
+
+        Returns:
+            dict: {state: [(start, end), ...], ...}
+        """
+        return {
+            'ANDHRA PRADESH': [(500001, 535599)],  # 5xxxxx series
+            'ARUNACHAL PRADESH': [(790001, 792129)],  # 79xxxx series
+            'ASSAM': [(781001, 788999)],  # 78xxxx series
+            'BIHAR': [(800001, 855105)],  # 8xxxxx series
+            'CHHATTISGARH': [(490001, 497775)],  # 49xxxx series
+            'GOA': [(403001, 403806)],  # 40xxxx series
+            'GUJARAT': [(360001, 396521)],  # 3xxxxx series
+            'HARYANA': [(121001, 136156)],  # 1xxxxx series
+            'HIMACHAL PRADESH': [(171001, 177601)],  # 1xxxxx series
+            'JHARKHAND': [(813001, 835325)],  # 8xxxxx series
+            'KARNATAKA': [(560001, 591343)],  # 5xxxxx series
+            'KERALA': [(670001, 695613)],  # 6xxxxx series
+            'MADHYA PRADESH': [(450001, 488449)],  # 4xxxxx series
+            'MAHARASHTRA': [(400001, 445402)],  # 4xxxxx series
+            'MANIPUR': [(795001, 795159)],  # 79xxxx series
+            'MEGHALAYA': [(793001, 794115)],  # 79xxxx series
+            'MIZORAM': [(796001, 796901)],  # 79xxxx series
+            'NAGALAND': [(797001, 798627)],  # 79xxxx series
+            'ODISHA': [(750001, 770069)],  # 7xxxxx series
+            'PUNJAB': [(140001, 160106)],  # 1xxxxx series
+            'RAJASTHAN': [(300001, 345033)],  # 3xxxxx series
+            'SIKKIM': [(737001, 737139)],  # 73xxxx series
+            'TAMIL NADU': [(600001, 643252)],  # 6xxxxx series
+            'TELANGANA': [(500001, 509465)],  # 5xxxxx series
+            'TRIPURA': [(799001, 799290)],  # 79xxxx series
+            'UTTAR PRADESH': [(201001, 285204)],  # 2xxxxx series
+            'UTTARAKHAND': [(244001, 263684)],  # 2xxxxx series
+            'WEST BENGAL': [(700001, 743714)],  # 7xxxxx series
+            'DELHI': [(110001, 110097)],  # 11xxxx series
+            'LADAKH': [(194101, 194405)],  # 19xxxx series
+            'PUDUCHERRY': [(605001, 609609)],  # 6xxxxx series
+            'CHANDIGARH': [(160001, 160107)],  # 16xxxx series
+            'LAKSHADWEEP': [(682551, 682559)],  # 68xxxx series
+            'DAMAN AND DIU': [(362001, 362850)],  # 36xxxx series
+            'ANDAMAN AND NICOBAR': [(744101, 744302)],  # 74xxxx series
+        }
+
+    def validate_pincode_for_state(self, pincode, state):
+        """Validate if pincode belongs to a given state
+
+        Args:
+            pincode: 6-digit pincode string (e.g., "518301")
+            state: State name (normalized, e.g., "ANDHRA PRADESH")
+
+        Returns:
+            bool: True if pincode is valid for the state, False otherwise
+
+        Examples:
+            validate_pincode_for_state("518301", "ANDHRA PRADESH") → True
+            validate_pincode_for_state("244713", "ANDHRA PRADESH") → False (it's Uttarakhand)
+        """
+        if not pincode or not state:
+            return False
+
+        try:
+            pin_int = int(pincode)
+        except (ValueError, TypeError):
+            return False
+
+        # Normalize state name
+        state_norm = self.normalize_text(state).upper()
+
+        pincode_ranges = self.get_state_pincode_ranges()
+
+        if state_norm not in pincode_ranges:
+            return False
+
+        ranges = pincode_ranges[state_norm]
+        for start, end in ranges:
+            if start <= pin_int <= end:
+                return True
+
+        return False
+
+    def get_pincode_match_boost(self, master_pincode, seat_pincode, master_state, seat_state):
+        """Calculate confidence boost based on pincode match
+
+        Args:
+            master_pincode: Pincode extracted from master college address
+            seat_pincode: Pincode extracted from seat data address
+            master_state: Master college state
+            seat_state: Seat data state
+
+        Returns:
+            dict: {
+                'pincode_match': bool,  # Both pincodes present and identical
+                'pincode_valid_master': bool,  # Master pincode valid for state
+                'pincode_valid_seat': bool,  # Seat pincode valid for state
+                'confidence_boost': float,  # Boost to add to match score (0.0 - 0.25)
+                'reason': str  # Explanation of the boost
+            }
+        """
+        result = {
+            'pincode_match': False,
+            'pincode_valid_master': False,
+            'pincode_valid_seat': False,
+            'confidence_boost': 0.0,
+            'reason': 'No pincode data available'
+        }
+
+        # If no pincodes available, no boost
+        if not master_pincode and not seat_pincode:
+            result['reason'] = 'No pincode in either address'
+            return result
+
+        # If only one has pincode, minor boost for having location info
+        if not master_pincode or not seat_pincode:
+            result['confidence_boost'] = 0.05
+            result['reason'] = 'Only one address has pincode (minor boost)'
+            return result
+
+        # Both have pincodes - validate them
+        result['pincode_valid_master'] = self.validate_pincode_for_state(master_pincode, master_state)
+        result['pincode_valid_seat'] = self.validate_pincode_for_state(seat_pincode, seat_state)
+
+        # Check if pincodes match
+        pincode_exact_match = master_pincode == seat_pincode
+
+        if pincode_exact_match:
+            result['pincode_match'] = True
+            result['confidence_boost'] = 0.25  # HIGHEST boost for exact pincode match
+            result['reason'] = f'Exact pincode match: {master_pincode}'
+            return result
+
+        # Pincodes don't match
+        if result['pincode_valid_master'] and result['pincode_valid_seat']:
+            # Both valid but different - they're in same state? (shouldn't happen if states differ)
+            # This is actually a negative signal - different locations in same state
+            result['confidence_boost'] = -0.10  # PENALTY for different pincodes
+            result['reason'] = f'Different pincodes in same state: {master_pincode} vs {seat_pincode}'
+        elif result['pincode_valid_master'] and not result['pincode_valid_seat']:
+            # Master is valid, seat pincode is wrong for its state - very suspicious
+            result['confidence_boost'] = -0.15  # PENALTY
+            result['reason'] = f'Seat pincode {seat_pincode} invalid for {seat_state}'
+        elif not result['pincode_valid_master'] and result['pincode_valid_seat']:
+            # Master pincode is wrong - suspicious
+            result['confidence_boost'] = -0.10  # PENALTY
+            result['reason'] = f'Master pincode {master_pincode} invalid for {master_state}'
+        else:
+            # Both pincodes invalid for their states - data quality issue
+            result['confidence_boost'] = 0.0
+            result['reason'] = 'Both pincodes invalid for their states (data quality)'
+
+        return result
 
     def validate_geography(self, query_address, candidate_address, query_state, candidate_state):
         """Validate geographic match between query and candidate
@@ -7169,13 +7404,19 @@ class AdvancedSQLiteMatcher:
 
         Composite College Key Format: "COLLEGE_NAME, ADDRESS"
         This uses the idx_scl_composite_key index on state_college_link for fast lookup
+
+        CRITICAL FIX: Use normalize_state_name_import() for state normalization
+        to match how master data was imported
         """
         try:
-            # Compose the composite key
+            # Compose the composite key (using raw college_name and address)
             composite_key = f"{college_name}, {address}".strip()
 
             if not composite_key:
                 return None
+
+            # Normalize state for comparison
+            normalized_input_state = self.normalize_state_name_import(state)
 
             # Query master_data.db using indexed lookup
             import sqlite3
@@ -7183,6 +7424,7 @@ class AdvancedSQLiteMatcher:
             cursor = conn.cursor()
 
             # Try exact composite_college_key match with state validation
+            # Get all candidates first, then normalize states for comparison
             cursor.execute("""
                 SELECT
                     college_id as id,
@@ -7192,49 +7434,29 @@ class AdvancedSQLiteMatcher:
                     composite_college_key
                 FROM state_college_link
                 WHERE composite_college_key = ?
-                AND UPPER(state) = ?
-                LIMIT 1
-            """, (composite_key, state.upper()))
-
-            result = cursor.fetchone()
-
-            if result:
-                logger.debug(f"⚡ Fast path composite_key match: {composite_key} in {state}")
-                conn.close()
-                return {
-                    'id': result[0],
-                    'name': result[1],
-                    'address': result[2],
-                    'state': result[3],
-                    'composite_college_key': result[4]
-                }
-
-            # If no exact match, try without state filter (in case seat data has wrong state)
-            cursor.execute("""
-                SELECT
-                    college_id as id,
-                    college_name as name,
-                    address,
-                    state,
-                    composite_college_key
-                FROM state_college_link
-                WHERE composite_college_key = ?
-                LIMIT 1
+                LIMIT 5
             """, (composite_key,))
 
-            result = cursor.fetchone()
+            results = cursor.fetchall()
 
-            if result:
-                logger.warning(f"⚠️  Fast path composite_key match (state mismatch): {composite_key} in DB={result[3]} vs input={state}")
-                conn.close()
-                return {
-                    'id': result[0],
-                    'name': result[1],
-                    'address': result[2],
-                    'state': result[3],
-                    'composite_college_key': result[4]
-                }
+            # Find best match considering state normalization
+            for result in results:
+                result_state = result[3]
+                normalized_result_state = self.normalize_state_name_import(result_state) if result_state else ''
 
+                # Match if normalized states match
+                if normalized_input_state and normalized_result_state and normalized_input_state.upper() == normalized_result_state.upper():
+                    logger.debug(f"⚡ Fast path composite_key match: {composite_key} in {state}")
+                    conn.close()
+                    return {
+                        'id': result[0],
+                        'name': result[1],
+                        'address': result[2],
+                        'state': result[3],
+                        'composite_college_key': result[4]
+                    }
+
+            # If no exact state match, return None and let fuzzy matching handle it
             conn.close()
             return None
 
@@ -7290,7 +7512,9 @@ class AdvancedSQLiteMatcher:
 
         # Normalize inputs
         normalized_college = self.normalize_text(college_name)
-        normalized_state = self.normalize_text(state)
+        # CRITICAL FIX: Use normalize_state_name_import() for state (same as master data import)
+        # Master data colleges were imported with normalize_state_name_import("DELHI") → "DELHI (NCT)"
+        normalized_state = self.normalize_state_name_import(state)
         normalized_address = self.normalize_text(address)
 
         # ========================================================================
@@ -7669,8 +7893,15 @@ class AdvancedSQLiteMatcher:
         # ========== PASS 4: FINAL ADDRESS FILTERING (NEW!) ==========
         # Uses address part from composite_college_key to disambiguate
         # between multiple campuses of the same college
+        # ENHANCED: Also applies pincode validation if available
         if normalized_address:
-            college_matches = self.pass4_final_address_filtering(college_matches, normalized_address, normalized_college)
+            college_matches = self.pass4_final_address_filtering(
+                college_matches,
+                normalized_address,
+                normalized_college,
+                seat_address=address,  # Raw address for pincode extraction
+                seat_state=state       # State for pincode validation
+            )
 
             if not college_matches:
                 logger.warning(f"⚠️  All {len(college_matches)} name matches REJECTED due to address mismatch in PASS 4")
@@ -9843,8 +10074,121 @@ class AdvancedSQLiteMatcher:
 
         results['stats']['college_address_violations'] = len(df_address_violations)
 
-        # ==================== CHECK 3: Expected row counts ====================
-        console.print("[bold]Check 3: Expected Row Counts[/bold]")
+        # ==================== CHECK 3: State-College Link Validation ====================
+        console.print("[bold]Check 3: State-College Link Validation[/bold]")
+        console.print("[dim]   Constraint: Verify college_id + state_id relationships are valid (using primary keys)[/dim]")
+
+        # IMPROVED VALIDATION: Use state_id + college_id (actual relationships) instead of composite_college_key
+        # This is more accurate because we're validating relationships, not matching text
+        query = """
+            SELECT
+                scl.college_id,
+                scl.state_id,
+                c.id as college_exists,
+                s.id as state_exists,
+                c.state as college_state,
+                s.normalized_name as state_name,
+                COUNT(*) as link_count
+            FROM state_college_link scl
+            LEFT JOIN colleges c ON scl.college_id = c.id
+            LEFT JOIN states s ON scl.state_id = s.id
+            GROUP BY scl.college_id, scl.state_id
+            ORDER BY link_count DESC
+        """
+
+        try:
+            df_scl = pd.read_sql(query, conn)
+
+            if len(df_scl) == 0:
+                console.print("[yellow]   ⚠️  WARNING: state_college_link table is empty[/yellow]\n")
+                results['violations'].append('empty_state_college_link')
+            else:
+                # Validate college_id + state_id relationships
+                missing_colleges = []
+                missing_states = []
+                duplicate_links = []
+                state_mismatches = []
+
+                for idx, row in df_scl.iterrows():
+                    # Check if college exists
+                    if pd.isna(row['college_exists']):
+                        missing_colleges.append(row['college_id'])
+
+                    # Check if state exists
+                    if pd.isna(row['state_exists']):
+                        missing_states.append(f"{row['state_id']}")
+
+                    # Check for duplicate links (same college_id + state_id in state_college_link)
+                    if row['link_count'] > 1:
+                        duplicate_links.append({
+                            'college_id': row['college_id'],
+                            'state_id': row['state_id'],
+                            'count': row['link_count']
+                        })
+
+                    # Check if college's normalized_state matches the linked state
+                    if not pd.isna(row['college_exists']) and row['college_state']:
+                        normalized_college_state = self.normalize_state_name_import(row['college_state'])
+                        if not pd.isna(row['state_exists']) and row['state_name']:
+                            if normalized_college_state and normalized_college_state.upper() != row['state_name'].upper():
+                                state_mismatches.append({
+                                    'college_id': row['college_id'],
+                                    'state_id': row['state_id'],
+                                    'college_state': row['college_state'],
+                                    'linked_state': row['state_name']
+                                })
+
+                # Report results
+                issues_found = missing_colleges or missing_states or duplicate_links or state_mismatches
+
+                if missing_colleges:
+                    results['passed'] = False
+                    results['violations'].append('missing_colleges_in_link')
+                    console.print(f"[red]   ❌ FAILED: {len(missing_colleges)} college IDs in state_college_link do not exist in colleges table[/red]")
+                    for college_id in missing_colleges[:5]:
+                        console.print(f"   • Missing college: {college_id}")
+                    if len(missing_colleges) > 5:
+                        console.print(f"[dim]   ... and {len(missing_colleges) - 5} more[/dim]\n")
+
+                if missing_states:
+                    results['passed'] = False
+                    results['violations'].append('missing_states_in_link')
+                    console.print(f"[red]   ❌ FAILED: {len(missing_states)} state IDs in state_college_link do not exist in states table[/red]")
+                    for state_id in missing_states[:5]:
+                        console.print(f"   • Missing state: {state_id}")
+                    if len(missing_states) > 5:
+                        console.print(f"[dim]   ... and {len(missing_states) - 5} more[/dim]\n")
+
+                if duplicate_links:
+                    results['passed'] = False
+                    results['violations'].append('duplicate_state_college_links')
+                    console.print(f"[red]   ❌ FAILED: {len(duplicate_links)} college-state relationships have duplicates[/red]")
+                    for dup in duplicate_links[:3]:
+                        console.print(f"   • {dup['college_id']} + {dup['state_id']}: {dup['count']} duplicate records")
+                    if len(duplicate_links) > 3:
+                        console.print(f"[dim]   ... and {len(duplicate_links) - 3} more[/dim]\n")
+
+                if state_mismatches:
+                    console.print(f"[yellow]   ⚠️  WARNING: {len(state_mismatches)} colleges linked to mismatched states[/yellow]")
+                    for mismatch in state_mismatches[:3]:
+                        console.print(f"   • {mismatch['college_id']}: stored as {mismatch['college_state']} but linked to {mismatch['linked_state']}")
+                    if len(state_mismatches) > 3:
+                        console.print(f"[dim]   ... and {len(state_mismatches) - 3} more[/dim]\n")
+
+                if not issues_found:
+                    console.print("[green]   ✅ PASSED: All college_id + state_id relationships are valid[/green]\n")
+
+                results['stats']['state_college_link_records'] = len(df_scl)
+                results['stats']['missing_colleges'] = len(missing_colleges)
+                results['stats']['missing_states'] = len(missing_states)
+                results['stats']['duplicate_links'] = len(duplicate_links)
+                results['stats']['state_mismatches'] = len(state_mismatches)
+
+        except Exception as e:
+            console.print(f"[yellow]   ⚠️  Could not validate state_college_link: {e}[/yellow]\n")
+
+        # ==================== CHECK 4: Expected row counts ====================
+        console.print("[bold]Check 4: Expected Row Counts[/bold]")
 
         # seat_data unique combinations
         query = "SELECT COUNT(*) FROM seat_data WHERE master_college_id IS NOT NULL"
@@ -13284,22 +13628,77 @@ class AdvancedSQLiteMatcher:
 
         return validated_matches
 
-    def pass4_final_address_filtering(self, matches, normalized_address, normalized_college=''):
+    def apply_pincode_validation_to_match(self, match, seat_address, master_address, seat_state):
+        """Apply pincode validation and boost match confidence if pincodes align
+
+        Args:
+            match: Match dictionary with 'address_score'
+            seat_address: Raw address from seat data
+            master_address: Raw address from master data
+            seat_state: State from seat data (for pincode validation)
+
+        Returns:
+            dict: Updated match with pincode_boost applied to address_score
+        """
+        # Extract pincodes from both addresses
+        seat_pincode = self.extract_pincode(seat_address)
+        master_pincode = self.extract_pincode(master_address)
+
+        # Get master state from match candidate
+        candidate = match.get('candidate', {})
+        master_state = candidate.get('state', '') or match.get('state', '')
+
+        # Calculate pincode boost
+        pincode_result = self.get_pincode_match_boost(
+            master_pincode,
+            seat_pincode,
+            master_state,
+            seat_state
+        )
+
+        # Apply boost to address score
+        original_score = match.get('address_score', 0)
+        boosted_score = original_score + pincode_result['confidence_boost']
+
+        # Clamp to [0, 100] range
+        match['address_score'] = max(0, min(100, boosted_score))
+
+        # Store pincode validation details
+        match['pincode_validation'] = {
+            'seat_pincode': seat_pincode,
+            'master_pincode': master_pincode,
+            'pincode_match': pincode_result['pincode_match'],
+            'pincode_boost': pincode_result['confidence_boost'],
+            'reason': pincode_result['reason']
+        }
+
+        if pincode_result['confidence_boost'] != 0.0:
+            direction = "↑" if pincode_result['confidence_boost'] > 0 else "↓"
+            logger.debug(f"{direction} PINCODE: {pincode_result['reason']} (boost: {pincode_result['confidence_boost']:+.2f})")
+
+        return match
+
+    def pass4_final_address_filtering(self, matches, normalized_address, normalized_college='', seat_address='', seat_state=''):
         """Pass 4: Final address filtering using composite_college_key address part
 
         NEW: Composite College Key Fix - Final disambiguation step
+        ENHANCED: Pincode validation for confidence boosting
 
         SEQUENTIAL FLOW:
-        STATE → COURSE → COMPOSITE_COLLEGE_KEY → ADDRESS (THIS FUNCTION)
+        STATE → COURSE → COMPOSITE_COLLEGE_KEY → ADDRESS (THIS FUNCTION) → PINCODE BOOST
 
         This is the FINAL step in the new sequential filtering flow.
         Uses the address part from composite_college_key (after comma) to
         disambiguate between multiple campuses of the same college.
 
+        Also validates pincodes (if present) to boost match confidence.
+
         Args:
             matches: List of matches from name filtering (may have multiple campuses)
             normalized_address: Normalized address from seat data
             normalized_college: Normalized college name (for logging)
+            seat_address: Raw address from seat data (for pincode extraction)
+            seat_state: State from seat data (for pincode validation)
 
         Returns:
             List of filtered matches (only those with matching address)
@@ -13349,27 +13748,104 @@ class AdvancedSQLiteMatcher:
 
             # Determine if address matches
             is_generic_college = self.is_generic_college_name(normalized_college)
+            is_ultra_generic = self.is_ultra_generic_college_name(normalized_college)
 
-            if len(common_keywords) > 0:
-                # Address match found!
-                # Add address score and mark as validated
+            # CRITICAL FIX: For ULTRA-GENERIC colleges, require LOCATION KEYWORD from master
+            # Master data has KEYWORDS (concise), Seat data has COMPLETE ADDRESSES
+            # Example: Master has "AREA HOSPITAL, SRI KALAHASTHI CHITOTORM"
+            #          Seat might have "AREA HOSPITAL NEAR YSR STATUE VICTORIAPET ADONI"
+            # Current bug: Both match "AREA" + "HOSPITAL" → FALSE MATCH ❌
+            # Fix: Require seat data contains location keyword from master (SRI KALAHASTHI or CHITOTORM)
+            if is_ultra_generic and len(common_keywords) > 0:
+                # For ultra-generic colleges, extract location keywords from master address
+                # Location keywords are usually AFTER the college name (in composite_college_key)
+                # Format: "COLLEGE_NAME, LOCATION1, LOCATION2..."
+
+                # Get location keywords from master (non-generic, non-generic-terms)
+                location_keywords = set()
+                for kw in master_keywords_lower:
+                    # Location keywords are usually place names (longer words, not abbreviations)
+                    if len(kw) > 3 and kw not in ['HOSPITAL', 'AREA', 'DISTRICT', 'GENERAL']:
+                        location_keywords.add(kw)
+
+                if location_keywords:
+                    # PRIORITY 1: Check if seat data contains ALL location keywords from master (strict)
+                    location_match_all = location_keywords.issubset(seat_keywords_lower)
+
+                    # PRIORITY 2: Check if seat data contains at least ONE location keyword from master (lenient)
+                    location_match_any = bool(location_keywords & seat_keywords_lower)
+
+                    if location_match_all:
+                        # All location keywords match - HIGH CONFIDENCE
+                        match['address_score'] = len(common_keywords) + len(location_keywords)
+                        match['address_validated'] = True
+                        match['address_source'] = address_source
+                        match['location_match_type'] = 'all'
+                        filtered_matches.append(match)
+                        logger.debug(f"✅ ADDRESS MATCH (ultra-generic, ALL locations): {candidate['id']} from {address_source} (all={location_keywords})")
+
+                    elif location_match_any:
+                        # At least ONE location keyword matches - MEDIUM CONFIDENCE
+                        match['address_score'] = len(common_keywords)
+                        match['address_validated'] = True
+                        match['address_source'] = address_source
+                        match['location_match_type'] = 'any'
+                        filtered_matches.append(match)
+                        logger.debug(f"✅ ADDRESS MATCH (ultra-generic, ANY location): {candidate['id']} from {address_source} (any={location_keywords & seat_keywords_lower})")
+
+                    else:
+                        # No location keywords match - REJECT
+                        logger.debug(f"❌ ADDRESS REJECTED (ultra-generic, wrong location): {candidate['id']} from {address_source} (expected={location_keywords}, found={seat_keywords_lower})")
+                        continue  # Don't include in filtered matches
+                else:
+                    # No location keywords extracted - shouldn't happen, accept with warning
+                    match['address_score'] = len(common_keywords)
+                    match['address_validated'] = False
+                    match['address_source'] = address_source
+                    filtered_matches.append(match)
+                    logger.warning(f"⚠️  ADDRESS MATCH (ultra-generic, no location kw): {candidate['id']} from {address_source}")
+
+            elif len(common_keywords) > 0:
+                # Non-ultra-generic with keyword match - accept
                 match['address_score'] = len(common_keywords)
                 match['address_validated'] = True
                 match['address_source'] = address_source
                 filtered_matches.append(match)
                 logger.debug(f"✅ ADDRESS MATCH: {candidate['id']} from {address_source} (common={len(common_keywords)} keywords)")
+
             elif is_generic_college and len(common_keywords) == 0:
                 # Generic college with NO address match - reject
-                logger.debug(f"❌ ADDRESS REJECTED (generic): {candidate['id']} - {address_source} (common={len(common_keywords)} keywords)")
+                logger.debug(f"❌ ADDRESS REJECTED (generic, no match): {candidate['id']} - {address_source}")
                 continue  # Don't include in filtered matches
+
             else:
                 # Specific college with NO address match - include but mark as unvalidated
-                # (will be handled by later validation logic)
                 match['address_score'] = 0
                 match['address_validated'] = False
                 match['address_source'] = address_source
                 logger.debug(f"⚠️  ADDRESS MISMATCH: {candidate['id']} from {address_source} (common={len(common_keywords)} keywords)")
                 filtered_matches.append(match)
+
+        # ENHANCEMENT: Apply pincode validation to boost match confidence
+        # If pincode data is available in addresses, use it to enhance match scores
+        if seat_address and seat_state:
+            logger.info(f"📍 PASS 4: Applying pincode validation to {len(filtered_matches)} matches...")
+            for match in filtered_matches:
+                try:
+                    candidate = match.get('candidate', {})
+                    master_address = candidate.get('address', '')
+
+                    # Apply pincode boost if both addresses available
+                    if master_address:
+                        match = self.apply_pincode_validation_to_match(
+                            match,
+                            seat_address,
+                            master_address,
+                            seat_state
+                        )
+                except Exception as e:
+                    logger.debug(f"⚠️  Pincode validation error: {e}")
+                    # Continue without pincode boost if error
 
         logger.info(f"📍 PASS 4: Address filtering complete: {len(matches)} → {len(filtered_matches)} validated candidates")
         return filtered_matches
@@ -13515,25 +13991,58 @@ class AdvancedSQLiteMatcher:
     
     def is_generic_college_name(self, college_name):
         """Detect if college name is generic (exists in multiple locations).
-        
+
         Args:
             college_name: Normalized college name
-            
+
         Returns:
             bool: True if name is generic
         """
         if not college_name:
             return False
-        
+
         generic_terms = set(self.config.get('validation', {}).get('generic_name_terms', [
             'GOVERNMENT', 'MEDICAL', 'COLLEGE', 'DENTAL', 'INSTITUTE', 'HOSPITAL', 'UNIVERSITY'
         ]))
-        
+
         name_terms = set(college_name.upper().split())
         non_generic_terms = name_terms - generic_terms
-        
+
         max_non_generic = self.config.get('validation', {}).get('generic_name_max_non_generic_terms', 2)
         return len(non_generic_terms) <= max_non_generic
+
+    def is_ultra_generic_college_name(self, college_name):
+        """Detect ULTRA-GENERIC names that exist in many states/districts.
+
+        These need STRICT address validation (exact match, not keyword overlap)
+        Examples: SADAR HOSPITAL, DISTRICT HOSPITAL, GENERAL HOSPITAL, GOVERNMENT HOSPITAL
+
+        Args:
+            college_name: Normalized college name
+
+        Returns:
+            bool: True if name is ultra-generic
+        """
+        if not college_name:
+            return False
+
+        ultra_generic_patterns = [
+            'SADAR HOSPITAL',
+            'DISTRICT HOSPITAL',
+            'GENERAL HOSPITAL',
+            'GOVERNMENT HOSPITAL',
+            'AREA HOSPITAL',
+            'COMMUNITY HEALTH',
+            'PRIMARY HEALTH',
+            'GOVERNMENT MEDICAL',
+            'GOVERNMENT DENTAL'
+        ]
+
+        for pattern in ultra_generic_patterns:
+            if pattern in college_name.upper():
+                return True
+
+        return False
 
     def validate_address_match(self, seat_address, master_address, college_name='', match_type='exact'):
         """Validate address match with configurable threshold.
@@ -14448,20 +14957,20 @@ class AdvancedSQLiteMatcher:
 
                     console.print(f"[cyan]📝 Updating {len(all_pass2_results):,} records with PASS 2 alias results...[/cyan]")
 
-                    # Merge PASS 2 results back into main results_df
+                    # CRITICAL FIX: Update results_df with PASS 2 results
+                    # Update for ALL records in pass2_df (including matches and no-matches)
+                    # This preserves all original fields while adding/updating matching fields
                     for _, pass2_row in pass2_df.iterrows():
-                        if pass2_row.get('master_college_id'):  # Only update if alias matching found something
-                            record_id = pass2_row.get('id')
-                            if 'id' in results_df.columns:
-                                mask = results_df['id'] == record_id
-                                if mask.any():
-                                    # Update with alias match
-                                    results_df.loc[mask, 'master_college_id'] = pass2_row['master_college_id']
-                                    results_df.loc[mask, 'college_match_score'] = pass2_row.get('college_match_score', 0)
-                                    results_df.loc[mask, 'college_match_method'] = pass2_row.get('college_match_method', 'no_match')
-                                    results_df.loc[mask, 'master_course_id'] = pass2_row['master_course_id']
-                                    results_df.loc[mask, 'course_match_score'] = pass2_row.get('course_match_score', 0)
-                                    results_df.loc[mask, 'course_match_method'] = pass2_row.get('course_match_method', 'no_match')
+                        record_id = pass2_row.get('id')
+                        if 'id' in results_df.columns:
+                            mask = results_df['id'] == record_id
+                            if mask.any():
+                                # Update ALL fields from pass2_row to preserve original data
+                                for col in pass2_row.index:
+                                    results_df.loc[mask, col] = pass2_row[col]
+
+                                # Also explicitly set matching fields
+                                if pass2_row.get('master_college_id'):
                                     results_df.loc[mask, 'is_linked'] = True
 
                     # Ensure all required columns are present before saving
@@ -14501,29 +15010,20 @@ class AdvancedSQLiteMatcher:
                                 results_df = results_df.sort_index()
 
                     # ================================================================
-                    # CRITICAL FIX: UPDATE DATABASE WITH PASS 2 RESULTS (NOT REPLACE!)
+                    # CRITICAL FIX: SAVE results_df (NOT fresh current_df)
                     # ================================================================
-                    # Read the full current database state (has all PASS 1 records)
-                    current_df = pd.read_sql(f"SELECT * FROM {table_name}", conn)
-
-                    # Update current_df with PASS 2 results by matching on 'id'
-                    for _, pass2_row in pass2_df.iterrows():
-                        if pass2_row.get('master_college_id'):
-                            record_id = pass2_row.get('id')
-                            # Find matching row in current_df and update it
-                            mask = current_df['id'] == record_id
-                            if mask.any():
-                                current_df.loc[mask, 'master_college_id'] = pass2_row.get('master_college_id')
-                                current_df.loc[mask, 'college_match_score'] = pass2_row.get('college_match_score', 0)
-                                current_df.loc[mask, 'college_match_method'] = pass2_row.get('college_match_method', 'no_match')
-                                current_df.loc[mask, 'master_course_id'] = pass2_row.get('master_course_id')
-                                current_df.loc[mask, 'course_match_score'] = pass2_row.get('course_match_score', 0)
-                                current_df.loc[mask, 'course_match_method'] = pass2_row.get('course_match_method', 'no_match')
-                                current_df.loc[mask, 'is_linked'] = True
-
-                    # Save the UPDATED database (preserving all PASS 1 records + PASS 2 updates)
-                    # ✅ CRITICAL: Use replace with the FULL dataset, not just PASS 2 results
-                    current_df.to_sql(table_name, conn, if_exists='replace', index=False)
+                    # IMPORTANT: Use results_df which has:
+                    #   1. PASS 1 matches (lines 14687-14700)
+                    #   2. PASS 2 updates (lines 14687-14700)
+                    #   3. Deduplication (lines 14732-14736) - removes duplicates
+                    #
+                    # DO NOT re-read current_df from database because it would:
+                    #   - Lose the deduplication work (825 records dropped)
+                    #   - Not have PASS 2 updates applied
+                    #   - Overwrite deduplicated data with old database state
+                    #
+                    # results_df ALREADY has all the processed data, just save it
+                    results_df.to_sql(table_name, conn, if_exists='replace', index=False)
                     conn.commit()
 
                     console.print(f"[green]✅ PASS 2 Results:[/green]")
@@ -17798,10 +18298,13 @@ class AdvancedSQLiteMatcher:
             return df
 
     def _ensure_dataframe_columns(self, df, table_name='seat_data'):
-        """Ensure DataFrame has all required columns for seat_data table"""
+        """Ensure DataFrame has all required columns for seat_data table
+
+        CRITICAL: Only add missing columns, NEVER overwrite existing data with None!
+        """
         if table_name != 'seat_data':
             return df
-        
+
         # Define all required columns for seat_data table
         required_columns = [
             'id', 'college_name', 'course_name', 'seats', 'state', 'address',
@@ -17812,27 +18315,56 @@ class AdvancedSQLiteMatcher:
             'college_match_score', 'course_match_score', 'college_match_method',
             'course_match_method', 'is_linked', 'state_id', 'college_id', 'course_id'
         ]
-        
-        # Add missing columns with None/0 values
-        for col in required_columns:
+
+        # CRITICAL FIX: Only add missing columns for MATCHING fields, NOT original data
+        # Original data columns should NEVER be added as None if they're missing
+        matching_columns = [
+            'master_college_id', 'master_course_id', 'master_state_id',
+            'college_match_score', 'course_match_score', 'college_match_method',
+            'course_match_method', 'is_linked', 'state_id', 'college_id', 'course_id'
+        ]
+
+        original_data_columns = [
+            'id', 'college_name', 'course_name', 'seats', 'state', 'address',
+            'management', 'university_affiliation', 'normalized_college_name',
+            'normalized_course_name', 'normalized_state', 'normalized_address',
+            'course_type', 'source_file', 'created_at', 'updated_at'
+        ]
+
+        # Add ONLY matching columns if missing (safe to add as None)
+        for col in matching_columns:
             if col not in df.columns:
                 if col == 'is_linked':
                     df[col] = 0
-                elif col == 'seats':
-                    df[col] = 0
+                elif col in ['college_match_score', 'course_match_score']:
+                    df[col] = 0.0
                 else:
                     df[col] = None
-        
-        # Remove any columns that aren't in required list (except validation columns)
+
+        # DO NOT add original data columns - they must be preserved from source
+        # If they're missing, something went wrong upstream, don't mask the error
+
+        # Keep all columns (both required and any extras)
+        # This preserves original data and doesn't delete columns
         allowed_extra_columns = ['validation_status', 'validation_errors', 'record_hash']
-        columns_to_keep = required_columns + [col for col in df.columns if col in allowed_extra_columns]
-        df = df[[col for col in columns_to_keep if col in df.columns]]
-        
-        # Reorder columns to match expected schema
-        ordered_columns = [col for col in required_columns if col in df.columns]
-        if ordered_columns:
-            df = df[ordered_columns]
-        
+
+        # Keep all columns that exist in df
+        # Don't use columns_to_keep filtering that removes columns
+        # Just return the dataframe as-is
+
+        # Reorder columns to match expected schema, but keep all columns
+        ordered_columns = []
+        for col in required_columns:
+            if col in df.columns:
+                ordered_columns.append(col)
+
+        # Add any extra columns not in required list
+        for col in df.columns:
+            if col not in ordered_columns:
+                ordered_columns.append(col)
+
+        df = df[ordered_columns]
+
         return df
 
     def _ensure_seat_data_table_schema(self, conn, table_name='seat_data'):
