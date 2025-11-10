@@ -14275,12 +14275,17 @@ class AdvancedSQLiteMatcher:
                                          (results_df['master_college_id'] == '')]
 
                 if len(matched_df) > 0:
-                    # Group by (college_id + state) and find duplicates
-                    grouped = matched_df.groupby(['master_college_id', 'state'])
+                    # FIXED: Group by (college_id + state + course_id) to avoid dropping valid different-course matches
+                    # CRITICAL: Must include course_id because the same college in same state can offer multiple courses
+                    groupby_cols = ['master_college_id', 'state']
+                    if 'master_course_id' in matched_df.columns:
+                        groupby_cols.append('master_course_id')
+
+                    grouped = matched_df.groupby(groupby_cols)
                     duplicates_count = 0
                     rows_to_drop = []
 
-                    for (college_id, state), group in grouped:
+                    for group_key, group in grouped:
                         if len(group) > 1:
                             # Multiple matches for same college in same state - FALSE MATCHES!
                             # Keep the one with highest score, drop others
@@ -14293,7 +14298,16 @@ class AdvancedSQLiteMatcher:
 
                                 # Log the deduplication action
                                 best_score = group.loc[best_idx, score_col]
-                                logger.warning(f"🔄 DEDUPLICATION: college_id={college_id} in state={state}")
+                                # group_key can be (college_id, state) or (college_id, state, course_id)
+                                if isinstance(group_key, tuple):
+                                    college_id = group_key[0]
+                                    state = group_key[1]
+                                    course_info = f", course={group_key[2]}" if len(group_key) > 2 else ""
+                                else:
+                                    college_id = group_key
+                                    state = ""
+                                    course_info = ""
+                                logger.warning(f"🔄 DEDUPLICATION: college_id={college_id} in state={state}{course_info}")
                                 logger.warning(f"   Found {len(group)} matches, keeping best (score={best_score:.2f}), dropping {len(worst_indices)} false matches")
 
                     if duplicates_count > 0:
@@ -14428,8 +14442,10 @@ class AdvancedSQLiteMatcher:
                     results_df = self._ensure_dataframe_columns(results_df, table_name)
 
                     # ================================================================
-                    # P0 FIX: DEDUPLICATION (PASS 2) - Same logic as PASS 1
+                    # P0 FIX: DEDUPLICATION (PASS 2) - MUST include course_id!
                     # ================================================================
+                    # CRITICAL: Group by (college_id, state, course_id) NOT just (college_id, state)
+                    # Because the same seat record can match to DIFFERENT courses in the same college
                     if 'master_college_id' in results_df.columns and 'state' in results_df.columns:
                         matched_df = results_df[results_df['master_college_id'].notna() &
                                                (results_df['master_college_id'] != '')]
@@ -14437,11 +14453,16 @@ class AdvancedSQLiteMatcher:
                                                  (results_df['master_college_id'] == '')]
 
                         if len(matched_df) > 0:
-                            grouped = matched_df.groupby(['master_college_id', 'state'])
+                            # FIXED: Include master_course_id in grouping to avoid dropping valid different-course matches
+                            groupby_cols = ['master_college_id', 'state']
+                            if 'master_course_id' in matched_df.columns:
+                                groupby_cols.append('master_course_id')
+
+                            grouped = matched_df.groupby(groupby_cols)
                             duplicates_count = 0
                             rows_to_drop = []
 
-                            for (college_id, state), group in grouped:
+                            for group_key, group in grouped:
                                 if len(group) > 1:
                                     score_col = 'college_match_score' if 'college_match_score' in group.columns else 'score'
                                     if score_col in group.columns:
@@ -14457,25 +14478,29 @@ class AdvancedSQLiteMatcher:
                                 results_df = results_df.sort_index()
 
                     # ================================================================
-                    # CRITICAL FIX: MERGE ORIGINAL COLUMNS BACK (PASS 2) - Same as PASS 1
+                    # CRITICAL FIX: UPDATE DATABASE WITH PASS 2 RESULTS (NOT REPLACE!)
                     # ================================================================
-                    # Read the current database state (which has original columns from PASS 1)
+                    # Read the full current database state (has all PASS 1 records)
                     current_df = pd.read_sql(f"SELECT * FROM {table_name}", conn)
 
-                    if 'id' in current_df.columns and 'id' in results_df.columns:
-                        original_cols = set(current_df.columns)
-                        matching_cols = set(results_df.columns)
-                        preserve_cols = [col for col in original_cols
-                                        if col not in matching_cols and col != 'id']
+                    # Update current_df with PASS 2 results by matching on 'id'
+                    for _, pass2_row in pass2_df.iterrows():
+                        if pass2_row.get('master_college_id'):
+                            record_id = pass2_row.get('id')
+                            # Find matching row in current_df and update it
+                            mask = current_df['id'] == record_id
+                            if mask.any():
+                                current_df.loc[mask, 'master_college_id'] = pass2_row.get('master_college_id')
+                                current_df.loc[mask, 'college_match_score'] = pass2_row.get('college_match_score', 0)
+                                current_df.loc[mask, 'college_match_method'] = pass2_row.get('college_match_method', 'no_match')
+                                current_df.loc[mask, 'master_course_id'] = pass2_row.get('master_course_id')
+                                current_df.loc[mask, 'course_match_score'] = pass2_row.get('course_match_score', 0)
+                                current_df.loc[mask, 'course_match_method'] = pass2_row.get('course_match_method', 'no_match')
+                                current_df.loc[mask, 'is_linked'] = True
 
-                        if preserve_cols:
-                            for col in preserve_cols:
-                                if col in current_df.columns:
-                                    existing_map = dict(zip(current_df['id'], current_df[col]))
-                                    results_df[col] = results_df['id'].map(existing_map)
-
-                    # Save PASS 2 results back to database
-                    results_df.to_sql(table_name, conn, if_exists='replace', index=False)
+                    # Save the UPDATED database (preserving all PASS 1 records + PASS 2 updates)
+                    # ✅ CRITICAL: Use replace with the FULL dataset, not just PASS 2 results
+                    current_df.to_sql(table_name, conn, if_exists='replace', index=False)
                     conn.commit()
 
                     console.print(f"[green]✅ PASS 2 Results:[/green]")
