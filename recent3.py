@@ -6794,18 +6794,20 @@ class AdvancedSQLiteMatcher:
             # Debug check removed - types are now correctly loaded
 
             # Step 2: Filter by STATE first (most restrictive - reduces 2443 to ~127)
-            normalized_state = self.normalize_state(state)
-            if normalized_state is None:
-                normalized_state = self.normalize_text(state)
+            # CRITICAL FIX: Use normalize_state_name_import() to match how master data was imported
+            # Master data colleges were imported with normalize_state_name_import("DELHI") → "DELHI (NCT)"
+            # But get_college_pool() was using normalize_state("DELHI") → None/fallback to "DELHI"
+            # Result: State filtering failed even with exact matches!
+            normalized_state = self.normalize_state_name_import(state)
 
             # Filter colleges by state using proper state normalization
             state_filtered = []
             for c in all_colleges:
-                # Get college's state and normalize it
+                # Get college's state and normalize it using the SAME function as import
                 college_state = c.get('state', '')
-                college_state_normalized = self.normalize_state(college_state) if college_state else ''
+                college_state_normalized = self.normalize_state_name_import(college_state) if college_state else ''
 
-                # Also check the pre-normalized field if it exists
+                # Also check the pre-normalized field if it exists (already normalized from import)
                 college_normalized_state_field = c.get('normalized_state', '')
 
                 # Match if either normalized values match
