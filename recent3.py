@@ -7159,7 +7159,87 @@ class AdvancedSQLiteMatcher:
         except Exception as e:
             logger.warning(f"TF-IDF similarity calculation failed: {e}")
             return 0.0
-    
+
+    def fast_path_composite_key_lookup(self, college_name, address, state):
+        """Fast indexed lookup using composite_college_key on SQLite
+
+        PERFORMANCE: O(log n) indexed lookup (~1ms) vs fuzzy matching (~50ms)
+
+        Composite College Key Format: "COLLEGE_NAME, ADDRESS"
+        This uses the idx_scl_composite_key index on state_college_link for fast lookup
+        """
+        try:
+            # Compose the composite key
+            composite_key = f"{college_name}, {address}".strip()
+
+            if not composite_key:
+                return None
+
+            # Query master_data.db using indexed lookup
+            import sqlite3
+            conn = sqlite3.connect(self.master_db_path)
+            cursor = conn.cursor()
+
+            # Try exact composite_college_key match with state validation
+            cursor.execute("""
+                SELECT
+                    college_id as id,
+                    college_name as name,
+                    address,
+                    state,
+                    composite_college_key
+                FROM state_college_link
+                WHERE composite_college_key = ?
+                AND UPPER(state) = ?
+                LIMIT 1
+            """, (composite_key, state.upper()))
+
+            result = cursor.fetchone()
+
+            if result:
+                logger.debug(f"⚡ Fast path composite_key match: {composite_key} in {state}")
+                conn.close()
+                return {
+                    'id': result[0],
+                    'name': result[1],
+                    'address': result[2],
+                    'state': result[3],
+                    'composite_college_key': result[4]
+                }
+
+            # If no exact match, try without state filter (in case seat data has wrong state)
+            cursor.execute("""
+                SELECT
+                    college_id as id,
+                    college_name as name,
+                    address,
+                    state,
+                    composite_college_key
+                FROM state_college_link
+                WHERE composite_college_key = ?
+                LIMIT 1
+            """, (composite_key,))
+
+            result = cursor.fetchone()
+
+            if result:
+                logger.warning(f"⚠️  Fast path composite_key match (state mismatch): {composite_key} in DB={result[3]} vs input={state}")
+                conn.close()
+                return {
+                    'id': result[0],
+                    'name': result[1],
+                    'address': result[2],
+                    'state': result[3],
+                    'composite_college_key': result[4]
+                }
+
+            conn.close()
+            return None
+
+        except Exception as e:
+            logger.warning(f"Fast path composite_key lookup failed: {e}")
+            return None
+
     @perf_monitor.track_time("match_college_enhanced")
     def match_college_enhanced(self, college_name, state, course_type, address='', course_name=''):
         """Enhanced college matching with proper 4-pass mechanism and DIPLOMA fallback logic
@@ -7210,7 +7290,31 @@ class AdvancedSQLiteMatcher:
         normalized_college = self.normalize_text(college_name)
         normalized_state = self.normalize_text(state)
         normalized_address = self.normalize_text(address)
-        
+
+        # ========================================================================
+        # FAST PATH: DIRECT COMPOSITE_COLLEGE_KEY INDEXED LOOKUP (BEFORE fuzzy matching)
+        # ========================================================================
+        # If we have both college name and address, try direct indexed lookup first
+        # This uses the idx_scl_composite_key index on master_data.db for O(log n) performance
+        # Bypasses the fuzzy matching and address pre-filtering that causes false negatives
+        # ========================================================================
+        if address and normalized_address:
+            fast_path_result = self.fast_path_composite_key_lookup(
+                college_name=normalized_college,
+                address=normalized_address,
+                state=normalized_state
+            )
+            if fast_path_result:
+                logger.info(
+                    f"⚡ FAST PATH (composite_college_key): {college_name[:40]} → "
+                    f"{fast_path_result.get('name', '')[:40]} (ID: {fast_path_result.get('id')})"
+                )
+                # Cache the result
+                if self.redis_cache.enabled:
+                    cache_key = f"college:{state}:{college_name}:{course_type}:{address[:20]}"
+                    self.redis_cache.set(cache_key, (fast_path_result, 1.0, 'fast_path_composite_key'), ttl=3600)
+                return (fast_path_result, 1.0, 'fast_path_composite_key')
+
         # Execute matching based on course type
         if course_type == 'diploma' and course_name in self.config['diploma_courses']['overlapping']:
             result = self.match_overlapping_diploma_course(college_name, state, address, course_name)
@@ -9642,18 +9746,18 @@ class AdvancedSQLiteMatcher:
 
         # ==================== CRITICAL CHECK 1: college_id + state_id uniqueness ====================
         console.print("[bold]Check 1: College ID + State ID Uniqueness[/bold]")
-        console.print("[dim]   Constraint: Each college_id should exist in ONLY ONE state[/dim]")
+        console.print("[dim]   Constraint: Each college_id should exist in ONLY ONE state (considering aliases)[/dim]")
 
         query = """
             SELECT
                 master_college_id,
-                COUNT(DISTINCT state) as state_count,
-                GROUP_CONCAT(state, ', ') as states,
+                COUNT(DISTINCT normalized_state) as state_count,
+                GROUP_CONCAT(normalized_state, ', ') as states,
                 COUNT(*) as total_records
             FROM seat_data
             WHERE master_college_id IS NOT NULL
             GROUP BY master_college_id
-            HAVING COUNT(DISTINCT state) > 1
+            HAVING COUNT(DISTINCT normalized_state) > 1
             ORDER BY state_count DESC, total_records DESC
         """
 
@@ -17151,6 +17255,9 @@ class AdvancedSQLiteMatcher:
                                                        enable_dedup=not clear_before_import,
                                                        clear_before_import=False if idx > 0 else clear_before_import)
 
+                    # Ensure count is an integer (safeguard against None returns)
+                    count = count if count is not None else 0
+
                     results.append({
                         'file': file_name,
                         'records': count,
@@ -17827,9 +17934,11 @@ class AdvancedSQLiteMatcher:
             record['updated_at'] = datetime.now().isoformat()
             
             # Normalize data fields for seat_data table
-            record['normalized_college_name'] = self.normalize_text(record.get('college_name', ''))
+            # Use normalize_text_for_import for college_name to apply abbreviation expansion (GOVT → GOVERNMENT)
+            record['normalized_college_name'] = self.normalize_text_for_import(record.get('college_name', ''))
             record['normalized_course_name'] = self.normalize_text(record.get('course_name', ''))
-            record['normalized_state'] = self.normalize_state(record.get('state', ''))
+            # Use normalize_state_name_import to apply state consolidation (DELHI → DELHI (NCT), ORISSA → ODISHA)
+            record['normalized_state'] = self.normalize_state_name_import(record.get('state', ''))
             record['normalized_address'] = self.normalize_text(record.get('address', ''))
             
             # Detect course type
@@ -18229,7 +18338,7 @@ class AdvancedSQLiteMatcher:
             missing_cols = [col for col in required_cols if col not in df.columns]
             if missing_cols:
                 console.print(f"[red]❌ Missing columns: {missing_cols}[/red]")
-                return
+                return 0
 
             # Process each record
             records = []
@@ -18249,9 +18358,11 @@ class AdvancedSQLiteMatcher:
                     college_name, address = self.split_college_institute(getattr(row, 'COLLEGE_INSTITUTE', getattr(row, 'COLLEGE/INSTITUTE', '')))
 
                     # Normalize fields (including address)
-                    college_normalized = self.normalize_text(college_name)
+                    # Use normalize_text_for_import for college_name to expand abbreviations (GOVT → GOVERNMENT)
+                    college_normalized = self.normalize_text_for_import(college_name)
                     course_normalized = self.normalize_text(row.COURSE)
-                    state_normalized = self.normalize_text(row.STATE)
+                    # Use normalize_state_name_import to consolidate states (DELHI → DELHI (NCT), ORISSA → ODISHA)
+                    state_normalized = self.normalize_state_name_import(row.STATE)
                     address_normalized = self.normalize_text(address) if address else ''
 
                     # Detect course type for matching
@@ -18274,9 +18385,10 @@ class AdvancedSQLiteMatcher:
                     course_id = course_match['id'] if course_match else None
 
                     # Match state (exact match from master data)
+                    # Master states are already in canonical form, so compare directly with normalized input
                     state_id = None
                     for state in self.master_data.get('states', []):
-                        if self.normalize_text(state['name']) == state_normalized:
+                        if state['name'] == state_normalized:
                             state_id = state['id']
                             break
 
