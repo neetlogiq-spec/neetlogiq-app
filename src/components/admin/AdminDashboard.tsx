@@ -12,19 +12,22 @@ import {
   Clock,
   Shield,
   Menu,
-  X
+  X,
+  FileText
 } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
 import DataManagementSection from './DataManagementSection';
 import StatisticsCards from './StatisticsCards';
+import DocumentsManager from './DocumentsManager';
 
 const AdminDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeSection, setActiveSection] = useState<'overview' | 'data'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'data' | 'documents'>('overview');
 
   const navigation = [
     { id: 'overview', name: 'Overview', icon: Activity, description: 'Dashboard & Stats' },
     { id: 'data', name: 'Data Management', icon: Database, description: 'Colleges, Cutoffs, Courses' },
+    { id: 'documents', name: 'Documents', icon: FileText, description: 'Counselling Documents' },
   ];
 
   return (
@@ -212,6 +215,12 @@ const AdminDashboard: React.FC = () => {
           {activeSection === 'data' && (
             <div className="animate-fadeIn">
               <DataManagementSection />
+            </div>
+          )}
+
+          {activeSection === 'documents' && (
+            <div className="animate-fadeIn">
+              <DocumentsManager />
             </div>
           )}
         </main>
