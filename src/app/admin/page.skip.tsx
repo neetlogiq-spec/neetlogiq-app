@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { 
-  Building2, 
-  GraduationCap, 
-  BarChart3, 
-  Upload, 
-  Database, 
-  Search, 
+import {
+  Building2,
+  GraduationCap,
+  BarChart3,
+  Upload,
+  Database,
+  Search,
   Settings,
   Users,
   Shield,
@@ -26,7 +26,11 @@ import {
   Clock,
   Plus,
   Filter,
-  FileText
+  FileText,
+  Bell,
+  Flag,
+  AlertTriangle,
+  Sliders
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import TwoFactorAuth from '@/components/admin/TwoFactorAuth';
@@ -36,6 +40,11 @@ import SystemAdministration from '@/components/admin/SystemAdministration';
 import AnalyticsMonitoring from '@/components/admin/AnalyticsMonitoring';
 import ContentManagement from '@/components/admin/ContentManagement';
 import DataRefreshManagement from '@/components/admin/DataRefreshManagement';
+import NotificationManagement from '@/components/admin/NotificationManagement';
+import StreamManagement from '@/components/admin/StreamManagement';
+import FeatureFlags from '@/components/admin/FeatureFlags';
+import CutoffManagement from '@/components/admin/CutoffManagement';
+import ApplicationSettings from '@/components/admin/ApplicationSettings';
 import { logAdminAction } from '@/services/adminAuditLog';
 import { firebaseAdminService, UserProfile, UserStats } from '@/services/firebaseAdmin';
 
@@ -356,12 +365,16 @@ const AdminPage: React.FC = () => {
             {[
               { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
               { id: 'users', label: 'Users', icon: Users },
+              { id: 'notifications', label: 'Notifications', icon: Bell },
               { id: 'analytics', label: 'Analytics', icon: TrendingUp },
               { id: 'content', label: 'Content', icon: FileText },
               { id: 'colleges', label: 'Colleges', icon: Building2 },
               { id: 'courses', label: 'Courses', icon: GraduationCap },
+              { id: 'cutoffs', label: 'Cutoffs', icon: AlertTriangle },
               { id: 'data', label: 'Data Pipeline', icon: Database },
               { id: 'search', label: 'Search', icon: Search },
+              { id: 'streams', label: 'Streams', icon: Sliders },
+              { id: 'features', label: 'Feature Flags', icon: Flag },
               { id: 'system', label: 'System Admin', icon: Shield },
               { id: 'settings', label: 'Settings', icon: Settings },
             ].map((tab) => {
@@ -1074,16 +1087,59 @@ const AdminPage: React.FC = () => {
           </motion.div>
         )}
 
+        {/* Notifications Tab */}
+        {activeTab === 'notifications' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <NotificationManagement />
+          </motion.div>
+        )}
+
+        {/* Streams Tab */}
+        {activeTab === 'streams' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <StreamManagement />
+          </motion.div>
+        )}
+
+        {/* Feature Flags Tab */}
+        {activeTab === 'features' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <FeatureFlags />
+          </motion.div>
+        )}
+
+        {/* Cutoffs Tab */}
+        {activeTab === 'cutoffs' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <CutoffManagement />
+          </motion.div>
+        )}
+
         {/* Settings Tab */}
         {activeTab === 'settings' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-              System Settings
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Basic system settings and preferences will be implemented here.
-            </p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <ApplicationSettings />
+          </motion.div>
         )}
       </div>
       
