@@ -24,6 +24,7 @@ const MCCPage: React.FC = () => {
       title: 'NEET UG 2024 Seat Matrix - Round 1',
       category: 'Seat Matrix',
       fileUrl: '/documents/mcc-seat-matrix-2024.pdf',
+      officialUrl: 'https://mcc.nic.in/WebInfo/Page/Page?PageId=1&LangId=P',
       uploadDate: '2024-06-15',
       fileSize: '12.5 MB',
       downloads: 45231,
@@ -35,6 +36,7 @@ const MCCPage: React.FC = () => {
       title: 'Round 1 Schedule & Important Dates',
       category: 'Schedule',
       fileUrl: '/documents/mcc-round1-schedule.pdf',
+      officialUrl: 'https://mcc.nic.in/WebInfo/Page/Page?PageId=2&LangId=P',
       uploadDate: '2024-06-10',
       fileSize: '2.1 MB',
       downloads: 38450,
@@ -46,6 +48,7 @@ const MCCPage: React.FC = () => {
       title: 'Document Verification Guidelines',
       category: 'Guidelines',
       fileUrl: '/documents/mcc-document-guidelines.pdf',
+      officialUrl: 'https://mcc.nic.in/WebInfo/Page/Page?PageId=3&LangId=P',
       uploadDate: '2024-06-05',
       fileSize: '5.8 MB',
       downloads: 29340,
@@ -57,6 +60,7 @@ const MCCPage: React.FC = () => {
       title: 'NEET UG 2024 Information Bulletin',
       category: 'Information',
       fileUrl: '/documents/mcc-information-bulletin.pdf',
+      officialUrl: 'https://mcc.nic.in/WebInfo/Page/Page?PageId=4&LangId=P',
       uploadDate: '2024-05-20',
       fileSize: '8.3 MB',
       downloads: 56120,
@@ -319,8 +323,7 @@ const MCCPage: React.FC = () => {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.1 }}
-                        onClick={() => setSelectedDocument(doc)}
-                        className={`backdrop-blur-sm rounded-xl border p-6 cursor-pointer transition-all duration-300 ${
+                        className={`backdrop-blur-sm rounded-xl border p-6 transition-all duration-300 ${
                           selectedDocument?.id === doc.id
                             ? isDarkMode
                               ? 'bg-white/20 border-white/40'
@@ -351,6 +354,40 @@ const MCCPage: React.FC = () => {
                                 <Download className="w-3 h-3" />
                                 {doc.downloads.toLocaleString()}
                               </span>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-2 mt-4">
+                              <button
+                                onClick={() => setSelectedDocument(doc)}
+                                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                  selectedDocument?.id === doc.id
+                                    ? isDarkMode
+                                      ? 'bg-blue-600/30 text-blue-400 border border-blue-500/50'
+                                      : 'bg-blue-100 text-blue-700 border border-blue-300'
+                                    : isDarkMode
+                                      ? 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+                                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-200'
+                                }`}
+                              >
+                                <FileText className="w-4 h-4" />
+                                Preview
+                              </button>
+
+                              <a
+                                href={doc.officialUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                  isDarkMode
+                                    ? 'bg-gradient-to-r from-blue-600/20 to-cyan-600/20 hover:from-blue-600/30 hover:to-cyan-600/30 text-blue-400 border border-blue-500/30'
+                                    : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white border border-blue-400'
+                                }`}
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                                Official Link
+                              </a>
                             </div>
                           </div>
                         </div>

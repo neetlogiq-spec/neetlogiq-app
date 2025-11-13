@@ -23,6 +23,7 @@ const KEAPage: React.FC = () => {
       title: 'Karnataka CET 2024 Seat Matrix',
       category: 'Seat Matrix',
       fileUrl: '/documents/kea-seat-matrix-2024.pdf',
+      officialUrl: 'https://kea.kar.nic.in/ugmedical2024/seat_matrix.aspx',
       uploadDate: '2024-06-20',
       fileSize: '8.2 MB',
       downloads: 28450,
@@ -34,6 +35,7 @@ const KEAPage: React.FC = () => {
       title: 'KEA Counselling Schedule 2024',
       category: 'Schedule',
       fileUrl: '/documents/kea-schedule-2024.pdf',
+      officialUrl: 'https://kea.kar.nic.in/ugmedical2024/schedule.aspx',
       uploadDate: '2024-06-18',
       fileSize: '1.9 MB',
       downloads: 22130,
@@ -183,14 +185,66 @@ const KEAPage: React.FC = () => {
                   {documents.map((doc, index) => {
                     const Icon = doc.icon;
                     return (
-                      <motion.div key={doc.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: index * 0.1 }} onClick={() => setSelectedDocument(doc)} className={`backdrop-blur-sm rounded-xl border p-6 cursor-pointer transition-all duration-300 ${selectedDocument?.id === doc.id ? isDarkMode ? 'bg-white/20 border-white/40' : 'bg-purple-50 border-purple-300' : isDarkMode ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white/60 border-gray-200 hover:bg-white/80'}`}>
+                      <motion.div
+                        key={doc.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                        className={`backdrop-blur-sm rounded-xl border p-6 transition-all duration-300 ${
+                          selectedDocument?.id === doc.id
+                            ? isDarkMode
+                              ? 'bg-white/20 border-white/40'
+                              : 'bg-purple-50 border-purple-300'
+                            : isDarkMode
+                              ? 'bg-white/5 border-white/10 hover:bg-white/10'
+                              : 'bg-white/60 border-gray-200 hover:bg-white/80'
+                        }`}
+                      >
                         <div className="flex items-start gap-4">
                           <div className={`p-3 rounded-xl bg-gradient-to-br ${doc.color}`}>
                             <Icon className="w-6 h-6 text-white" />
                           </div>
                           <div className="flex-1">
-                            <h3 className={`font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{doc.title}</h3>
-                            <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{doc.category}</p>
+                            <h3 className={`font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {doc.title}
+                            </h3>
+                            <p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                              {doc.category}
+                            </p>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-2 mt-4">
+                              <button
+                                onClick={() => setSelectedDocument(doc)}
+                                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                  selectedDocument?.id === doc.id
+                                    ? isDarkMode
+                                      ? 'bg-purple-600/30 text-purple-400 border border-purple-500/50'
+                                      : 'bg-purple-100 text-purple-700 border border-purple-300'
+                                    : isDarkMode
+                                      ? 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+                                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-200'
+                                }`}
+                              >
+                                <FileText className="w-4 h-4" />
+                                Preview
+                              </button>
+
+                              <a
+                                href={doc.officialUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                  isDarkMode
+                                    ? 'bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 text-purple-400 border border-purple-500/30'
+                                    : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border border-purple-400'
+                                }`}
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                                Official Link
+                              </a>
+                            </div>
                           </div>
                         </div>
                       </motion.div>
