@@ -70,8 +70,8 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
     displayName: 'Premium',
     description: 'Unlimited access to everything',
     price: {
-      monthly: 99,
-      yearly: 999  // ~₹83/month - 17% savings
+      monthly: 149,
+      yearly: 999  // ~₹83/month - 44% savings
     },
     razorpayPlanId: {
       monthly: 'plan_premium_monthly',
