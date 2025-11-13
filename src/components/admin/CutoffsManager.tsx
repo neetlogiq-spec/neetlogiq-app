@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Trash2, Filter, X, Save, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Filter, X, Save, Download, ChevronLeft, ChevronRight, Upload } from 'lucide-react';
 import CutoffModal from './CutoffModal';
 import { showSuccess, showError } from '@/lib/toast';
+import { exportToCSV, readCSVFile } from '@/lib/csv-utils';
 
 interface College {
   id: string;
@@ -54,6 +55,7 @@ const CutoffsManager: React.FC = () => {
   const [selectedCutoff, setSelectedCutoff] = useState<Cutoff | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 50,
@@ -173,6 +175,72 @@ const CutoffsManager: React.FC = () => {
     setShowModal(true);
   };
 
+  // CSV Export
+  const handleExport = () => {
+    const exportData = filteredCutoffs.map(cutoff => ({
+      college: cutoff.colleges?.name || '',
+      course: cutoff.courses?.name || '',
+      year: cutoff.year,
+      round: cutoff.round,
+      category: cutoff.category,
+      quota: cutoff.quota,
+      state: cutoff.state || '',
+      opening_rank: cutoff.opening_rank,
+      closing_rank: cutoff.closing_rank,
+      seats: cutoff.seats || '',
+      seats_filled: cutoff.seats_filled || ''
+    }));
+
+    const filename = `cutoffs-export-${new Date().toISOString().split('T')[0]}.csv`;
+    exportToCSV(exportData, filename);
+    showSuccess(`Exported ${exportData.length} cutoff records to CSV`);
+  };
+
+  // Bulk selection
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredCutoffs.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredCutoffs.map(c => c.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  // Bulk delete
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) {
+      showError('No cutoffs selected');
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete ${selectedIds.size} cutoff records?`)) {
+      return;
+    }
+
+    const promises = Array.from(selectedIds).map(id =>
+      fetch(`/api/admin/cutoffs/${id}`, { method: 'DELETE' })
+    );
+
+    try {
+      await Promise.all(promises);
+      setCutoffs(prev => prev.filter(c => !selectedIds.has(c.id)));
+      setSelectedIds(new Set());
+      showSuccess(`Deleted ${selectedIds.size} cutoff records successfully`);
+    } catch (error) {
+      showError('Failed to delete some cutoffs');
+      console.error(error);
+    }
+  };
+
   // Filtered cutoffs based on search
   const filteredCutoffs = cutoffs.filter(cutoff => {
     if (!searchTerm) return true;
@@ -279,12 +347,41 @@ const CutoffsManager: React.FC = () => {
               <Plus className="h-4 w-4 mr-2" />
               Add Cutoff
             </button>
-            <button className="flex items-center px-4 py-3 bg-green-600 text-white rounded-xl font-medium hover:shadow-lg transition-all">
+            <button
+              onClick={handleExport}
+              className="flex items-center px-4 py-3 bg-green-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+            >
               <Download className="h-4 w-4 mr-2" />
-              Export
+              Export CSV
             </button>
           </div>
         </div>
+
+        {/* Bulk Actions Bar */}
+        {selectedIds.size > 0 && (
+          <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <span className="text-sm font-medium text-purple-900 dark:text-purple-100">
+                {selectedIds.size} cutoff{selectedIds.size > 1 ? 's' : ''} selected
+              </span>
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
+              >
+                Clear selection
+              </button>
+            </div>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={handleBulkDelete}
+                className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Selected
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Filters Panel */}
         {showFilters && (
@@ -354,6 +451,14 @@ const CutoffsManager: React.FC = () => {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
+                    <th className="px-4 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.size === filteredCutoffs.length && filteredCutoffs.length > 0}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       College
                     </th>
@@ -389,6 +494,14 @@ const CutoffsManager: React.FC = () => {
                       key={cutoff.id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors"
                     >
+                      <td className="px-4 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(cutoff.id)}
+                          onChange={() => toggleSelect(cutoff.id)}
+                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </td>
                       <td className="px-6 py-4">
                         <div>
                           <div className="font-medium text-gray-900 dark:text-white">

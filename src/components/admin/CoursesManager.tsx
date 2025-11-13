@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Trash2, BookOpen, Award, Clock } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, BookOpen, Award, Clock, Download } from 'lucide-react';
 import { showSuccess, showError } from '@/lib/toast';
+import { exportToCSV } from '@/lib/csv-utils';
 
 interface Course {
   id: string;
@@ -123,6 +124,20 @@ const CoursesManager: React.FC = () => {
     }
   };
 
+  // CSV Export
+  const handleExport = () => {
+    const exportData = courses.map(course => ({
+      name: course.name,
+      degree_type: course.degree_type,
+      duration_years: course.duration_years || '',
+      description: course.description || ''
+    }));
+
+    const filename = `courses-export-${new Date().toISOString().split('T')[0]}.csv`;
+    exportToCSV(exportData, filename);
+    showSuccess(`Exported ${courses.length} courses to CSV`);
+  };
+
   const cancelEdit = () => {
     setFormData({ id: '', name: '', description: '', duration_years: 5, degree_type: 'MBBS' });
     setEditing(null);
@@ -237,8 +252,8 @@ const CoursesManager: React.FC = () => {
 
       {/* Search & List */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
-        <div className="mb-6">
-          <div className="relative">
+        <div className="mb-6 flex items-center space-x-4">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
@@ -248,6 +263,13 @@ const CoursesManager: React.FC = () => {
               className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-900 dark:text-white transition-all"
             />
           </div>
+          <button
+            onClick={handleExport}
+            className="flex items-center px-4 py-3 bg-green-600 text-white rounded-xl font-medium hover:shadow-lg transition-all whitespace-nowrap"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export CSV
+          </button>
         </div>
 
         {/* Stats */}

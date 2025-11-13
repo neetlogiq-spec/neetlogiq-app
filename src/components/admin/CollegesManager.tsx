@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Trash2, Building2, MapPin, Phone, Mail, ExternalLink, X, Save } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Building2, MapPin, Phone, Mail, ExternalLink, X, Save, Download, Upload } from 'lucide-react';
 import CollegeModal from './CollegeModal';
 import { showSuccess, showError } from '@/lib/toast';
+import { exportToCSV, readCSVFile } from '@/lib/csv-utils';
 
 interface College {
   id: string;
@@ -38,6 +39,8 @@ const CollegesManager: React.FC = () => {
   const [selectedCollege, setSelectedCollege] = useState<College | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showImportModal, setShowImportModal] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 50,
@@ -160,6 +163,91 @@ const CollegesManager: React.FC = () => {
     setShowModal(true);
   };
 
+  // CSV Export
+  const handleExport = () => {
+    const exportData = colleges.map(college => ({
+      name: college.name,
+      city: college.city,
+      state: college.state,
+      type: college.type,
+      ownership: college.ownership,
+      established_year: college.established_year || '',
+      website: college.website || '',
+      contact_email: college.contact_email || '',
+      contact_phone: college.contact_phone || '',
+      total_seats: college.total_seats || '',
+      nirf_rank: college.nirf_rank || '',
+      accreditation: college.accreditation || '',
+      address: college.address || ''
+    }));
+
+    const filename = `colleges-export-${new Date().toISOString().split('T')[0]}.csv`;
+    exportToCSV(exportData, filename);
+    showSuccess(`Exported ${colleges.length} colleges to CSV`);
+  };
+
+  // CSV Import Handler
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const data = await readCSVFile(file);
+      // Show import preview modal or process directly
+      setShowImportModal(true);
+      showSuccess(`Loaded ${data.length} records from CSV`);
+      // You can store data in state and show preview
+    } catch (error) {
+      showError('Failed to parse CSV file');
+      console.error(error);
+    }
+  };
+
+  // Bulk selection
+  const toggleSelectAll = () => {
+    if (selectedIds.size === colleges.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(colleges.map(c => c.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  // Bulk delete
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) {
+      showError('No colleges selected');
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete ${selectedIds.size} colleges? This will also delete all associated cutoff records.`)) {
+      return;
+    }
+
+    const promises = Array.from(selectedIds).map(id =>
+      fetch(`/api/admin/colleges/${id}`, { method: 'DELETE' })
+    );
+
+    try {
+      await Promise.all(promises);
+      setColleges(prev => prev.filter(c => !selectedIds.has(c.id)));
+      setSelectedIds(new Set());
+      showSuccess(`Deleted ${selectedIds.size} colleges successfully`);
+    } catch (error) {
+      showError('Failed to delete some colleges');
+      console.error(error);
+    }
+  };
+
   // Editable cell component
   const EditableCell: React.FC<{
     college: College;
@@ -260,6 +348,25 @@ const CollegesManager: React.FC = () => {
             </select>
 
             <button
+              onClick={handleExport}
+              className="flex items-center px-4 py-3 bg-green-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </button>
+
+            <label className="flex items-center px-4 py-3 bg-orange-600 text-white rounded-xl font-medium hover:shadow-lg transition-all cursor-pointer">
+              <Upload className="h-4 w-4 mr-2" />
+              Import CSV
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleImport}
+                className="hidden"
+              />
+            </label>
+
+            <button
               onClick={openCreateModal}
               className="flex items-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
             >
@@ -269,6 +376,32 @@ const CollegesManager: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Bulk Actions Bar */}
+      {selectedIds.size > 0 && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              {selectedIds.size} college{selectedIds.size > 1 ? 's' : ''} selected
+            </span>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Clear selection
+            </button>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={handleBulkDelete}
+              className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Selected
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -337,6 +470,14 @@ const CollegesManager: React.FC = () => {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
+                    <th className="px-4 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.size === colleges.length && colleges.length > 0}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       College
                     </th>
@@ -369,6 +510,14 @@ const CollegesManager: React.FC = () => {
                       key={college.id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors"
                     >
+                      <td className="px-4 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(college.id)}
+                          onChange={() => toggleSelect(college.id)}
+                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-start space-x-3">
                           <div className="flex-shrink-0">
