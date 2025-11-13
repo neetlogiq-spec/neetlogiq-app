@@ -4,14 +4,18 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ArrowRight, Brain, Zap, Target, TrendingUp, Award, MessageSquare } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { usePremium } from '@/contexts/PremiumContext';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
 import Footer from '@/components/ui/Footer';
 import SmartChat from '@/components/smart/SmartChat';
+import PremiumGate from '@/components/premium/PremiumGate';
+import { FEATURE_KEYS } from '@/config/premium';
 
 const SmartPage: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const { isDarkMode } = useTheme();
+  const { canUseFeature, incrementFeatureUsage } = usePremium();
 
   // Hero/Content transition state
   const [showContent, setShowContent] = useState(false);
@@ -273,7 +277,9 @@ const SmartPage: React.FC = () => {
                   animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
                   transition={{ duration: 0.2, delay: 0.45 }}
                 >
-                  <SmartChat />
+                  <PremiumGate featureKey={FEATURE_KEYS.SMART_PREDICTIONS}>
+                    <SmartChat />
+                  </PremiumGate>
                 </motion.div>
 
                 {/* Features Grid */}

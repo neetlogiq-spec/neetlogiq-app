@@ -10,10 +10,13 @@ import LightVortex from '@/components/ui/LightVortex';
 import Footer from '@/components/ui/Footer';
 import Link from 'next/link';
 import { PRICING_PLANS } from '@/config/premium';
+import { useRazorpay } from '@/hooks/useRazorpay';
+import { supabase } from '@/lib/supabase';
 
 const PricingPage: React.FC = () => {
   const { isDarkMode } = useTheme();
   const { currentPlan, loading: subscriptionLoading } = usePremium();
+  const { initializePayment, loading: paymentLoading } = useRazorpay();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const [showContent, setShowContent] = useState(false);
 
@@ -22,9 +25,26 @@ const PricingPage: React.FC = () => {
   const handleSubscribe = async (planId: string, cycle: 'monthly' | 'yearly') => {
     if (planId === 'free') return;
 
-    // TODO: Implement Razorpay checkout
-    console.log('Subscribe to:', planId, cycle);
-    // This will be implemented in the next step
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('Please sign in to subscribe');
+        return;
+      }
+
+      // Initialize Razorpay payment
+      await initializePayment({
+        planId,
+        billingCycle: cycle,
+        userId: user.id,
+        userEmail: user.email || '',
+        userName: user.user_metadata?.name || user.email || 'User'
+      });
+    } catch (error) {
+      console.error('Subscription error:', error);
+      alert('Failed to initialize payment. Please try again.');
+    }
   };
 
   const floatingIcons = [
@@ -253,7 +273,7 @@ const PricingPage: React.FC = () => {
               </motion.div>
 
               {/* Pricing Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-8">
                 {plans.map((plan, index) => {
                   const isCurrentPlan = plan.id === currentPlan;
                   const price = billingCycle === 'monthly' ? plan.price.monthly : plan.price.yearly;

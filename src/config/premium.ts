@@ -64,76 +64,6 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
     },
     color: 'from-gray-500 to-gray-600'
   },
-  basic: {
-    id: 'basic',
-    name: 'basic',
-    displayName: 'Basic',
-    description: 'Great for serious aspirants',
-    price: {
-      monthly: 299,
-      yearly: 2999  // ~₹250/month
-    },
-    razorpayPlanId: {
-      monthly: 'plan_basic_monthly',
-      yearly: 'plan_basic_yearly'
-    },
-    features: [
-      '20 college comparisons/month',
-      '50 AI predictions/month',
-      'Historical trend analysis',
-      '20 document downloads/month',
-      'Advanced search filters',
-      'Export data (10/month)',
-      'Email support'
-    ],
-    limits: {
-      collegeComparisons: 20,
-      smartPredictions: 50,
-      trendAnalysis: true,
-      counsellingDocuments: 20,
-      exportData: 10,
-      prioritySupport: false,
-      advancedFilters: true,
-      rankPredictor: true
-    },
-    color: 'from-blue-500 to-cyan-500'
-  },
-  pro: {
-    id: 'pro',
-    name: 'pro',
-    displayName: 'Pro',
-    description: 'For power users who need more',
-    price: {
-      monthly: 599,
-      yearly: 5999  // ~₹500/month
-    },
-    razorpayPlanId: {
-      monthly: 'plan_pro_monthly',
-      yearly: 'plan_pro_yearly'
-    },
-    features: [
-      '100 college comparisons/month',
-      '200 AI predictions/month',
-      'Full trend analysis access',
-      '100 document downloads/month',
-      'All advanced filters',
-      'Export data (50/month)',
-      'Priority email support',
-      'Advanced rank predictor'
-    ],
-    limits: {
-      collegeComparisons: 100,
-      smartPredictions: 200,
-      trendAnalysis: true,
-      counsellingDocuments: 100,
-      exportData: 50,
-      prioritySupport: true,
-      advancedFilters: true,
-      rankPredictor: true
-    },
-    popular: true,
-    color: 'from-purple-500 to-pink-500'
-  },
   premium: {
     id: 'premium',
     name: 'premium',
@@ -141,7 +71,7 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
     description: 'Unlimited access to everything',
     price: {
       monthly: 999,
-      yearly: 9999  // ~₹833/month
+      yearly: 9999  // ~₹833/month - 17% savings
     },
     razorpayPlanId: {
       monthly: 'plan_premium_monthly',
@@ -169,7 +99,8 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
       advancedFilters: true,
       rankPredictor: true
     },
-    color: 'from-orange-500 to-red-500'
+    popular: true,
+    color: 'from-purple-500 to-pink-500'
   }
 };
 
