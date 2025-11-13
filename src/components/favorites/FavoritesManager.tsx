@@ -34,53 +34,112 @@ const FavoritesManager: React.FC = () => {
     filterFavorites();
   }, [favorites, activeFilter, searchQuery, selectedTags]);
 
-  const loadFavorites = () => {
+  const loadFavorites = async () => {
     if (!user) return;
-    
-    // Load from localStorage (in real app, this would be from API)
-    const savedFavorites = localStorage.getItem(`favorites_${user.uid}`);
-    if (savedFavorites) {
-      const parsed = JSON.parse(savedFavorites);
-      setFavorites(parsed);
-      
-      // Extract unique tags
-      const tags = [...new Set(parsed.flatMap((fav: FavoriteItem) => fav.tags))];
-      setAvailableTags(tags);
+
+    try {
+      const response = await fetch('/api/favorites');
+      const result = await response.json();
+
+      if (result.success) {
+        // Transform API response to match component interface
+        const transformedFavorites = result.data.map((fav: any) => ({
+          id: fav.id,
+          type: 'college' as const,
+          data: fav.colleges,
+          addedAt: fav.created_at,
+          tags: fav.tags || [],
+          notes: fav.notes
+        }));
+
+        setFavorites(transformedFavorites);
+
+        // Extract unique tags
+        const tags = [...new Set(transformedFavorites.flatMap((fav: FavoriteItem) => fav.tags))];
+        setAvailableTags(tags);
+      }
+    } catch (error) {
+      console.error('Error loading favorites:', error);
     }
   };
 
   const saveFavorites = (newFavorites: FavoriteItem[]) => {
-    if (!user) return;
-    localStorage.setItem(`favorites_${user.uid}`, JSON.stringify(newFavorites));
     setFavorites(newFavorites);
   };
 
-  const addToFavorites = (type: 'college' | 'course' | 'cutoff', data: any, tags: string[] = [], notes?: string) => {
+  const addToFavorites = async (type: 'college' | 'course' | 'cutoff', data: any, tags: string[] = [], notes?: string) => {
     if (!user) return;
 
-    const newFavorite: FavoriteItem = {
-      id: `${type}_${data.id}_${Date.now()}`,
-      type,
-      data,
-      addedAt: new Date().toISOString(),
-      tags,
-      notes
-    };
+    try {
+      const response = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          collegeId: data.id,
+          notes,
+          tags
+        })
+      });
 
-    const updatedFavorites = [...favorites, newFavorite];
-    saveFavorites(updatedFavorites);
+      const result = await response.json();
+
+      if (result.success) {
+        // Reload favorites
+        await loadFavorites();
+      } else {
+        console.error('Failed to add favorite:', result.error);
+        alert(result.message || result.error);
+      }
+    } catch (error) {
+      console.error('Error adding favorite:', error);
+      alert('Failed to add to favorites');
+    }
   };
 
-  const removeFromFavorites = (id: string) => {
-    const updatedFavorites = favorites.filter(fav => fav.id !== id);
-    saveFavorites(updatedFavorites);
+  const removeFromFavorites = async (id: string) => {
+    try {
+      const response = await fetch(`/api/favorites?id=${id}`, {
+        method: 'DELETE'
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Update local state
+        setFavorites(favorites.filter(fav => fav.id !== id));
+      } else {
+        console.error('Failed to remove favorite:', result.error);
+      }
+    } catch (error) {
+      console.error('Error removing favorite:', error);
+    }
   };
 
-  const updateFavorite = (id: string, updates: Partial<FavoriteItem>) => {
-    const updatedFavorites = favorites.map(fav => 
-      fav.id === id ? { ...fav, ...updates } : fav
-    );
-    saveFavorites(updatedFavorites);
+  const updateFavorite = async (id: string, updates: Partial<FavoriteItem>) => {
+    try {
+      const response = await fetch('/api/favorites', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          favoriteId: id,
+          notes: updates.notes,
+          tags: updates.tags
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Update local state
+        setFavorites(favorites.map(fav =>
+          fav.id === id ? { ...fav, ...updates } : fav
+        ));
+      } else {
+        console.error('Failed to update favorite:', result.error);
+      }
+    } catch (error) {
+      console.error('Error updating favorite:', error);
+    }
   };
 
   const filterFavorites = () => {

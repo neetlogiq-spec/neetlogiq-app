@@ -22,7 +22,9 @@
     "generate:static": "node scripts/generate-static-data.js",
     "upload:data": "node scripts/upload-to-r2.js",
     "deploy:all": "bash scripts/deploy-all.sh",
-    "build:optimized": "npm run generate:static && npm run build"
+    "build:optimized": "npm run generate:static && npm run build",
+    "migrate:postgres": "tsx scripts/migrate-to-postgres.ts",
+    "supabase:types": "supabase gen types typescript --local > src/lib/database.types.ts"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.30.0",
