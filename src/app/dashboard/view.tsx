@@ -26,6 +26,10 @@ import FavoritesWidget from '@/components/dashboard/FavoritesWidget';
 import WatchlistWidget from '@/components/dashboard/WatchlistWidget';
 import RecommendationsWidget from '@/components/dashboard/RecommendationsWidget';
 import RecentActivityWidget from '@/components/dashboard/RecentActivityWidget';
+import ProgressTracker from '@/components/dashboard/ProgressTracker';
+import UrgentActions from '@/components/dashboard/UrgentActions';
+import SmartRecommendations from '@/components/dashboard/SmartRecommendations';
+import InteractiveVisualizations from '@/components/dashboard/InteractiveVisualizations';
 
 export default function DashboardPage() {
   const { isDarkMode } = useTheme();
@@ -84,6 +88,30 @@ export default function DashboardPage() {
         return <RecommendationsWidget key={widget.id} />;
       case 'recent_activity':
         return <RecentActivityWidget key={widget.id} preferences={preferences} />;
+      case 'progress_tracker':
+        return (
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <ProgressTracker key={widget.id} />
+          </div>
+        );
+      case 'urgent_actions':
+        return (
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <UrgentActions key={widget.id} maxItems={5} />
+          </div>
+        );
+      case 'smart_recommendations':
+        return (
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <SmartRecommendations key={widget.id} maxRecommendations={3} />
+          </div>
+        );
+      case 'interactive_visualizations':
+        return (
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <InteractiveVisualizations key={widget.id} />
+          </div>
+        );
       default:
         return null;
     }
@@ -199,8 +227,8 @@ export default function DashboardPage() {
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
               transition={{ duration: 0.5, delay: 0.3 }}
               className={`text-center py-16 rounded-2xl border-2 border-dashed ${
-                isDarkMode 
-                  ? 'border-white/20 bg-white/5' 
+                isDarkMode
+                  ? 'border-white/20 bg-white/5'
                   : 'border-gray-300 bg-gray-50/50'
               }`}
             >
@@ -220,6 +248,33 @@ export default function DashboardPage() {
               </button>
             </motion.div>
           )}
+
+          {/* Enhanced Dashboard Features - Always Visible */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isLoaded ? 1 : 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mt-12 space-y-8"
+          >
+            {/* Progress & Actions Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                <UrgentActions maxItems={5} />
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                <SmartRecommendations maxRecommendations={3} />
+              </div>
+            </div>
+
+            {/* Full Width Sections */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <ProgressTracker />
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <InteractiveVisualizations />
+            </div>
+          </motion.div>
         </main>
       </div>
     </div>

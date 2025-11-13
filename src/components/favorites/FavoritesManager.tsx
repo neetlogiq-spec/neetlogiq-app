@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Star, BookOpen, GraduationCap, BarChart3, Trash2, ExternalLink, Filter } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import CollegeWorkspace from '@/components/college/CollegeWorkspace';
 
 interface FavoriteItem {
   id: string;
@@ -22,6 +23,8 @@ const FavoritesManager: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedCollege, setSelectedCollege] = useState<any | null>(null);
+  const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
 
   useEffect(() => {
     loadFavorites();
@@ -191,7 +194,15 @@ const FavoritesManager: React.FC = () => {
 
         <div className="flex justify-between items-center">
           <div className="flex space-x-2">
-            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <button
+              onClick={() => {
+                if (item.type === 'college') {
+                  setSelectedCollege(item.data);
+                  setIsWorkspaceOpen(true);
+                }
+              }}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
               View Details
             </button>
             <button className="text-gray-600 hover:text-gray-700 text-sm font-medium">
@@ -321,6 +332,18 @@ const FavoritesManager: React.FC = () => {
             <FavoriteCard key={item.id} item={item} />
           ))}
         </div>
+      )}
+
+      {/* College Workspace Modal */}
+      {selectedCollege && (
+        <CollegeWorkspace
+          isOpen={isWorkspaceOpen}
+          onClose={() => {
+            setIsWorkspaceOpen(false);
+            setSelectedCollege(null);
+          }}
+          college={selectedCollege}
+        />
       )}
     </div>
   );
