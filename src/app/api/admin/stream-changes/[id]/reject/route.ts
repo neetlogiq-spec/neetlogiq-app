@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { isDeveloperAccount } from '@/contexts/StreamContext';
+import { sendStreamChangeRejectedEmail } from '@/lib/email';
 
 /**
  * POST /api/admin/stream-changes/[id]/reject
@@ -100,6 +101,18 @@ export async function POST(
 
     if (profileError) {
       console.error('Error updating user profile:', profileError);
+    }
+
+    // Send email notification to user
+    try {
+      await sendStreamChangeRejectedEmail(
+        changeRequest.user_id,
+        changeRequest.requested_stream,
+        adminNotes
+      );
+    } catch (emailError) {
+      console.error('Error sending rejection email:', emailError);
+      // Don't fail the request if email fails
     }
 
     return NextResponse.json({

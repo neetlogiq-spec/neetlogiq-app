@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { isDeveloperAccount } from '@/contexts/StreamContext';
+import { sendStreamChangeApprovedEmail } from '@/lib/email';
 
 /**
  * POST /api/admin/stream-changes/[id]/approve
@@ -83,6 +84,19 @@ export async function POST(
         { error: 'Failed to change user stream' },
         { status: 500 }
       );
+    }
+
+    // Send email notification to user
+    try {
+      await sendStreamChangeApprovedEmail(
+        changeRequest.user_id,
+        changeRequest.current_stream,
+        changeRequest.requested_stream,
+        adminNotes
+      );
+    } catch (emailError) {
+      console.error('Error sending approval email:', emailError);
+      // Don't fail the request if email fails
     }
 
     return NextResponse.json({

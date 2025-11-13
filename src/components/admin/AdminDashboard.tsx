@@ -13,21 +13,27 @@ import {
   Shield,
   Menu,
   X,
-  FileText
+  FileText,
+  Gift,
+  Repeat
 } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
 import DataManagementSection from './DataManagementSection';
 import StatisticsCards from './StatisticsCards';
 import DocumentsManager from './DocumentsManager';
+import SubscriptionGiftManager from './SubscriptionGiftManager';
+import UserStreamChangeManager from './UserStreamChangeManager';
 
 const AdminDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeSection, setActiveSection] = useState<'overview' | 'data' | 'documents'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'data' | 'documents' | 'subscriptions' | 'stream-changes'>('overview');
 
   const navigation = [
     { id: 'overview', name: 'Overview', icon: Activity, description: 'Dashboard & Stats' },
     { id: 'data', name: 'Data Management', icon: Database, description: 'Colleges, Cutoffs, Courses' },
     { id: 'documents', name: 'Documents', icon: FileText, description: 'Counselling Documents' },
+    { id: 'subscriptions', name: 'Gift Subscriptions', icon: Gift, description: 'Activate user subscriptions' },
+    { id: 'stream-changes', name: 'Stream Changes', icon: Repeat, description: 'Manage stream requests' },
   ];
 
   return (
@@ -221,6 +227,18 @@ const AdminDashboard: React.FC = () => {
           {activeSection === 'documents' && (
             <div className="animate-fadeIn">
               <DocumentsManager />
+            </div>
+          )}
+
+          {activeSection === 'subscriptions' && (
+            <div className="animate-fadeIn">
+              <SubscriptionGiftManager />
+            </div>
+          )}
+
+          {activeSection === 'stream-changes' && (
+            <div className="animate-fadeIn">
+              <UserStreamChangeManager />
             </div>
           )}
         </main>
