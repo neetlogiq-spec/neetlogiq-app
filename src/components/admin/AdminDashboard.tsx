@@ -14,6 +14,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 import DataManagementSection from './DataManagementSection';
 import StatisticsCards from './StatisticsCards';
 
@@ -223,6 +224,9 @@ const AdminDashboard: React.FC = () => {
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
+
+      {/* Toast Notifications */}
+      <Toaster />
     </div>
   );
 };

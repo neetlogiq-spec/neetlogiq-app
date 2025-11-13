@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit2, Trash2, Filter, X, Save, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import CutoffModal from './CutoffModal';
+import { showSuccess, showError } from '@/lib/toast';
 
 interface College {
   id: string;
@@ -50,8 +52,8 @@ const CutoffsManager: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [editingCell, setEditingCell] = useState<EditingCell | null>(null);
   const [selectedCutoff, setSelectedCutoff] = useState<Cutoff | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 50,
@@ -114,14 +116,12 @@ const CutoffsManager: React.FC = () => {
           prev.map(c => (c.id === cutoffId ? { ...c, [field]: newValue } : c))
         );
         setEditingCell(null);
-
-        // Show success notification
-        showNotification('Updated successfully!', 'success');
+        showSuccess('Updated successfully!');
       } else {
-        showNotification(data.error || 'Failed to update', 'error');
+        showError(data.error || 'Failed to update');
       }
     } catch (error) {
-      showNotification('Failed to update cutoff', 'error');
+      showError('Failed to update cutoff');
       console.error('Error updating cutoff:', error);
     }
   };
@@ -139,21 +139,38 @@ const CutoffsManager: React.FC = () => {
 
       if (data.success) {
         setCutoffs(prev => prev.filter(c => c.id !== id));
-        showNotification('Cutoff deleted successfully', 'success');
+        showSuccess('Cutoff deleted successfully');
       } else {
-        showNotification(data.error || 'Failed to delete', 'error');
+        showError(data.error || 'Failed to delete');
       }
     } catch (error) {
-      showNotification('Failed to delete cutoff', 'error');
+      showError('Failed to delete cutoff');
       console.error('Error deleting cutoff:', error);
     }
   };
 
-  // Simple notification (you can replace with toast library)
-  const showNotification = (message: string, type: 'success' | 'error') => {
-    // Placeholder - implement with react-hot-toast or similar
-    console.log(`[${type.toUpperCase()}] ${message}`);
-    alert(message);
+  // Modal handlers
+  const handleModalSuccess = (cutoff: Cutoff) => {
+    if (modalMode === 'create') {
+      setCutoffs(prev => [cutoff, ...prev]);
+    } else {
+      setCutoffs(prev =>
+        prev.map(c => (c.id === cutoff.id ? cutoff : c))
+      );
+    }
+    fetchCutoffs(); // Refresh to get updated data
+  };
+
+  const openCreateModal = () => {
+    setSelectedCutoff(null);
+    setModalMode('create');
+    setShowModal(true);
+  };
+
+  const openEditModal = (cutoff: Cutoff) => {
+    setSelectedCutoff(cutoff);
+    setModalMode('edit');
+    setShowModal(true);
   };
 
   // Filtered cutoffs based on search
@@ -256,7 +273,7 @@ const CutoffsManager: React.FC = () => {
               Filters
             </button>
             <button
-              onClick={() => setShowCreateModal(true)}
+              onClick={openCreateModal}
               className="flex items-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -407,10 +424,7 @@ const CutoffsManager: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
                         <button
-                          onClick={() => {
-                            setSelectedCutoff(cutoff);
-                            setShowEditModal(true);
-                          }}
+                          onClick={() => openEditModal(cutoff)}
                           className="inline-flex items-center p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                         >
                           <Edit2 className="h-4 w-4" />
@@ -480,6 +494,15 @@ const CutoffsManager: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Cutoff Modal */}
+      <CutoffModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={handleModalSuccess}
+        cutoff={selectedCutoff}
+        mode={modalMode}
+      />
     </div>
   );
 };

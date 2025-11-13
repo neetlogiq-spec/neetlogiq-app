@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit2, Trash2, Building2, MapPin, Phone, Mail, ExternalLink, X, Save } from 'lucide-react';
+import CollegeModal from './CollegeModal';
+import { showSuccess, showError } from '@/lib/toast';
 
 interface College {
   id: string;
@@ -34,7 +36,8 @@ const CollegesManager: React.FC = () => {
   const [stateFilter, setStateFilter] = useState('');
   const [editingCell, setEditingCell] = useState<EditingCell | null>(null);
   const [selectedCollege, setSelectedCollege] = useState<College | null>(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 50,
@@ -100,12 +103,12 @@ const CollegesManager: React.FC = () => {
           prev.map(c => (c.id === collegeId ? { ...c, [field]: newValue } : c))
         );
         setEditingCell(null);
-        showNotification('Updated successfully!', 'success');
+        showSuccess('Updated successfully!');
       } else {
-        showNotification(data.error || 'Failed to update', 'error');
+        showError(data.error || 'Failed to update');
       }
     } catch (error) {
-      showNotification('Failed to update college', 'error');
+      showError('Failed to update college');
       console.error('Error updating college:', error);
     }
   };
@@ -123,19 +126,38 @@ const CollegesManager: React.FC = () => {
 
       if (data.success) {
         setColleges(prev => prev.filter(c => c.id !== id));
-        showNotification('College deleted successfully', 'success');
+        showSuccess('College deleted successfully');
       } else {
-        showNotification(data.error || 'Failed to delete', 'error');
+        showError(data.error || 'Failed to delete');
       }
     } catch (error) {
-      showNotification('Failed to delete college', 'error');
+      showError('Failed to delete college');
       console.error('Error deleting college:', error);
     }
   };
 
-  const showNotification = (message: string, type: 'success' | 'error') => {
-    console.log(`[${type.toUpperCase()}] ${message}`);
-    alert(message);
+  // Modal handlers
+  const handleModalSuccess = (college: College) => {
+    if (modalMode === 'create') {
+      setColleges(prev => [college, ...prev]);
+    } else {
+      setColleges(prev =>
+        prev.map(c => (c.id === college.id ? college : c))
+      );
+    }
+    fetchColleges(); // Refresh to get updated data
+  };
+
+  const openCreateModal = () => {
+    setSelectedCollege(null);
+    setModalMode('create');
+    setShowModal(true);
+  };
+
+  const openEditModal = (college: College) => {
+    setSelectedCollege(college);
+    setModalMode('edit');
+    setShowModal(true);
   };
 
   // Editable cell component
@@ -237,7 +259,10 @@ const CollegesManager: React.FC = () => {
               <option value="West Bengal">West Bengal</option>
             </select>
 
-            <button className="flex items-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all">
+            <button
+              onClick={openCreateModal}
+              className="flex items-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add College
             </button>
@@ -417,10 +442,7 @@ const CollegesManager: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
                         <button
-                          onClick={() => {
-                            setSelectedCollege(college);
-                            setShowDetailModal(true);
-                          }}
+                          onClick={() => openEditModal(college)}
                           className="inline-flex items-center p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                         >
                           <Edit2 className="h-4 w-4" />
@@ -470,6 +492,15 @@ const CollegesManager: React.FC = () => {
           </>
         )}
       </div>
+
+      {/* College Modal */}
+      <CollegeModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={handleModalSuccess}
+        college={selectedCollege}
+        mode={modalMode}
+      />
     </div>
   );
 };

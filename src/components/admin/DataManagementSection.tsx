@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Building2, BarChart3, BookOpen, History, Download, Upload, RefreshCw } from 'lucide-react';
 import CollegesManager from './CollegesManager';
 import CutoffsManager from './CutoffsManager';
+import CoursesManager from './CoursesManager';
 import AuditLogViewer from './AuditLogViewer';
 
 type Tab = 'colleges' | 'cutoffs' | 'courses' | 'audit';
@@ -108,22 +109,7 @@ const DataManagementSection: React.FC = () => {
       <div className="animate-fadeIn">
         {activeTab === 'colleges' && <CollegesManager />}
         {activeTab === 'cutoffs' && <CutoffsManager />}
-        {activeTab === 'courses' && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-12 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl mb-6">
-              <BookOpen className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-              Courses Management
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-              Manage all medical and dental courses. Coming soon with advanced features.
-            </p>
-            <button className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
-              Request Early Access
-            </button>
-          </div>
-        )}
+        {activeTab === 'courses' && <CoursesManager />}
         {activeTab === 'audit' && <AuditLogViewer />}
       </div>
     </div>
