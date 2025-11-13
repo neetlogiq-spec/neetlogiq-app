@@ -18,7 +18,11 @@
     "build:all": "npm run build:wasm && npm run build",
     "create:stream-manifest": "node scripts/create-stream-manifest.js",
     "create:compressed-cutoffs": "node scripts/create-partitioned-cutoffs.js",
-    "test:compression": "node scripts/compression-comparison.js"
+    "test:compression": "node scripts/compression-comparison.js",
+    "generate:static": "node scripts/generate-static-data.js",
+    "upload:data": "node scripts/upload-to-r2.js",
+    "deploy:all": "bash scripts/deploy-all.sh",
+    "build:optimized": "npm run generate:static && npm run build"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.30.0",
