@@ -10,10 +10,14 @@ export interface PricingPlan {
   description: string;
   price: {
     monthly: number;
+    quarterly: number;
+    halfYearly: number;
     yearly: number;
   };
   razorpayPlanId: {
     monthly: string;
+    quarterly: string;
+    halfYearly: string;
     yearly: string;
   };
   features: string[];
@@ -39,10 +43,14 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
     description: 'Perfect for exploring options',
     price: {
       monthly: 0,
+      quarterly: 0,
+      halfYearly: 0,
       yearly: 0
     },
     razorpayPlanId: {
       monthly: '',
+      quarterly: '',
+      halfYearly: '',
       yearly: ''
     },
     features: [
@@ -70,11 +78,15 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
     displayName: 'Premium',
     description: 'Unlimited access to everything',
     price: {
-      monthly: 149,
-      yearly: 999  // ~₹83/month - 44% savings
+      monthly: 149,      // ₹149/month
+      quarterly: 399,    // ₹133/month - 11% savings
+      halfYearly: 699,   // ₹117/month - 21% savings
+      yearly: 999        // ₹83/month - 44% savings
     },
     razorpayPlanId: {
       monthly: 'plan_premium_monthly',
+      quarterly: 'plan_premium_quarterly',
+      halfYearly: 'plan_premium_halfyearly',
       yearly: 'plan_premium_yearly'
     },
     features: [

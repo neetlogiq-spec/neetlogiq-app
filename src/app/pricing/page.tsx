@@ -17,12 +17,12 @@ const PricingPage: React.FC = () => {
   const { isDarkMode } = useTheme();
   const { currentPlan, loading: subscriptionLoading } = usePremium();
   const { initializePayment, loading: paymentLoading } = useRazorpay();
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'quarterly' | 'halfYearly' | 'yearly'>('yearly');
   const [showContent, setShowContent] = useState(false);
 
   const plans = Object.values(PRICING_PLANS);
 
-  const handleSubscribe = async (planId: string, cycle: 'monthly' | 'yearly') => {
+  const handleSubscribe = async (planId: string, cycle: 'monthly' | 'quarterly' | 'halfYearly' | 'yearly') => {
     if (planId === 'free') return;
 
     try {
@@ -234,12 +234,12 @@ const PricingPage: React.FC = () => {
                   </p>
 
                   {/* Billing Toggle */}
-                  <div className={`inline-flex items-center gap-3 p-2 rounded-xl ${
+                  <div className={`inline-flex flex-wrap items-center justify-center gap-2 p-2 rounded-xl ${
                     isDarkMode ? 'bg-white/10 border-white/20' : 'bg-gray-100 border-gray-200'
                   } border`}>
                     <button
                       onClick={() => setBillingCycle('monthly')}
-                      className={`px-6 py-2 rounded-lg font-medium transition-all ${
+                      className={`px-4 py-2 rounded-lg font-medium transition-all text-sm ${
                         billingCycle === 'monthly'
                           ? isDarkMode
                             ? 'bg-white text-gray-900'
@@ -252,8 +252,42 @@ const PricingPage: React.FC = () => {
                       Monthly
                     </button>
                     <button
+                      onClick={() => setBillingCycle('quarterly')}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all text-sm relative ${
+                        billingCycle === 'quarterly'
+                          ? isDarkMode
+                            ? 'bg-white text-gray-900'
+                            : 'bg-gray-900 text-white'
+                          : isDarkMode
+                            ? 'text-gray-400'
+                            : 'text-gray-600'
+                      }`}
+                    >
+                      3 Months
+                      <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-blue-500 text-white text-xs rounded-full">
+                        11%
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => setBillingCycle('halfYearly')}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all text-sm relative ${
+                        billingCycle === 'halfYearly'
+                          ? isDarkMode
+                            ? 'bg-white text-gray-900'
+                            : 'bg-gray-900 text-white'
+                          : isDarkMode
+                            ? 'text-gray-400'
+                            : 'text-gray-600'
+                      }`}
+                    >
+                      6 Months
+                      <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-orange-500 text-white text-xs rounded-full">
+                        21%
+                      </span>
+                    </button>
+                    <button
                       onClick={() => setBillingCycle('yearly')}
-                      className={`px-6 py-2 rounded-lg font-medium transition-all relative ${
+                      className={`px-4 py-2 rounded-lg font-medium transition-all text-sm relative ${
                         billingCycle === 'yearly'
                           ? isDarkMode
                             ? 'bg-white text-gray-900'
@@ -264,8 +298,8 @@ const PricingPage: React.FC = () => {
                       }`}
                     >
                       Yearly
-                      <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-green-500 text-white text-xs rounded-full">
-                        Save 17%
+                      <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-green-500 text-white text-xs rounded-full">
+                        44%
                       </span>
                     </button>
                   </div>
@@ -276,8 +310,11 @@ const PricingPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-8">
                 {plans.map((plan, index) => {
                   const isCurrentPlan = plan.id === currentPlan;
-                  const price = billingCycle === 'monthly' ? plan.price.monthly : plan.price.yearly;
-                  const monthlyPrice = billingCycle === 'yearly' ? Math.round(plan.price.yearly / 12) : price;
+                  const price = plan.price[billingCycle];
+                  const monthlyPrice = billingCycle === 'monthly' ? price
+                    : billingCycle === 'quarterly' ? Math.round(price / 3)
+                    : billingCycle === 'halfYearly' ? Math.round(price / 6)
+                    : Math.round(price / 12);
 
                   return (
                     <motion.div
@@ -327,14 +364,18 @@ const PricingPage: React.FC = () => {
                         ) : (
                           <>
                             <div className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                              ₹{monthlyPrice}
+                              ₹{billingCycle === 'monthly' ? price : monthlyPrice}
                               <span className={`text-lg font-normal ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                 /month
                               </span>
                             </div>
-                            {billingCycle === 'yearly' && (
+                            {billingCycle !== 'monthly' && (
                               <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                Billed ₹{price} yearly
+                                Billed ₹{price} {
+                                  billingCycle === 'quarterly' ? 'every 3 months'
+                                  : billingCycle === 'halfYearly' ? 'every 6 months'
+                                  : 'yearly'
+                                }
                               </div>
                             )}
                           </>

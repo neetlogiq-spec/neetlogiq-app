@@ -17,7 +17,7 @@ declare global {
 
 interface PaymentOptions {
   planId: string;
-  billingCycle: 'monthly' | 'yearly';
+  billingCycle: 'monthly' | 'quarterly' | 'halfYearly' | 'yearly';
   userId: string;
   userEmail: string;
   userName: string;
