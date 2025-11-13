@@ -160,6 +160,12 @@ export interface Database {
           subscription_end_date: string | null
           daily_recommendation_count: number
           last_recommendation_reset: string
+          selected_stream: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL' | null
+          stream_locked: boolean
+          stream_locked_at: string | null
+          stream_change_requested: boolean
+          stream_change_request_date: string | null
+          stream_change_request_reason: string | null
           created_at: string
           updated_at: string
         }
@@ -175,6 +181,12 @@ export interface Database {
           subscription_end_date?: string | null
           daily_recommendation_count?: number
           last_recommendation_reset?: string
+          selected_stream?: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL' | null
+          stream_locked?: boolean
+          stream_locked_at?: string | null
+          stream_change_requested?: boolean
+          stream_change_request_date?: string | null
+          stream_change_request_reason?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -190,6 +202,12 @@ export interface Database {
           subscription_end_date?: string | null
           daily_recommendation_count?: number
           last_recommendation_reset?: string
+          selected_stream?: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL' | null
+          stream_locked?: boolean
+          stream_locked_at?: string | null
+          stream_change_requested?: boolean
+          stream_change_request_date?: string | null
+          stream_change_request_reason?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -460,6 +478,47 @@ export interface Database {
           features?: Json
           is_active?: boolean
           created_at?: string
+        }
+      }
+      stream_change_requests: {
+        Row: {
+          id: string
+          user_id: string
+          current_stream: string
+          requested_stream: string
+          reason: string
+          status: 'pending' | 'approved' | 'rejected'
+          admin_notes: string | null
+          admin_user_id: string | null
+          created_at: string
+          updated_at: string
+          processed_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          current_stream: string
+          requested_stream: string
+          reason: string
+          status?: 'pending' | 'approved' | 'rejected'
+          admin_notes?: string | null
+          admin_user_id?: string | null
+          created_at?: string
+          updated_at?: string
+          processed_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          current_stream?: string
+          requested_stream?: string
+          reason?: string
+          status?: 'pending' | 'approved' | 'rejected'
+          admin_notes?: string | null
+          admin_user_id?: string | null
+          created_at?: string
+          updated_at?: string
+          processed_at?: string | null
         }
       }
     }

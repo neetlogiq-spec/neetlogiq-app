@@ -15,6 +15,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import StreamSelectionModal from '@/components/auth/StreamSelectionModal';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 export type StreamType = 'UG' | 'PG_MEDICAL' | 'PG_DENTAL';
 
@@ -70,13 +71,18 @@ const STREAM_CONFIGS: Record<StreamType, StreamFilterConfig> = {
 interface StreamContextType {
   selectedStream: StreamType | null;
   streamConfig: StreamFilterConfig | null;
-  setStream: (stream: StreamType) => void;
+  setStream: (stream: StreamType) => Promise<void>;
   clearStream: () => void;
   isStreamSelected: boolean;
   showModal: boolean;
   openModal: () => void;
   closeModal: () => void;
   isDeveloper: boolean; // Developer accounts bypass filtering
+  isLocked: boolean; // Whether stream is locked
+  lockedAt: string | null; // When stream was locked
+  changeRequested: boolean; // Whether user has requested a change
+  requestStreamChange: (requestedStream: StreamType, reason: string) => Promise<void>;
+  loadingStreamInfo: boolean; // Loading state for stream info
 }
 
 const StreamContext = createContext<StreamContextType | undefined>(undefined);
@@ -101,11 +107,15 @@ export const StreamProvider: React.FC<StreamProviderProps> = ({ children }) => {
   const [selectedStream, setSelectedStream] = useState<StreamType | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockedAt, setLockedAt] = useState<string | null>(null);
+  const [changeRequested, setChangeRequested] = useState(false);
+  const [loadingStreamInfo, setLoadingStreamInfo] = useState(false);
 
   // Check if current user is a developer
   const isDeveloper = isDeveloperAccount(user?.email);
 
-  // Load stream selection from localStorage on mount
+  // Load stream selection from database on mount
   useEffect(() => {
     // Only show modal if user is authenticated
     if (!user) {
@@ -119,30 +129,100 @@ export const StreamProvider: React.FC<StreamProviderProps> = ({ children }) => {
       return;
     }
 
-    const storedStream = localStorage.getItem(STORAGE_KEY) as StreamType | null;
-    const modalShown = localStorage.getItem(MODAL_SHOWN_KEY);
+    // Load stream from database
+    const loadStreamFromDatabase = async () => {
+      setLoadingStreamInfo(true);
+      try {
+        const { data: profile, error } = await supabase
+          .from('user_profiles')
+          .select('selected_stream, stream_locked, stream_locked_at, stream_change_requested')
+          .eq('user_id', user.id)
+          .single();
 
-    if (storedStream && (storedStream === 'UG' || storedStream === 'PG_MEDICAL' || storedStream === 'PG_DENTAL')) {
-      setSelectedStream(storedStream);
-      setIsInitialized(true);
-    } else {
-      // Show modal only if authenticated and not shown before
-      // Modal will appear after successful authentication
-      if (!modalShown) {
-        setShowModal(true);
+        if (error && error.code !== 'PGRST116') { // PGRST116 = not found
+          console.error('Error loading stream from database:', error);
+        }
+
+        if (profile?.selected_stream) {
+          setSelectedStream(profile.selected_stream as StreamType);
+          setIsLocked(profile.stream_locked || false);
+          setLockedAt(profile.stream_locked_at || null);
+          setChangeRequested(profile.stream_change_requested || false);
+
+          // Sync to localStorage for backwards compatibility
+          localStorage.setItem(STORAGE_KEY, profile.selected_stream);
+          localStorage.setItem(MODAL_SHOWN_KEY, 'true');
+        } else {
+          // No stream in database, check localStorage as fallback
+          const storedStream = localStorage.getItem(STORAGE_KEY) as StreamType | null;
+          if (storedStream && ['UG', 'PG_MEDICAL', 'PG_DENTAL'].includes(storedStream)) {
+            setSelectedStream(storedStream);
+          } else {
+            // Show modal only if no stream selected
+            const modalShown = localStorage.getItem(MODAL_SHOWN_KEY);
+            if (!modalShown) {
+              setShowModal(true);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error in loadStreamFromDatabase:', error);
+      } finally {
+        setLoadingStreamInfo(false);
+        setIsInitialized(true);
       }
-      setIsInitialized(true);
-    }
+    };
+
+    loadStreamFromDatabase();
   }, [isDeveloper, user]);
 
-  const setStream = (stream: StreamType) => {
-    setSelectedStream(stream);
-    localStorage.setItem(STORAGE_KEY, stream);
-    localStorage.setItem(MODAL_SHOWN_KEY, 'true');
-    setShowModal(false);
+  const setStream = async (stream: StreamType) => {
+    try {
+      // If user is authenticated, save to database
+      if (user) {
+        const { data: { session } } = await supabase.auth.getSession();
 
-    // Clear any cached data that might be stream-specific
-    clearStreamCache();
+        if (session) {
+          const response = await fetch('/api/user/stream', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ stream })
+          });
+
+          if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.error || 'Failed to save stream');
+          }
+
+          const data = await response.json();
+
+          // Update state from response
+          setIsLocked(data.stream.isLocked);
+          setLockedAt(data.stream.lockedAt);
+        }
+      }
+
+      // Update local state
+      setSelectedStream(stream);
+      localStorage.setItem(STORAGE_KEY, stream);
+      localStorage.setItem(MODAL_SHOWN_KEY, 'true');
+      setShowModal(false);
+
+      // Clear any cached data that might be stream-specific
+      clearStreamCache();
+    } catch (error) {
+      console.error('Error saving stream:', error);
+      // Still update local state even if API fails
+      setSelectedStream(stream);
+      localStorage.setItem(STORAGE_KEY, stream);
+      localStorage.setItem(MODAL_SHOWN_KEY, 'true');
+      setShowModal(false);
+      clearStreamCache();
+      throw error; // Re-throw to let caller handle
+    }
   };
 
   const clearStream = () => {
@@ -152,13 +232,58 @@ export const StreamProvider: React.FC<StreamProviderProps> = ({ children }) => {
   };
 
   const openModal = () => {
-    setShowModal(true);
+    // Only allow opening modal if stream is not locked
+    if (!isLocked) {
+      setShowModal(true);
+    }
   };
 
   const closeModal = () => {
     setShowModal(false);
     // Mark as shown even if user closes without selecting
     localStorage.setItem(MODAL_SHOWN_KEY, 'true');
+  };
+
+  const requestStreamChange = async (requestedStream: StreamType, reason: string) => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    if (!isLocked) {
+      throw new Error('Stream is not locked. You can change it directly.');
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error('No active session');
+      }
+
+      const response = await fetch('/api/user/stream/request-change', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ requestedStream, reason })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to request stream change');
+      }
+
+      const data = await response.json();
+
+      // Update local state
+      setChangeRequested(true);
+
+      return data;
+    } catch (error) {
+      console.error('Error requesting stream change:', error);
+      throw error;
+    }
   };
 
   const clearStreamCache = () => {
@@ -190,7 +315,12 @@ export const StreamProvider: React.FC<StreamProviderProps> = ({ children }) => {
     showModal,
     openModal,
     closeModal,
-    isDeveloper
+    isDeveloper,
+    isLocked,
+    lockedAt,
+    changeRequested,
+    requestStreamChange,
+    loadingStreamInfo
   };
 
   return (

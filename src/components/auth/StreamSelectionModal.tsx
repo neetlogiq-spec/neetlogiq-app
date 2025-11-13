@@ -12,11 +12,12 @@ import {
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { User } from '@/types';
+import StreamLockConfirmationModal from './StreamLockConfirmationModal';
 
 interface StreamSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onComplete: (stream: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL') => void;
+  onComplete: (stream: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL') => Promise<void>;
 }
 
 const StreamSelectionModal: React.FC<StreamSelectionModalProps> = ({ 
@@ -27,6 +28,7 @@ const StreamSelectionModal: React.FC<StreamSelectionModalProps> = ({
   const { isDarkMode } = useTheme();
   const { user } = useAuth();
   const [selectedStream, setSelectedStream] = useState<'UG' | 'PG_MEDICAL' | 'PG_DENTAL' | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const streams = [
@@ -65,20 +67,30 @@ const StreamSelectionModal: React.FC<StreamSelectionModalProps> = ({
     }
   ];
 
-  const handleSubmit = async () => {
+  const handleContinue = () => {
     if (!selectedStream) return;
-    
+    // Show confirmation modal
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmLock = async () => {
+    if (!selectedStream) return;
+
     setIsSubmitting(true);
     try {
-      // Save the selected stream to user profile
+      // Save the selected stream to user profile (will lock it)
       await onComplete(selectedStream);
+      setShowConfirmation(false);
       onClose();
     } catch (error) {
       console.error('Error saving stream selection:', error);
+      alert('Failed to save stream selection. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const selectedStreamInfo = streams.find(s => s.id === selectedStream);
 
   return (
     <AnimatePresence>
@@ -185,10 +197,10 @@ const StreamSelectionModal: React.FC<StreamSelectionModalProps> = ({
               </div>
               
               <div className={`mt-6 p-4 rounded-lg ${
-                isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-blue-50 border border-blue-200'
+                isDarkMode ? 'bg-orange-900/20 border border-orange-700' : 'bg-orange-50 border border-orange-200'
               }`}>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-blue-800'}`}>
-                  <strong>Why select a stream?</strong> This helps us show you the most relevant colleges, courses, and cutoff data based on your academic level. You can change this later in your profile settings.
+                <p className={`text-sm ${isDarkMode ? 'text-orange-300' : 'text-orange-800'}`}>
+                  <strong>⚠️ Important:</strong> Your stream selection will be <strong>locked permanently</strong> after confirmation to ensure data consistency. You will need to contact support to change it later.
                 </p>
               </div>
             </div>
@@ -197,31 +209,32 @@ const StreamSelectionModal: React.FC<StreamSelectionModalProps> = ({
             <div className={`px-6 py-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <div className="flex justify-end">
                 <button
-                  onClick={handleSubmit}
-                  disabled={!selectedStream || isSubmitting}
+                  onClick={handleContinue}
+                  disabled={!selectedStream}
                   className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all ${
-                    !selectedStream || isSubmitting
+                    !selectedStream
                       ? 'opacity-50 cursor-not-allowed'
                       : 'bg-blue-600 hover:bg-blue-700 text-white'
                   }`}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      Continue
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
+                  Continue
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
           </motion.div>
         </div>
       )}
+
+      {/* Stream Lock Confirmation Modal */}
+      <StreamLockConfirmationModal
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={handleConfirmLock}
+        streamName={selectedStreamInfo?.name || ''}
+        streamDescription={selectedStreamInfo?.description || ''}
+        isLoading={isSubmitting}
+      />
     </AnimatePresence>
   );
 };
