@@ -25,73 +25,112 @@ See **SCHEMA_MIGRATION_GUIDE.md** for detailed mapping documentation.
 
 ---
 
-## Step 1: Apply Unified Schema Migration
+## Step 1: Apply Complete Hybrid Schema Migration
 
-**Use the new unified schema (20250114_unified_schema.sql):**
+**Use the complete hybrid schema (20250114_complete_hybrid_schema.sql):**
 
 ```sql
--- File: supabase/migrations/20250114_unified_schema.sql
+-- File: supabase/migrations/20250114_complete_hybrid_schema.sql
 ```
 
 **How to apply:**
 1. Go to **Supabase Dashboard → SQL Editor**
 2. Create a new query
-3. Copy the entire contents of `supabase/migrations/20250114_unified_schema.sql`
+3. Copy the entire contents of `supabase/migrations/20250114_complete_hybrid_schema.sql`
 4. Paste into the SQL Editor
 5. Click **Run** or press Ctrl+Enter
 6. Verify: "Success. No rows returned"
 
 **What this creates:**
 
-**Foundation Tables (8):**
-- `states` - 36 Indian states/UTs
-- `categories` - Admission categories (General, OBC, SC, ST, EWS, PwD)
-- `quotas` - 12 quota types (AIQ, State, Management, etc.)
-- `courses` - Course types and specializations
-- `sources` - Data sources (AIQ, KEA, STATE, MCC, DGHS, NBEMS)
-- `levels` - Education levels (UG, PG, DEN, DNB, DIPLOMA)
+**Foundation Tables (6):**
+- `states` - 36 Indian states/UTs with regions
+- `categories` - 11 admission categories (General, OBC, SC, ST, EWS, PwD)
+- `quotas` - 12 quota types (AIQ, State, Management, AIIMS, etc.)
+- `master_courses` - 40 courses with TF-IDF vectors (TEXT IDs)
+- `sources` - 7 data sources (AIQ, KEA, STATE, MCC, DGHS, NBEMS)
+- `levels` - 5 education levels (UG, PG, DEN, DNB, DIPLOMA)
 
-**College Tables (3):**
-- `medical_colleges` - Medical colleges with normalization and TF-IDF vectors
-- `dental_colleges` - Dental colleges with normalization
-- `dnb_colleges` - DNB institutions with normalization
+**College Tables (4):**
+- `medical_colleges` - Medical colleges with normalization, composite keys, TF-IDF (TEXT IDs)
+- `dental_colleges` - Dental colleges with normalization (TEXT IDs)
+- `dnb_colleges` - DNB institutions with normalization (TEXT IDs)
+- `colleges` - Application colleges table (UUID for app compatibility)
+
+**Course & Cutoff Tables (2 - CRITICAL):**
+- `courses` - Application courses (UUID, links to colleges + master_courses)
+- `cutoffs` - Historical cutoff data for recommendations (ESSENTIAL!)
 
 **Alias Tables (5):**
-- `college_aliases` - College name variations for matching
+- `college_aliases` - College name variations for hierarchical matching
 - `course_aliases` - Course name variations
 - `state_aliases` - State name variations
 - `category_aliases` - Category name variations
 - `quota_aliases` - Quota name variations
 
 **Link Tables (3):**
-- `state_college_link` - State-college relationships
-- `state_course_college_link` - State-course-college combinations
+- `state_college_link` - State-college relationships with composite keys
+- `state_course_college_link` - State-course-college with occurrence tracking
 - `state_mappings` - Raw to normalized state mappings
 
 **Data Tables (4):**
-- `seat_data` - Seat matrix with college/course matching
-- `counselling_records` - Historical counselling data
+- `seat_data` - Seat matrix with matching metadata
+- `counselling_records` - Historical counselling/admission data (partitioned)
 - `counselling_rounds` - Counselling round information
-- `partition_metadata` - Partition statistics
+- `partition_metadata` - Auto-updated partition statistics
 
-**Application Tables (11):**
-- `user_profiles` - User account data
-- `user_roles` - Role-based access control
+**User Management Tables (4):**
+- `user_profiles` - User account data (extends auth.users)
+- `user_roles` - Role-based access control (RBAC)
 - `admin_users` - Admin accounts
-- `subscriptions` - Payment subscriptions
+- `admin_audit_log` - Admin activity audit trail
+
+**Subscription & Payment Tables (4):**
+- `subscriptions` - Payment subscriptions (Razorpay integration)
 - `payment_transactions` - Payment history
+- `premium_features` - Premium feature catalog
+- `user_feature_usage` - Feature usage tracking
+
+**User Interaction Tables (7):**
 - `favorites` - User favorites
+- `college_notes` - User notes on colleges
+- `watchlist` - User watchlist
 - `recommendations` - College recommendations
 - `user_activity` - Activity tracking
+- `search_history` - Search history
+- `user_preferences` - User preferences (theme, language, etc.)
+
+**Real-Time & Live Data Tables (3):**
+- `live_seat_updates` - Real-time seat tracking (premium feature)
 - `notifications` - User notifications
-- `stream_configurations` - Stream settings
-- `user_streams` - User stream access
+- `alert_subscriptions` - SMS/email alert subscriptions
+
+**Counselling Feature Tables (3):**
+- `counselling_documents` - Document uploads with verification
+- `counselling_packages` - Professional counselling service packages
+- `counselling_bookings` - Appointment scheduling
+
+**Stream Management Tables (4):**
+- `stream_configurations` - Stream settings (UG, PG_MEDICAL, DIPLOMA, DNB)
+- `user_streams` - User stream access control
+- `stream_locks` - Temporary stream locks
+- `stream_change_requests` - Stream change approval workflow
+
+**Analytics Tables (3):**
+- `user_usage_tracking` - Daily/monthly usage limits enforcement
+- `recommendation_requests` - AI recommendation tracking
+- `college_comparisons` - College comparison tracking
 
 **Views (2):**
-- `colleges_unified` - Unified view of all college types
-- `v_counselling_details` - Complete counselling data with joins
+- `colleges_unified` - Unified view of medical/dental/DNB colleges
+- `v_counselling_details` - Complete counselling data with master data joins
 
-**Total:** 35+ tables, 50+ indexes, 10+ triggers
+**Functions (3):**
+- `update_partition_metadata()` - Auto-update counselling partition statistics
+- `check_daily_limit()` - Enforce feature usage limits by tier
+- `update_updated_at_column()` - Auto-update timestamps
+
+**Total:** 50+ tables, 60+ indexes, 10+ triggers, 3 functions
 
 ---
 
@@ -109,12 +148,20 @@ AND table_type = 'BASE TABLE'
 ORDER BY table_name;
 ```
 
-**Expected tables (35+):**
+**Expected tables (50+):**
 ```
+admin_audit_log
 admin_users
+alert_subscriptions
 categories
 category_aliases
 college_aliases
+college_comparisons
+college_notes
+colleges
+counselling_bookings
+counselling_documents
+counselling_packages
 counselling_records
 counselling_rounds
 course_aliases
@@ -123,13 +170,18 @@ dental_colleges
 dnb_colleges
 favorites
 levels
+live_seat_updates
+master_courses
 medical_colleges
 notifications
 partition_metadata
 payment_transactions
+premium_features
 quota_aliases
 quotas
+recommendation_requests
 recommendations
+search_history
 seat_data
 sources
 state_aliases
@@ -137,12 +189,18 @@ state_college_link
 state_course_college_link
 state_mappings
 states
+stream_change_requests
 stream_configurations
+stream_locks
 subscriptions
 user_activity
+user_feature_usage
+user_preferences
 user_profiles
 user_roles
 user_streams
+user_usage_tracking
+watchlist
 ```
 
 **Verify views:**
@@ -196,7 +254,7 @@ SELECT 'Sources', COUNT(*) FROM sources
 UNION ALL
 SELECT 'Levels', COUNT(*) FROM levels
 UNION ALL
-SELECT 'Courses', COUNT(*) FROM courses
+SELECT 'Master Courses', COUNT(*) FROM master_courses
 UNION ALL
 SELECT 'Stream Configurations', COUNT(*) FROM stream_configurations
 UNION ALL
@@ -212,7 +270,7 @@ Categories               | 11
 Quotas                   | 12
 Sources                  | 7
 Levels                   | 5
-Courses                  | 40
+Master Courses           | 40
 Stream Configurations    | 4
 User Roles               | 4
 ```
@@ -433,16 +491,18 @@ SELECT update_partition_metadata();
 
 ## Verification Checklist
 
-- [ ] Unified schema migration applied successfully
-- [ ] 35+ tables created
-- [ ] 2 views created
-- [ ] Foundation data populated (36 states, 11 categories, 12 quotas, etc.)
-- [ ] Stream configurations inserted (4 streams)
-- [ ] User roles created (4 roles)
+- [ ] Complete hybrid schema migration applied successfully
+- [ ] 50+ tables created (including cutoffs, college_notes, watchlist, etc.)
+- [ ] 2 views created (colleges_unified, v_counselling_details)
+- [ ] 3 functions created (partition metadata, usage limits, timestamps)
+- [ ] Foundation data populated (36 states, 11 categories, 12 quotas, 40 courses, etc.)
+- [ ] Stream configurations inserted (4 streams: UG, PG_MEDICAL, DIPLOMA, DNB)
+- [ ] User roles created (4 roles: super_admin, admin, moderator, user)
 - [ ] Super admin user created and verified
 - [ ] Environment variables configured in Vercel
 - [ ] Database connectivity tested
-- [ ] Triggers working correctly
+- [ ] Triggers working correctly (partition metadata auto-update)
+- [ ] All indexes created (60+ indexes)
 
 ---
 
@@ -459,12 +519,23 @@ SELECT update_partition_metadata();
 
 ## Complete! 🎉
 
-Your database is now configured with the unified schema matching DATABASE_SCHEMAS.md structure!
+Your database is now configured with the **complete hybrid schema** combining DATABASE_SCHEMAS.md + ALL application features!
+
+**What You Have:**
+- ✅ 50+ tables (DATABASE_SCHEMAS.md structure + all app features)
+- ✅ TEXT ID system for master data import (MED0001, CRS0001, ST001)
+- ✅ UUID ID system for app features (user interactions, bookings, notes)
+- ✅ Historical cutoffs table (CRITICAL for recommendations)
+- ✅ Premium features (live tracking, alerts, professional counselling)
+- ✅ Complete user management (roles, permissions, subscriptions)
+- ✅ Usage tracking and limits enforcement
+- ✅ 60+ performance indexes, 10+ triggers, 3 functions
 
 **Schema Documentation:**
 - **SCHEMA_MIGRATION_GUIDE.md** - SQLite to PostgreSQL mapping details
-- **DATABASE_SCHEMAS.md** - Original SQLite schema documentation
+- **DATABASE_SCHEMAS.md** - Original SQLite schema documentation (3 databases merged)
+- **20250114_complete_hybrid_schema.sql** - Complete schema (1090 lines)
 - **foundation_data_population.sql** - Foundation data insertion script
 - **promote_to_super_admin.sql** - Admin user promotion script
 
-**Status:** Ready for college data import and application testing
+**Status:** Ready for college data import, counselling data import, and full application deployment
