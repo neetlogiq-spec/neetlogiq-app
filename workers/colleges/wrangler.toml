@@ -1,0 +1,39 @@
+# Colleges API Worker Configuration
+
+name = "neetlogiq-colleges-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+node_compat = true
+
+# Workers limits
+[limits]
+cpu_ms = 50  # Max 50ms CPU time (free tier: 10ms, paid: 50ms)
+
+# R2 bucket binding
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "neetlogiq-data"
+
+# KV namespace binding for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = ""  # TODO: Add your KV namespace ID from: wrangler kv:namespace list
+preview_id = ""  # TODO: Add your preview KV namespace ID
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+
+# Development environment
+[env.dev]
+name = "neetlogiq-colleges-api-dev"
+
+[env.dev.vars]
+ENVIRONMENT = "development"
+
+# Build configuration
+[build]
+command = "npm install && npm run build"
+
+[build.upload]
+format = "service-worker"

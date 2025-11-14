@@ -5,6 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart3, Users, TrendingUp, Award, Zap, Sparkles, ArrowRight, Target } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePremium } from '@/contexts/PremiumContext';
+import PremiumGate from '@/components/premium/PremiumGate';
+import { FEATURE_KEYS } from '@/config/premium';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
 import Footer from '@/components/ui/Footer';
@@ -483,8 +486,10 @@ const TrendsPage: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="fixed inset-0 z-20 overflow-y-auto bg-white dark:bg-gray-900 pt-16"
           >
-            {/* Trend Visualization Section */}
-            <div className="py-4 px-4">
+            {/* Premium Gate for Trend Analysis */}
+            <PremiumGate featureKey={FEATURE_KEYS.TREND_ANALYSIS}>
+              {/* Trend Visualization Section */}
+              <div className="py-4 px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
             className="text-center mb-12"
@@ -1336,6 +1341,7 @@ const TrendsPage: React.FC = () => {
           </motion.div>
         </div>
       </div>
+            </PremiumGate>
 
             {/* Footer */}
             <Footer />

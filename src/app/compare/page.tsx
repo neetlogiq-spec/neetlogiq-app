@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Plus, Trophy, Users, Clock, Zap, Sparkles, ArrowRight } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { usePremium } from '@/contexts/PremiumContext';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
 import Footer from '@/components/ui/Footer';
@@ -11,6 +12,8 @@ import CollegeSelector from '@/components/compare/CollegeSelector';
 import ComparisonResults from '@/components/compare/ComparisonResults';
 import ProgressIndicator from '@/components/compare/ProgressIndicator';
 import AchievementToast from '@/components/compare/AchievementToast';
+import PremiumGate from '@/components/premium/PremiumGate';
+import { FEATURE_KEYS } from '@/config/premium';
 import './compare.css';
 
 interface College {
@@ -38,6 +41,7 @@ const ComparePage: React.FC = () => {
   const [selectedStream, setSelectedStream] = useState<string>('all');
   const [selectedManagement, setSelectedManagement] = useState<string>('all');
   const { isDarkMode } = useTheme();
+  const { canUseFeature, incrementFeatureUsage } = usePremium();
   
   // Hero/Content transition state
   const [showContent, setShowContent] = useState(false);
@@ -79,10 +83,20 @@ const ComparePage: React.FC = () => {
     setSelectedColleges(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleCompare = () => {
-    if (selectedColleges.length >= 2) {
-      setShowResults(true);
+  const handleCompare = async () => {
+    if (selectedColleges.length < 2) return;
+
+    // Check if user can use the comparison feature
+    const canUse = await canUseFeature(FEATURE_KEYS.COLLEGE_COMPARISONS);
+    if (!canUse) {
+      // Premium gate will be shown automatically
+      return;
     }
+
+    // Increment usage counter
+    await incrementFeatureUsage(FEATURE_KEYS.COLLEGE_COMPARISONS);
+
+    setShowResults(true);
   };
 
   const handleReset = () => {

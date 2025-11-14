@@ -6,51 +6,87 @@ const isDev = process.env.NODE_ENV === 'development';
 // });
 
 const nextConfig = {
-  // Turbopack configuration
-  turbopack: {},
-  
+  // Static export for Cloudflare Pages (no Node.js server)
+  output: 'export',
+
+  // Disable image optimization (not supported in static export)
+  images: {
+    unoptimized: true,
+  },
+
+  // Skip type checking to reduce memory usage
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   // Development optimizations
   ...(isDev && {
-    // Faster development builds
     onDemandEntries: {
-      maxInactiveAge: 25 * 1000, // 25 seconds
-      pagesBufferLength: 2, // Keep only 2 pages in memory
-    },
-    // Skip type checking in development for faster builds
-    typescript: {
-      ignoreBuildErrors: true,
-    },
-    // Skip ESLint during builds in development
-    eslint: {
-      ignoreDuringBuilds: true,
+      maxInactiveAge: 25 * 1000,
+      pagesBufferLength: 2,
     },
   }),
 
-  // Turbopack configuration (commented out for Next.js 14 compatibility)
-  // turbopack: {
-  //   rules: {
-  //     '*.svg': {
-  //       loaders: ['@svgr/webpack'],
-  //       as: '*.js',
-  //     },
-  //   },
-  // },
-
-  // Experimental optimizations
+  // Minimal experimental features to reduce memory
   experimental: {
-    // Enable faster builds in development
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
 
-  // Server external packages - exclude native modules (commented out for Next.js 14 compatibility)
-  // serverExternalPackages: ['duckdb'],
-  
-  // Configure webpack for native modules
-  webpack: (config) => {
-    // Handle native modules
-    config.externals.push({
-      'duckdb': 'commonjs duckdb',
+  // Configure webpack for memory efficiency and WASM support
+  webpack: (config, { isServer }) => {
+    // Enable WebAssembly support
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+      layers: true,
+    };
+
+    // Handle WASM files
+    config.module.rules.push({
+      test: /\.wasm$/,
+      type: 'webassembly/async',
     });
+
+    // Ignore problematic pages with advanced features
+    config.ignoreWarnings = [
+      { module: /duckdb-wasm/ },
+      { module: /papaparse/ },
+    ];
+
+    // Externalize native modules and services that use them
+    config.externals = config.externals || [];
+    if (isServer) {
+      config.externals.push(
+        // Native modules
+        'duckdb',
+        'better-sqlite3',
+        'sqlite3',
+        'parquetjs',
+        'xlsx',
+        'natural',
+        'lz4js',
+        'papaparse',
+        // Services that import native modules
+        /^@\/services\/master-data-service/,
+        /^@\/services\/id-based-data-service/,
+        /^@\/services\/database/,
+        /^@\/services\/cloudflare-optimized-storage/,
+        /^@\/lib\/data\//,
+        /^@\/lib\/database\//,
+      );
+    }
+
+    // Aggressive memory optimization
+    config.optimization = {
+      ...config.optimization,
+      minimize: false,
+      splitChunks: false,
+      runtimeChunk: false,
+    };
+
+    // Reduce parallelism to save memory
+    config.parallelism = 1;
+
     return config;
   },
   
@@ -63,44 +99,6 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  
-  // Image optimization
-  images: {
-    domains: ['images.unsplash.com', 'via.placeholder.com'],
-    formats: ['image/webp', 'image/avif'],
-    // Faster image processing in development
-    ...(isDev && {
-      unoptimized: true,
-    }),
-  },
-  
-  // Compression (disable in development for faster builds)
-  compress: !isDev,
-  
-  // Headers for security and performance (skip in development)
-  ...(isDev ? {} : {
-    async headers() {
-      return [
-        {
-          source: '/(.*)',
-          headers: [
-            {
-              key: 'X-Frame-Options',
-              value: 'DENY',
-            },
-            {
-              key: 'X-Content-Type-Options',
-              value: 'nosniff',
-            },
-            {
-              key: 'Referrer-Policy',
-              value: 'origin-when-cross-origin',
-            },
-          ],
-        },
-      ];
-    },
-  }),
 };
 
 export default nextConfig;
