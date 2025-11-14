@@ -1,0 +1,67 @@
+-- Fix course normalization to include "AND" properly
+-- This will unlock 1,173+ unmatched records
+
+-- Fix MDS IN CONSERVATIVE DENTISTRY courses
+UPDATE courses
+SET normalized_name = 'MDS IN CONSERVATIVE DENTISTRY AND ENDODONTICS'
+WHERE normalized_name = 'MDS IN CONSERVATIVE DENTISTRY ENDODONTICS'
+AND id = 'CRS0183';
+
+UPDATE courses
+SET normalized_name = 'PG DIPLOMA IN CONSERVATIVE DENTISTRY AND ENDODONTICS'
+WHERE normalized_name = 'PG DIPLOMA IN CONSERVATIVE DENTISTRY ENDODONTICS'
+AND id = 'CRS0198';
+
+-- Fix MDS IN ORTHODONITICS courses
+UPDATE courses
+SET normalized_name = 'MDS IN ORTHODONITICS AND DENTOFACIAL ORTHOPEDICS'
+WHERE normalized_name = 'MDS IN ORTHODONITICS DENTOFACIAL ORTHOPEDICS'
+AND id = 'CRS0187';
+
+-- Fix MDS IN PROSTHODONTICS courses
+UPDATE courses
+SET normalized_name = 'MDS IN PROSTHODONTICS AND CROWN AND BRIDGE'
+WHERE normalized_name = 'MDS IN PROSTHODONTICS AND CROWN BRIDGE'
+AND id = 'CRS0190';
+
+UPDATE courses
+SET normalized_name = 'PG DIPLOMA IN PROSTHODONTICS AND CROWN AND BRIDGE'
+WHERE normalized_name = 'PG DIPLOMA IN PROSTHODONTICS AND CROWN BRIDGE'
+AND id = 'CRS0203';
+
+-- Fix other MDS courses that might be missing "AND"
+UPDATE courses
+SET normalized_name = 'MDS IN ORAL MEDICINE AND RADIOLOGY'
+WHERE normalized_name = 'MDS IN ORAL MEDICINE RADIOLOGY';
+
+UPDATE courses
+SET normalized_name = 'MDS IN ORAL AND MAXILLOFACIAL PATHOLOGY AND ORAL MICROBIOLOGY'
+WHERE normalized_name = 'MDS IN ORAL MAXILLOFACIAL PATHOLOGY AND ORAL MICROBIOLOGY';
+
+UPDATE courses
+SET normalized_name = 'MDS IN ORAL AND MAXILLOFACIAL SURGERY'
+WHERE normalized_name = 'MDS IN ORAL MAXILLOFACIAL SURGERY';
+
+UPDATE courses
+SET normalized_name = 'MDS IN PERIODONTOLOGY AND IMPLANTOLOGY'
+WHERE normalized_name = 'MDS IN PERIODONTOLOGY IMPLANTOLOGY';
+
+UPDATE courses
+SET normalized_name = 'MDS IN PEDIATRIC AND PREVENTIVE DENTISTRY'
+WHERE normalized_name = 'MDS IN PEDIATRIC PREVENTIVE DENTISTRY';
+
+-- Fix PG Diploma courses
+UPDATE courses
+SET normalized_name = 'PG DIPLOMA IN ORTHODONITICS AND DENTOFACIAL ORTHOPEDICS'
+WHERE normalized_name = 'PG DIPLOMA IN ORTHODONTICS DENTOFACIAL ORTHOPEDICS';
+
+-- Verify the changes
+SELECT 'Verification Report:' as status;
+SELECT COUNT(*) as 'Courses with AND fixed'
+FROM courses
+WHERE normalized_name LIKE '%AND%' AND (
+    normalized_name LIKE '%DENTISTRY%' OR
+    normalized_name LIKE '%PROSTHODONTICS%' OR
+    normalized_name LIKE '%ORTHODONITICS%' OR
+    normalized_name LIKE '%ORAL%'
+);
