@@ -167,6 +167,9 @@ export interface Database {
           stream_change_request_date: string | null
           stream_change_request_reason: string | null
           role: 'user' | 'admin' | 'super_admin'
+          trial_started_at: string | null
+          trial_ends_at: string | null
+          trial_used: boolean
           created_at: string
           updated_at: string
         }
@@ -189,6 +192,9 @@ export interface Database {
           stream_change_request_date?: string | null
           stream_change_request_reason?: string | null
           role?: 'user' | 'admin' | 'super_admin'
+          trial_started_at?: string | null
+          trial_ends_at?: string | null
+          trial_used?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -211,6 +217,9 @@ export interface Database {
           stream_change_request_date?: string | null
           stream_change_request_reason?: string | null
           role?: 'user' | 'admin' | 'super_admin'
+          trial_started_at?: string | null
+          trial_ends_at?: string | null
+          trial_used?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -301,6 +310,10 @@ export interface Database {
           end_date: string | null
           auto_renew: boolean
           amount_paid: number | null
+          cancellation_requested_at: string | null
+          cancellation_reason: string | null
+          grace_period_ends_at: string | null
+          downgrade_scheduled: boolean
           created_at: string
           updated_at: string
         }
@@ -316,6 +329,10 @@ export interface Database {
           end_date?: string | null
           auto_renew?: boolean
           amount_paid?: number | null
+          cancellation_requested_at?: string | null
+          cancellation_reason?: string | null
+          grace_period_ends_at?: string | null
+          downgrade_scheduled?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -331,6 +348,10 @@ export interface Database {
           end_date?: string | null
           auto_renew?: boolean
           amount_paid?: number | null
+          cancellation_requested_at?: string | null
+          cancellation_reason?: string | null
+          grace_period_ends_at?: string | null
+          downgrade_scheduled?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -595,6 +616,102 @@ export interface Database {
           created_at?: string
           updated_at?: string
           processed_at?: string | null
+        }
+      }
+      user_usage_tracking: {
+        Row: {
+          id: string
+          user_id: string
+          month_year: string
+          recommendations_count: number
+          colleges_saved: number
+          comparisons_made: number
+          documents_downloaded: number
+          searches_performed: number
+          used_cutoff_years: Json
+          used_streams: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          month_year: string
+          recommendations_count?: number
+          colleges_saved?: number
+          comparisons_made?: number
+          documents_downloaded?: number
+          searches_performed?: number
+          used_cutoff_years?: Json
+          used_streams?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          month_year?: string
+          recommendations_count?: number
+          colleges_saved?: number
+          comparisons_made?: number
+          documents_downloaded?: number
+          searches_performed?: number
+          used_cutoff_years?: Json
+          used_streams?: Json
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      recommendation_requests: {
+        Row: {
+          id: string
+          user_id: string
+          neet_rank: number | null
+          category: string | null
+          state: string | null
+          stream: string | null
+          recommendations_count: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          neet_rank?: number | null
+          category?: string | null
+          state?: string | null
+          stream?: string | null
+          recommendations_count?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          neet_rank?: number | null
+          category?: string | null
+          state?: string | null
+          stream?: string | null
+          recommendations_count?: number | null
+          created_at?: string
+        }
+      }
+      college_comparisons: {
+        Row: {
+          id: string
+          user_id: string
+          college_ids: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          college_ids: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          college_ids?: Json
+          created_at?: string
         }
       }
     }
