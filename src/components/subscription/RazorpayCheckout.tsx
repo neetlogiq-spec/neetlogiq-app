@@ -46,7 +46,7 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
       setStatus('creating');
       setLoading(true);
 
-      const response = await fetch('/api/payment/create-order', {
+      const response = await fetch('/api/payments/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ planId })
@@ -72,7 +72,7 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
     try {
       setStatus('processing');
 
-      const response = await fetch('/api/payment/verify', {
+      const response = await fetch('/api/payments/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paymentDetails)

@@ -7,6 +7,7 @@ import { StreamProvider } from '@/contexts/StreamContext'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import LayoutWithStreamSelection from '@/components/layout/LayoutWithStreamSelection'
 import StreamGuard from '@/components/StreamGuard'
+import ErrorBoundary from '@/components/common/ErrorBoundary'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -72,19 +73,21 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <ThemeProvider>
-          <AuthProvider>
-            <AuthGuard>
-              <StreamProvider>
-                <StreamGuard>
-                  <LayoutWithStreamSelection>
-                    {children}
-                  </LayoutWithStreamSelection>
-                </StreamGuard>
-              </StreamProvider>
-            </AuthGuard>
-          </AuthProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider>
+            <AuthProvider>
+              <AuthGuard>
+                <StreamProvider>
+                  <StreamGuard>
+                    <LayoutWithStreamSelection>
+                      {children}
+                    </LayoutWithStreamSelection>
+                  </StreamGuard>
+                </StreamProvider>
+              </AuthGuard>
+            </AuthProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )

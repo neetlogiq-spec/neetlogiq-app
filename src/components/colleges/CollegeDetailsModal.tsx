@@ -53,18 +53,7 @@ const CollegeDetailsModal: React.FC<CollegeDetailsModalProps> = ({
   // Lock body scroll when modal is open
   useScrollLock(isOpen);
 
-  console.log('🔍 CollegeDetailsModal render:', { 
-    isOpen, 
-    college: college?.name, 
-    courses: courses?.length,
-    coursesArray: courses,
-    collegeId: college?.id,
-    isOpenType: typeof isOpen,
-    collegeType: typeof college
-  });
-
   if (!isOpen || !college) {
-    console.log('🔍 Modal not rendering because:', { isOpen, hasCollege: !!college });
     return null;
   }
 
