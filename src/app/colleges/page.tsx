@@ -15,7 +15,6 @@ import IntelligentFilters from '@/components/filters/IntelligentFilters';
 import LoadMoreButton from '@/components/ui/LoadMoreButton';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 import { College } from '@/types';
 
 interface CollegeWithCourseCount extends College {
@@ -711,8 +710,6 @@ const CollegesPage: React.FC = () => {
         isLoading={isModalLoading}
           />
 
-            {/* Footer */}
-            <Footer />
           </div>
         </motion.div>
       )}

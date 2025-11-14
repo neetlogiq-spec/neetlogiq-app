@@ -7,7 +7,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { usePremium } from '@/contexts/PremiumContext';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 import SmartChat from '@/components/smart/SmartChat';
 import PremiumGate from '@/components/premium/PremiumGate';
 import { FEATURE_KEYS } from '@/config/premium';
@@ -384,8 +383,6 @@ const SmartPage: React.FC = () => {
               </div>
             </motion.section>
 
-            {/* Footer */}
-            <Footer />
           </motion.div>
         )}
       </AnimatePresence>

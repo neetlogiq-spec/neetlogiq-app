@@ -7,7 +7,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { usePremium } from '@/contexts/PremiumContext';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 import Link from 'next/link';
 import { PRICING_PLANS } from '@/config/premium';
 import { useRazorpay } from '@/hooks/useRazorpay';
@@ -460,7 +459,6 @@ const PricingPage: React.FC = () => {
               </motion.div>
             </div>
 
-            <Footer />
           </motion.div>
         )}
       </AnimatePresence>

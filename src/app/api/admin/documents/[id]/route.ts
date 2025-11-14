@@ -6,11 +6,21 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { checkAdminAccess, logAdminAction } from '@/lib/admin-middleware';
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Check admin authentication
+  const authCheck = await checkAdminAccess(request);
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await request.json();
     const { id } = params;
@@ -41,6 +51,15 @@ export async function PUT(
       );
     }
 
+    // Log admin action
+    await logAdminAction(
+      authCheck.userId!,
+      'UPDATE',
+      'document',
+      id,
+      { title: body.title }
+    );
+
     return NextResponse.json({
       success: true,
       document: data,
@@ -60,6 +79,15 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Check admin authentication
+  const authCheck = await checkAdminAccess(request);
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = params;
 
@@ -74,6 +102,15 @@ export async function DELETE(
         { status: 500 }
       );
     }
+
+    // Log admin action
+    await logAdminAction(
+      authCheck.userId!,
+      'DELETE',
+      'document',
+      id,
+      {}
+    );
 
     return NextResponse.json({
       success: true,

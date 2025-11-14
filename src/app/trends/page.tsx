@@ -10,7 +10,6 @@ import PremiumGate from '@/components/premium/PremiumGate';
 import { FEATURE_KEYS } from '@/config/premium';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 import { useAvailableYears, useYearOptions } from '@/hooks/useAvailableYears';
 import './trends.css';
 
@@ -1343,8 +1342,6 @@ const TrendsPage: React.FC = () => {
       </div>
             </PremiumGate>
 
-            {/* Footer */}
-            <Footer />
           </motion.div>
         )}
       </AnimatePresence>
