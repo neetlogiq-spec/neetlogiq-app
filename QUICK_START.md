@@ -1,259 +1,153 @@
-# Quick Start Guide - Self-Sustainable Architecture
+# ⚡ Quick Start Guide
 
-## TL;DR
-
-Upload new Parquet files → Everything updates automatically → Get Telegram notification → Done!
+**Get NEETLogIQ running in production in under 30 minutes!**
 
 ---
 
-## One-Time Setup (30 minutes)
+## 🎯 Prerequisites
 
-### 1. Cloudflare Setup
-
-```bash
-# Install Wrangler
-npm install -g wrangler
-
-# Login
-wrangler login
-
-# Create R2 bucket
-wrangler r2 bucket create neetlogiq-data
-
-# Deploy worker
-cd workers
-wrangler deploy r2-upload-trigger.js --name r2-upload-trigger
-
-# Set secrets
-wrangler secret put GITHUB_TOKEN --name r2-upload-trigger
-wrangler secret put TELEGRAM_BOT_TOKEN --name r2-upload-trigger
-wrangler secret put TELEGRAM_CHAT_ID --name r2-upload-trigger
-```
-
-### 2. GitHub Setup
-
-Add these secrets to your repository (Settings → Secrets):
-
-- `CLOUDFLARE_ACCOUNT_ID`
-- `CLOUDFLARE_API_TOKEN`
-- `R2_BUCKET_NAME`
-- `TELEGRAM_BOT_TOKEN`
-- `TELEGRAM_CHAT_ID`
-
-### 3. Configure R2 Event Notification
-
-Cloudflare Dashboard → R2 → neetlogiq-data → Event Notifications:
-- Event: `Object Created`
-- Prefix: `data/parquet/`
-- Worker: `r2-upload-trigger`
+- GitHub account
+- Vercel account (free)
+- Supabase project created
+- Razorpay account (for payments)
 
 ---
 
-## Your Annual Workflow (5 minutes)
+## 🚀 Three-Step Deployment
 
-### Step 1: Prepare Data
+### Step 1: Database Setup (10 minutes)
 
-```bash
-# You already have your scraping/conversion scripts
-# Just make sure Parquet files are named correctly:
-# {STREAM}_{YEAR}_R{ROUND}.parquet
-
-# Example:
-# UG_2025_R1.parquet
-# PG_MEDICAL_2025_R1.parquet
-```
-
-### Step 2: Upload to R2
-
-```bash
-# Option A: Single file
-wrangler r2 object put neetlogiq-data/data/parquet/UG_2025_R1.parquet \
-  --file ./data/parquet/UG_2025_R1.parquet
-
-# Option B: All files
-./scripts/upload-to-r2.sh
-
-# Option C: Cloudflare Dashboard
-# Just drag and drop files in the browser
-```
-
-### Step 3: Wait for Notifications
-
-**After 5 minutes:**
-```
-Telegram: ✅ Data Update Complete
-- New year: 2025
-- Files processed: 12
-- Deployment triggered
-```
-
-**After 30 minutes:**
-```
-Telegram: 🎉 Deployment Successful
-- Version: 2025.01.08
-- URL: https://neetlogiq.pages.dev
-- Status: All health checks passed ✅
-```
-
-### Step 4: Verify (Optional)
-
-```bash
-# Check manifest
-curl https://neetlogiq.pages.dev/data/manifest.json
-
-# Check years
-curl https://neetlogiq.pages.dev/data/metadata/available-years.json
-
-# Visit site
-open https://neetlogiq.pages.dev
-```
-
-**DONE! ✅**
-
----
-
-## ID-Based Data System
-
-### Master Data (Source of Truth)
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard/project/dbkpoiatlynvhrcnpvgw)
+2. Click **SQL Editor** > **New Query**
+3. Copy `supabase/migrations/consolidated_all_migrations.sql`
+4. Paste and click **Run**
+5. Run this to add stream data:
 
 ```sql
--- colleges table
-college_id: "DNB1185"
-college_name: "MAL SUPER SPECIALITY HOSPITAL"
+INSERT INTO stream_config (stream_id, stream_name, description, enabled)
+VALUES
+  ('UG', 'Undergraduate (UG)', 'Undergraduate medical courses including MBBS', true),
+  ('PG', 'Postgraduate (PG)', 'Postgraduate medical courses including MD/MS', true),
+  ('DIPLOMA', 'Diploma', 'Diploma medical courses', true);
 ```
 
-### Counselling Data (Linked by ID)
+✅ **Done!** Database ready.
+
+---
+
+### Step 2: Deploy to Vercel (10 minutes)
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import repository: `kashyap2k/New`
+3. Add environment variables (from `.env.local`):
+
+**Required:**
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://dbkpoiatlynvhrcnpvgw.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<from_supabase_dashboard>
+SUPABASE_SERVICE_ROLE_KEY=<from_supabase_dashboard>
+
+# AI
+NEXT_PUBLIC_GEMINI_API_KEY=ff2d76242389488a9db04a89eeedbf91.uuFP8YmmC5cLRk4Q
+
+# Payments (get from Razorpay Dashboard)
+NEXT_PUBLIC_RAZORPAY_KEY_ID=<your_key>
+RAZORPAY_KEY_SECRET=<your_secret>
+```
+
+**Optional:**
+```bash
+# Firebase (already configured)
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyBoTOrLIfgMkfr3lMQQJd3f_ZWqfi-bFjk
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=neetlogiq-15499.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=neetlogiq-15499
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=neetlogiq-15499.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=100369453309
+NEXT_PUBLIC_FIREBASE_APP_ID=1:100369453309:web:205c0f116b5d899580ee94
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-V4V48LV46K
+```
+
+4. Click **Deploy**
+5. Wait 5-10 minutes for build
+
+✅ **Done!** App deployed.
+
+---
+
+### Step 3: Create Super Admin (5 minutes)
+
+1. Visit your deployed app
+2. Sign up with your email
+3. Copy your User ID from [Supabase Auth](https://supabase.com/dashboard/project/dbkpoiatlynvhrcnpvgw/auth/users)
+4. Run this SQL:
 
 ```sql
--- cutoffs table
-college_id: "DNB1185"  -- Links to master data
-college_name: "MAL SSH"  -- Might be different, but ID links it!
-closing_rank: 450
+UPDATE user_profiles
+SET role = 'super_admin'
+WHERE id = 'YOUR_USER_ID';
 ```
 
-### In Your Frontend
+5. Refresh and go to `/admin`
 
-```typescript
-// Automatic resolution
-const { data } = useIdBasedData({
-  stream: 'UG',
-  year: 2025,
-  round: 1
-});
-
-// data[0] will show:
-// {
-//   college_id: "DNB1185",
-//   college_name: "MAL SUPER SPECIALITY HOSPITAL", // ← Master data name
-//   closing_rank: 450  // ← Counselling data
-// }
-```
-
-**Benefits:**
-- ✅ Consistent names across the site
-- ✅ Accurate comparisons (ID-based)
-- ✅ Trends work correctly (same ID = same college)
-- ✅ No duplicate issues from name variations
+✅ **Done!** Admin access granted.
 
 ---
 
-## Data-Driven Configuration
+## 🧪 Quick Test
 
-### Before (Hardcoded ❌)
-
-```typescript
-const years = [2024, 2023, 2022]; // Need to update code every year
-const rounds = [1, 2, 3]; // Need to update if rounds change
-```
-
-### After (Data-Driven ✅)
-
-```typescript
-// Automatically detects from data!
-const { years } = useAvailableYears(); // [2025, 2024, 2023]
-const { rounds } = useAvailableRounds(2025); // [1, 2]
-
-// Zero code changes needed for new data!
-```
+1. **Sign up** - Create an account
+2. **Select stream** - Choose UG/PG/Diploma
+3. **Search colleges** - Try filtering
+4. **Save favorite** - Heart icon
+5. **Ask chatbot** - Test AI (15 req/min limit)
+6. **Try payment** - Use test card: `4111 1111 1111 1111`
+7. **Check admin** - Go to `/admin`
 
 ---
 
-## Cost
+## 📚 Detailed Guides
 
-| Service | Monthly Cost |
-|---------|--------------|
-| Cloudflare Pages | $0 |
-| Cloudflare Workers | $0 |
-| Cloudflare R2 | $0 |
-| Cloudflare KV | $0 |
-| GitHub Actions | $0 |
-| **TOTAL** | **$0** |
-
-Free tier covers everything, even with 10K+ daily users!
+- **Database:** `DATABASE_SETUP_GUIDE.md`
+- **Deployment:** `DEPLOYMENT_CHECKLIST.md`
+- **Platform Status:** `PLATFORM_STATUS.md`
+- **Tests:** `TEST_COVERAGE.md`
 
 ---
 
-## Troubleshooting
+## 🎉 You're Live!
 
-### Upload to R2 but nothing happens?
-
-```bash
-# Check worker logs
-wrangler tail r2-upload-trigger
-
-# Manually trigger GitHub Actions
-# Repository → Actions → Auto Deploy → Run workflow
-```
-
-### Data not updating on site?
-
-```bash
-# Clear cache
-curl -X POST "https://api.cloudflare.com/client/v4/zones/<ZONE_ID>/purge_cache" \
-  -H "Authorization: Bearer <API_TOKEN>" \
-  -d '{"purge_everything":true}'
-
-# Or add ?v=2025 to URL
-https://neetlogiq.pages.dev?v=2025
-```
-
-### No Telegram notifications?
-
-```bash
-# Test bot
-curl "https://api.telegram.org/bot<TOKEN>/getMe"
-
-# Check secrets are set
-wrangler secret list --name r2-upload-trigger
-```
+**Total time:** ~25 minutes
+**Status:** Production ready
+**Next:** Monitor, test, launch! 🚀
 
 ---
 
-## Support Files
+## 🆘 Need Help?
 
-- **Full Documentation**: `SELF_SUSTAINABLE_ARCHITECTURE_SETUP.md`
-- **Test Automation**: `node scripts/test-automation.js`
-- **Architecture Overview**: `website.md`
+### Common Issues
+
+**"Table doesn't exist"**
+- Run migrations in Supabase SQL Editor
+
+**"API not available"**
+- Check environment variables are set
+
+**"Payment failed"**
+- Verify Razorpay keys are correct
+- Use test card: `4111 1111 1111 1111`
+
+**"Unauthorized"**
+- Check you're logged in
+- Verify RLS policies enabled
+
+### Get Support
+
+- Check documentation files
+- Review error logs in Vercel
+- Check Supabase logs
+- Test locally first: `npm run dev`
 
 ---
 
-## Summary
-
-**What you built:**
-- 100% automated data-to-deployment pipeline
-- ID-based data linking for quality
-- Data-driven frontend (zero hardcoding)
-- Multi-layer caching for performance
-- Cost: $0/month
-
-**Your annual time investment:**
-- Upload Parquet files: 5 minutes
-- Everything else: Automatic!
-
-**Time saved:** 99.5% (from 20 hours → 5 minutes)
-
-Now focus on saving lives! 👨‍⚕️
-
----
-
-*For detailed setup, see: SELF_SUSTAINABLE_ARCHITECTURE_SETUP.md*
+**Ready to launch? Follow the steps above! 🚀**
