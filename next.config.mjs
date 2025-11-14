@@ -7,7 +7,8 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const nextConfig = {
   // Static export for Cloudflare Pages (no Node.js server)
-  output: 'export',
+  // Temporarily disabled for development to allow API routes
+  output: isDev ? undefined : 'export',
 
   // Disable image optimization (not supported in static export)
   images: {
