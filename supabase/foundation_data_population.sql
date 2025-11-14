@@ -131,10 +131,10 @@ ON CONFLICT (id) DO UPDATE SET
     updated_at = NOW();
 
 -- =====================================================
--- COURSES DATA (Common courses)
+-- COURSES DATA (Common courses) - Using master_courses table
 -- =====================================================
 
-INSERT INTO courses (id, name, code, normalized_name, level, domain, duration_years, description) VALUES
+INSERT INTO master_courses (id, name, code, normalized_name, level, domain, duration_years, description) VALUES
 -- UG Medical
 ('CRS001', 'MBBS', 'MBBS', 'mbbs', 'UG', 'MEDICAL', 5, 'Bachelor of Medicine and Bachelor of Surgery'),
 
@@ -259,7 +259,7 @@ SELECT 'Sources inserted:', COUNT(*) FROM sources;
 SELECT 'Levels inserted:', COUNT(*) FROM levels;
 
 -- Verify courses
-SELECT 'Courses inserted:', COUNT(*) FROM courses;
+SELECT 'Courses inserted:', COUNT(*) FROM master_courses;
 
 -- Verify stream configurations
 SELECT 'Stream configurations inserted:', COUNT(*) FROM stream_configurations;
