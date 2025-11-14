@@ -10,18 +10,23 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
 
 // Validate environment variables
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+// Warn if environment variables are missing (but don't throw during build)
+if (!supabaseUrl && typeof window !== 'undefined') {
+  console.error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
 }
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
+if (!supabaseAnonKey && typeof window !== 'undefined') {
+  console.error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
 }
 
 // Client-side Supabase client (safe to use in browser)
 export const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  supabaseUrl,
+  supabaseAnonKey,
   {
     auth: {
       persistSession: true,
@@ -39,8 +44,8 @@ export const supabase = createClient<Database>(
 // Server-side Supabase client (admin access, bypasses RLS)
 // Only use this in API routes, never expose to client!
 export const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  supabaseUrl,
+  supabaseServiceKey,
   {
     auth: {
       autoRefreshToken: false,

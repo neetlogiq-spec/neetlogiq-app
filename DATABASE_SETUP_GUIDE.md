@@ -1,433 +1,364 @@
-# 🗄️ Database Setup Guide
+# Database Setup Guide
 
-**NEETLogIQ Platform - Complete Supabase Database Setup**
+## Complete Supabase Database Configuration
 
-**Status:** Ready for deployment
-**Last Updated:** November 14, 2025
-
----
-
-## 📋 Overview
-
-This guide provides step-by-step instructions to set up the complete database schema for the NEETLogIQ platform on Supabase.
-
-Due to network restrictions in automated environments, migrations must be applied manually through the Supabase Dashboard.
+This guide provides step-by-step instructions for setting up the complete database schema, configuring streams, creating admin users, and testing all functionality.
 
 ---
 
-## 🎯 Prerequisites
+## Prerequisites
 
-- ✅ Supabase project created: `dbkpoiatlynvhrcnpvgw.supabase.co`
-- ✅ Environment variables configured in `.env.local`
-- ✅ All migration files ready in `supabase/migrations/`
-
----
-
-## 🚀 Quick Setup (Option 1: Consolidated Migration)
-
-### Use this method for fastest setup - applies all migrations at once.
-
-1. **Open Supabase Dashboard**
-   - Go to: https://supabase.com/dashboard/project/dbkpoiatlynvhrcnpvgw
-   - Navigate to: **SQL Editor** (left sidebar)
-
-2. **Create New Query**
-   - Click **"New Query"** button
-   - Name it: "Initial Database Setup"
-
-3. **Copy Migration SQL**
-   - Open file: `supabase/migrations/consolidated_all_migrations.sql`
-   - Copy entire contents (75,401 characters)
-   - Paste into SQL Editor
-
-4. **Execute Migration**
-   - Click **"Run"** or press `Ctrl/Cmd + Enter`
-   - Wait for completion (may take 30-60 seconds)
-   - Check for success message: "Success. No rows returned"
-
-5. **Verify Tables Created**
-   - Navigate to: **Table Editor** (left sidebar)
-   - You should see these tables:
-     - `user_profiles`
-     - `subscriptions`
-     - `favorites`
-     - `notifications`
-     - `stream_config`
-     - `user_usage_tracking`
-     - `admin_role_changes`
-     - `recommendation_requests`
-     - `college_comparisons`
+1. **Supabase Project**: You must have a Supabase project created
+2. **Access**: You need admin access to the Supabase Dashboard
+3. **SQL Editor**: Access to the SQL Editor in your Supabase dashboard
 
 ---
 
-## 📝 Detailed Setup (Option 2: Individual Migrations)
+## Step 1: Apply Database Migrations
 
-### Use this method if you prefer step-by-step migration or if consolidated migration fails.
+You have **two options** for applying migrations:
 
-Run each migration file in order through the Supabase SQL Editor:
+### Option A: Apply Consolidated Migration (Recommended)
 
-### Migration Order
-
-1. **001_initial_schema.sql** (20,718 chars)
-   - Creates core tables: `user_profiles`, `subscriptions`, `favorites`, `notifications`
-   - Sets up Row Level Security (RLS) policies
-   - Creates indexes for performance
-
-2. **002_admin_audit_log.sql** (2,631 chars)
-   - Creates `admin_role_changes` table
-   - Tracks all role changes for audit trail
-
-3. **20240615_create_counselling_documents.sql** (4,735 chars)
-   - Creates `counselling_documents` table
-   - Stores NEET counselling documents and forms
-
-4. **20240620_create_subscriptions.sql** (7,070 chars)
-   - Enhances subscription functionality
-   - Adds Razorpay integration fields
-
-5. **20250113_add_stream_lock.sql** (5,461 chars)
-   - Prevents stream changes after selection
-   - Data integrity protection
-
-6. **20250114_add_user_roles.sql** (3,889 chars)
-   - Adds RBAC (Role-Based Access Control)
-   - Three roles: `user`, `admin`, `super_admin`
-
-7. **20250114_create_stream_config.sql** (3,653 chars)
-   - Creates `stream_config` table
-   - Stores stream metadata (UG, PG, Diploma)
-
-8. **20250114_add_usage_tracking.sql** (6,254 chars)
-   - Creates `user_usage_tracking` table
-   - Tracks recommendations and saved colleges
-
-9. **20250114_add_usage_enforcement_triggers.sql** (6,745 chars)
-   - Enforces usage limits for free tier
-   - 3 daily recommendations for free users
-   - 5 saved colleges for free users
-
-10. **20250114_add_trial_period.sql** (5,864 chars)
-    - Adds 7-day premium trial functionality
-    - Auto-starts on first login
-    - Auto-downgrades to free after expiry
-
-11. **20250114_add_downgrade_rules.sql** (8,381 chars)
-    - Handles subscription downgrades
-    - Preserves data within new tier limits
-    - Cleans up excess data
-
----
-
-## 🔍 Verification Steps
-
-### After running migrations, verify everything is set up correctly:
-
-### 1. Check Tables
-
-Navigate to **Table Editor** and verify these tables exist:
-
-- ✅ `user_profiles` - User data and subscription info
-- ✅ `subscriptions` - Payment and subscription tracking
-- ✅ `favorites` - Saved colleges
-- ✅ `notifications` - User notifications
-- ✅ `stream_config` - Stream configuration (UG/PG/Diploma)
-- ✅ `user_usage_tracking` - Usage metrics
-- ✅ `admin_role_changes` - Role change audit log
-- ✅ `recommendation_requests` - AI recommendation history
-- ✅ `college_comparisons` - College comparison history
-- ✅ `counselling_documents` - Document storage
-
-### 2. Check Functions
-
-Navigate to **Database** > **Functions** and verify:
-
-- ✅ `start_user_trial()` - Starts 7-day trial
-- ✅ `is_on_trial()` - Checks trial status
-- ✅ `get_trial_status()` - Gets trial details
-- ✅ `expire_trials()` - Expires old trials
-- ✅ `check_usage_limit()` - Enforces usage limits
-- ✅ `track_user_activity()` - Tracks user actions
-- ✅ `reset_monthly_usage_counters()` - Resets counters
-
-### 3. Check Triggers
-
-Navigate to **Database** > **Triggers** and verify:
-
-- ✅ `enforce_saved_colleges_limit` - Limits saved colleges for free tier
-- ✅ `enforce_daily_recommendations_limit` - Limits recommendations
-- ✅ `trigger_start_trial_on_profile_insert` - Auto-starts trial
-
-### 4. Check RLS Policies
-
-Navigate to **Authentication** > **Policies** and verify RLS is enabled on all tables.
-
----
-
-## 👤 Create Super Admin User
-
-### After migrations, create the first super admin:
-
-1. **Register a User**
-   - Go to your app: http://localhost:3500 (or deployed URL)
-   - Sign up with your admin email
-   - Complete registration
-
-2. **Get User ID**
-   - Navigate to Supabase: **Authentication** > **Users**
-   - Find your user
-   - Copy the **UUID** (e.g., `123e4567-e89b-12d3-a456-426614174000`)
-
-3. **Promote to Super Admin**
-   - Go to: **SQL Editor**
-   - Run this query (replace `YOUR_USER_ID`):
-
-   ```sql
-   -- Make user a super admin
-   UPDATE user_profiles
-   SET role = 'super_admin'
-   WHERE id = 'YOUR_USER_ID';
-
-   -- Verify
-   SELECT id, email, role, created_at
-   FROM user_profiles
-   WHERE id = 'YOUR_USER_ID';
-   ```
-
-4. **Verify Admin Access**
-   - Log out and log back in
-   - Navigate to: `/admin` route
-   - You should see the admin panel
-
----
-
-## 🧪 Test Database Functions
-
-### Test critical functions manually:
-
-### Test Trial System
+Apply the single consolidated migration that includes everything:
 
 ```sql
--- Check trial status for a user (replace USER_ID)
-SELECT is_on_trial('USER_ID');
-
--- Get trial details
-SELECT get_trial_status('USER_ID');
-
--- Manually start trial (if needed)
-SELECT start_user_trial('USER_ID');
+-- File: supabase/migrations/consolidated_all_migrations.sql
 ```
 
-### Test Usage Tracking
+**How to apply:**
+1. Go to Supabase Dashboard → SQL Editor
+2. Create a new query
+3. Copy the entire contents of `supabase/migrations/consolidated_all_migrations.sql`
+4. Paste into the SQL Editor
+5. Click "Run" or press Ctrl+Enter
+6. Verify: "Success. No rows returned"
 
-```sql
--- Check usage for a user
-SELECT * FROM user_usage_tracking
-WHERE user_id = 'USER_ID';
+**What this includes:**
+- Initial schema (users, colleges, courses, cutoffs, etc.)
+- Admin and audit log tables
+- Counselling documents tables
+- Subscriptions and payments
+- Stream configuration tables
+- User roles and permissions
+- Usage tracking and enforcement
+- Trial period management
+- Downgrade rules
+- Fuzzy search capabilities
 
--- Track an activity
-SELECT track_user_activity('USER_ID', 'recommendation');
+### Option B: Apply Individual Migrations (Alternative)
 
--- Check if user can perform action
-SELECT check_usage_limit('USER_ID', 'recommendations');
-```
+If you prefer to apply migrations one by one, run them in this exact order:
 
-### Test Stream Configuration
+1. `001_initial_schema.sql` - Core tables
+2. `002_admin_audit_log.sql` - Admin functionality
+3. `20240615_create_counselling_documents.sql` - Counselling features
+4. `20240620_create_subscriptions.sql` - Payment system
+5. `20250113_add_stream_lock.sql` - Stream locking
+6. `20250114_add_user_roles.sql` - Role-based access
+7. `20250114_create_stream_config.sql` - Stream configuration
+8. `20250114_add_usage_tracking.sql` - Usage analytics
+9. `20250114_add_usage_enforcement_triggers.sql` - Limit enforcement
+10. `20250114_add_trial_period.sql` - Trial management
+11. `20250114_add_downgrade_rules.sql` - Subscription downgrades
+12. `20250114_add_fuzzy_search.sql` - Typo-tolerant search
 
-```sql
--- Check configured streams
-SELECT * FROM stream_config
-ORDER BY stream_id;
-
--- Should return: UG, PG, Diploma
-```
+**Important:** Each migration must complete successfully before proceeding to the next.
 
 ---
 
-## 🎯 Insert Stream Configuration Data
+## Step 2: Verify Migration Success
 
-### The stream_config table needs initial data:
-
-Run this in **SQL Editor**:
+Run this query to verify all tables were created:
 
 ```sql
--- Insert stream configurations
-INSERT INTO stream_config (stream_id, stream_name, description, enabled)
-VALUES
-  ('UG', 'Undergraduate (UG)', 'Undergraduate medical courses including MBBS', true),
-  ('PG', 'Postgraduate (PG)', 'Postgraduate medical courses including MD/MS', true),
-  ('DIPLOMA', 'Diploma', 'Diploma medical courses', true)
+SELECT
+  table_name,
+  table_type
+FROM information_schema.tables
+WHERE table_schema = 'public'
+AND table_type = 'BASE TABLE'
+ORDER BY table_name;
+```
+
+**Expected tables (minimum 25):**
+- admin_activity_log
+- admin_users
+- colleges
+- college_courses
+- college_facilities
+- counselling_bookings
+- counselling_documents
+- counselling_packages
+- course_variants
+- courses
+- cutoffs
+- live_seat_updates
+- notifications
+- payment_transactions
+- recommendations
+- stream_access_log
+- stream_configurations
+- stream_locks
+- subscriptions
+- user_activity
+- user_preferences
+- user_profiles
+- user_roles
+- user_streams
+- user_usage_tracking
+
+---
+
+## Step 3: Insert Stream Configuration Data
+
+The platform supports three educational streams. Insert the configuration for each:
+
+```sql
+-- Insert UG (Undergraduate) Stream Configuration
+INSERT INTO stream_configurations (
+  stream_id,
+  stream_name,
+  stream_description,
+  is_enabled,
+  requires_subscription,
+  priority,
+  metadata
+) VALUES (
+  'UG',
+  'Undergraduate Medical (NEET UG)',
+  'MBBS and BDS courses through NEET UG counseling',
+  true,
+  false,
+  1,
+  jsonb_build_object(
+    'exam', 'NEET UG',
+    'courses', ARRAY['MBBS', 'BDS'],
+    'counseling_body', 'MCC',
+    'rounds', 4,
+    'max_choices', 100
+  )
+)
 ON CONFLICT (stream_id) DO UPDATE
 SET
   stream_name = EXCLUDED.stream_name,
-  description = EXCLUDED.description,
-  enabled = EXCLUDED.enabled;
+  stream_description = EXCLUDED.stream_description,
+  is_enabled = EXCLUDED.is_enabled,
+  updated_at = NOW();
 
--- Verify
-SELECT * FROM stream_config;
+-- Insert PG Medical Stream Configuration
+INSERT INTO stream_configurations (
+  stream_id,
+  stream_name,
+  stream_description,
+  is_enabled,
+  requires_subscription,
+  priority,
+  metadata
+) VALUES (
+  'PG_MEDICAL',
+  'Postgraduate Medical (NEET PG)',
+  'MD/MS courses through NEET PG counseling',
+  true,
+  true,
+  2,
+  jsonb_build_object(
+    'exam', 'NEET PG',
+    'courses', ARRAY['MD', 'MS', 'PG Diploma'],
+    'counseling_body', 'MCC',
+    'rounds', 3,
+    'max_choices', 75
+  )
+)
+ON CONFLICT (stream_id) DO UPDATE
+SET
+  stream_name = EXCLUDED.stream_name,
+  stream_description = EXCLUDED.stream_description,
+  is_enabled = EXCLUDED.is_enabled,
+  updated_at = NOW();
+
+-- Insert Diploma Stream Configuration
+INSERT INTO stream_configurations (
+  stream_id,
+  stream_name,
+  stream_description,
+  is_enabled,
+  requires_subscription,
+  priority,
+  metadata
+) VALUES (
+  'DIPLOMA',
+  'Diploma in Medical/Dental',
+  'Diploma courses for medical and dental streams',
+  true,
+  true,
+  3,
+  jsonb_build_object(
+    'exam', 'NEET UG',
+    'courses', ARRAY['Diploma in Medical', 'Diploma in Dental'],
+    'counseling_body', 'State Councils',
+    'rounds', 2,
+    'max_choices', 50
+  )
+)
+ON CONFLICT (stream_id) DO UPDATE
+SET
+  stream_name = EXCLUDED.stream_name,
+  stream_description = EXCLUDED.stream_description,
+  is_enabled = EXCLUDED.is_enabled,
+  updated_at = NOW();
+```
+
+**Verify stream insertion:**
+
+```sql
+SELECT
+  stream_id,
+  stream_name,
+  is_enabled,
+  requires_subscription,
+  priority
+FROM stream_configurations
+ORDER BY priority;
+```
+
+Expected output:
+```
+stream_id    | stream_name                  | is_enabled | requires_subscription | priority
+-------------|------------------------------|------------|-----------------------|---------
+UG           | Undergraduate Medical        | true       | false                 | 1
+PG_MEDICAL   | Postgraduate Medical         | true       | true                  | 2
+DIPLOMA      | Diploma in Medical/Dental    | true       | true                  | 3
 ```
 
 ---
 
-## ⚙️ Environment Variables
+## Step 4: Create Super Admin User
 
-### Ensure these are set in `.env.local`:
+You need to create at least one super admin user to manage the platform.
 
-```bash
+### 4.1: Create Auth User First
+
+You **cannot** create a super admin directly in SQL because Supabase Auth manages users.
+
+**Option 1: Create via Supabase Dashboard**
+1. Go to Authentication → Users
+2. Click "Add user"
+3. Enter email: `admin@example.com` (or your preferred admin email)
+4. Set a strong password
+5. Enable "Auto Confirm User"
+6. Click "Create user"
+7. Copy the User UUID (you'll need this)
+
+**Option 2: Create via Sign-Up Flow**
+1. Use your application's sign-up page
+2. Register with your admin email
+3. Verify email if required
+4. Get the user UUID from the authentication table
+
+### 4.2: Promote User to Super Admin
+
+Once you have the user UUID, run this SQL:
+
+```sql
+-- Replace 'USER_UUID_HERE' with the actual UUID from Step 4.1
+DO $$
+DECLARE
+  admin_user_id UUID := 'USER_UUID_HERE'::uuid;
+  admin_role_id UUID;
+BEGIN
+  -- Create or get super_admin role
+  INSERT INTO user_roles (role_name, role_description, permissions)
+  VALUES (
+    'super_admin',
+    'Super Administrator with full platform access',
+    jsonb_build_object(
+      'can_manage_users', true,
+      'can_manage_content', true,
+      'can_manage_streams', true,
+      'can_view_analytics', true,
+      'can_manage_subscriptions', true,
+      'can_access_admin_panel', true
+    )
+  )
+  ON CONFLICT (role_name) DO UPDATE
+  SET permissions = EXCLUDED.permissions
+  RETURNING id INTO admin_role_id;
+
+  -- Assign super_admin role to user
+  UPDATE user_profiles
+  SET role_id = admin_role_id
+  WHERE user_id = admin_user_id;
+
+  -- Create admin_users entry
+  INSERT INTO admin_users (user_id, role, permissions, status)
+  VALUES (
+    admin_user_id,
+    'super_admin',
+    jsonb_build_object(
+      'full_access', true,
+      'can_create_admins', true
+    ),
+    'active'
+  )
+  ON CONFLICT (user_id) DO UPDATE
+  SET role = 'super_admin', status = 'active';
+
+  -- Grant access to all streams
+  INSERT INTO user_streams (user_id, stream_id, access_level)
+  VALUES
+    (admin_user_id, 'UG', 'full'),
+    (admin_user_id, 'PG_MEDICAL', 'full'),
+    (admin_user_id, 'DIPLOMA', 'full')
+  ON CONFLICT (user_id, stream_id) DO UPDATE
+  SET access_level = 'full';
+
+  RAISE NOTICE 'Super admin created successfully!';
+END $$;
+```
+
+**Verify admin creation:**
+
+```sql
+SELECT
+  u.user_id,
+  u.role_id,
+  r.role_name,
+  a.role as admin_role,
+  a.status
+FROM user_profiles u
+LEFT JOIN user_roles r ON u.role_id = r.id
+LEFT JOIN admin_users a ON u.user_id = a.user_id
+WHERE a.role = 'super_admin';
+```
+
+---
+
+## Step 5: Set Up Environment Variables
+
+Add these environment variables to your Vercel/deployment platform:
+
+```env
 # Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=https://dbkpoiatlynvhrcnpvgw.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_anon_key>
-SUPABASE_SERVICE_ROLE_KEY=<your_service_role_key>
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 
-# Gemini AI
+# Server-side only (DO NOT expose to client)
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+
+# Gemini AI Configuration
+GEMINI_API_KEY=ff2d76242389488a9db04a89eeedbf91.uuFP8YmmC5cLRk4Q
 NEXT_PUBLIC_GEMINI_API_KEY=ff2d76242389488a9db04a89eeedbf91.uuFP8YmmC5cLRk4Q
-
-# Razorpay
-NEXT_PUBLIC_RAZORPAY_KEY_ID=<your_razorpay_key>
-RAZORPAY_KEY_SECRET=<your_razorpay_secret>
-
-# Firebase (Optional - for analytics)
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyBoTOrLIfgMkfr3lMQQJd3f_ZWqfi-bFjk
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=neetlogiq-15499.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=neetlogiq-15499
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=neetlogiq-15499.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=100369453309
-NEXT_PUBLIC_FIREBASE_APP_ID=1:100369453309:web:205c0f116b5d899580ee94
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-V4V48LV46K
 ```
 
----
-
-## 🚦 Post-Setup Checklist
-
-After completing database setup:
-
-- [ ] All 10 tables created
-- [ ] All 7 database functions created
-- [ ] All 3 triggers active
-- [ ] RLS policies enabled
-- [ ] Stream config data inserted (UG, PG, Diploma)
-- [ ] Super admin user created
-- [ ] Admin panel accessible at `/admin`
-- [ ] Trial system tested
-- [ ] Usage tracking tested
-- [ ] Environment variables configured
+**Where to find Supabase keys:**
+1. Go to Supabase Dashboard
+2. Click on your project
+3. Go to Settings → API
+4. Copy the keys as shown above
 
 ---
 
-## 🐛 Troubleshooting
+## Complete! 🎉
 
-### Tables Not Created
-
-**Problem:** Some tables are missing after running migrations
-
-**Solution:**
-1. Check SQL Editor for error messages
-2. Run migrations one by one to identify failing migration
-3. Check for syntax errors in migration files
-4. Verify you have sufficient Supabase permissions
-
-### Functions Not Working
-
-**Problem:** Database functions return errors
-
-**Solution:**
-1. Navigate to **Database** > **Functions**
-2. Check if functions are created
-3. Test functions manually in SQL Editor
-4. Check function permissions
-
-### RLS Blocking Queries
-
-**Problem:** Queries fail with "permission denied" errors
-
-**Solution:**
-1. Use service role key for backend operations
-2. Check RLS policies in **Authentication** > **Policies**
-3. Ensure user authentication is working
-4. Verify user IDs match policy conditions
-
-### Trial Not Starting
-
-**Problem:** Trial doesn't start automatically for new users
-
-**Solution:**
-1. Check if trigger exists: `trigger_start_trial_on_profile_insert`
-2. Manually start trial: `SELECT start_user_trial('USER_ID');`
-3. Verify `user_profiles` table has trial columns
-
-### Usage Limits Not Enforced
-
-**Problem:** Free users can exceed usage limits
-
-**Solution:**
-1. Check if triggers exist in **Database** > **Triggers**
-2. Verify `user_usage_tracking` table exists
-3. Test manually: `SELECT check_usage_limit('USER_ID', 'recommendations');`
-
----
-
-## 📊 Database Schema Summary
-
-### Core Tables
-
-| Table | Purpose | Records (Estimated) |
-|-------|---------|---------------------|
-| `user_profiles` | User data, roles, subscription | 1,000+ |
-| `subscriptions` | Payment tracking | 500+ |
-| `favorites` | Saved colleges | 5,000+ |
-| `notifications` | User notifications | 10,000+ |
-| `stream_config` | Stream metadata | 3 |
-| `user_usage_tracking` | Usage metrics | 1,000+ |
-| `admin_role_changes` | Audit log | 100+ |
-| `recommendation_requests` | AI history | 5,000+ |
-| `college_comparisons` | Comparison history | 2,000+ |
-| `counselling_documents` | Documents | 50+ |
-
-### Key Features
-
-- **Authentication:** Supabase Auth with email/password
-- **Authorization:** RBAC with 3 roles (user, admin, super_admin)
-- **Subscription Tiers:** Free, Basic, Premium, Pro
-- **Trial System:** 7-day auto-start premium trial
-- **Usage Limits:** 3 daily recommendations, 5 saved colleges (free)
-- **Payment Integration:** Razorpay
-- **AI Integration:** Gemini API for chatbot and recommendations
-- **Audit Trail:** All role changes logged
-
----
-
-## 🎉 Success!
-
-Once all steps are complete, your database is ready for production!
-
-### Next Steps:
-
-1. **Test Locally:**
-   ```bash
-   npm install
-   npm run dev
-   ```
-   Visit: http://localhost:3500
-
-2. **Deploy to Vercel:**
-   ```bash
-   git add .
-   git commit -m "feat: Complete database setup"
-   git push origin main
-   ```
-   - Connect GitHub repo to Vercel
-   - Set environment variables
-   - Deploy
-
-3. **Monitor:**
-   - Check Supabase Dashboard for usage
-   - Monitor API logs
-   - Track user signups and trials
-
----
-
-**Need Help?**
-- Supabase Docs: https://supabase.com/docs
-- Project Dashboard: https://supabase.com/dashboard/project/dbkpoiatlynvhrcnpvgw
-
-**Database Status:** ✅ **READY FOR PRODUCTION**
+Your database is now configured and ready for use.

@@ -496,3 +496,6 @@ export function getSupabaseDataService(): SupabaseDataService {
   }
   return supabaseDataServiceInstance;
 }
+
+// Export singleton instance for direct imports
+export const supabaseDataService = new SupabaseDataService();

@@ -71,6 +71,13 @@ export class ProductionDataService {
 
   private async loadWebAssemblyModule(): Promise<void> {
     try {
+      // Only load WASM in browser environment
+      if (typeof window === 'undefined') {
+        console.log('⚠️ WASM not available in server environment');
+        this.wasmModule = null;
+        return;
+      }
+
       // Load WebAssembly module for production processing
       const wasmModule = await import('../../public/WASM/data_processor.js');
       this.wasmModule = await wasmModule.default();
