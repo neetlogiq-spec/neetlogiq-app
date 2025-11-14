@@ -97,11 +97,13 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   auto_renew BOOLEAN DEFAULT false,
   amount_paid INTEGER, -- in paise
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-
-  CONSTRAINT unique_active_subscription UNIQUE (user_id, status)
-  WHERE status = 'active'
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Create partial unique index for active subscriptions (one active subscription per user)
+CREATE UNIQUE INDEX IF NOT EXISTS unique_active_subscription_per_user
+ON subscriptions(user_id)
+WHERE status = 'active';
 
 -- Payment history
 CREATE TABLE IF NOT EXISTS payment_history (
