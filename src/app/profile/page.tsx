@@ -27,9 +27,13 @@ import {
   Award,
   BookOpen,
   TrendingUp,
-  Target
+  Target,
+  Repeat,
+  AlertCircle
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStream } from '@/contexts/StreamContext';
+import RequestStreamChangeDialog from '@/components/user/RequestStreamChangeDialog';
 
 interface UserProfile {
   uid: string;
@@ -64,14 +68,16 @@ interface UserProfile {
 
 const ProfilePage: React.FC = () => {
   const { user, isAuthenticated, loading } = useAuth();
+  const { selectedStream, isLocked, changeRequested } = useStream();
   const router = useRouter();
-  
+
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'preferences' | 'security' | 'activity'>('profile');
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showStreamChangeDialog, setShowStreamChangeDialog] = useState(false);
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -590,6 +596,66 @@ const ProfilePage: React.FC = () => {
                 ))}
               </div>
             </div>
+
+            {/* Stream Selection Section */}
+            {selectedStream && (
+              <div className="mt-6 p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Academic Stream
+                  </label>
+                  {isLocked && (
+                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                      <Lock className="w-3 h-3 mr-1" />
+                      Locked
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold text-gray-900 dark:text-white">
+                      {selectedStream === 'UG' && 'Undergraduate (MBBS, BDS)'}
+                      {selectedStream === 'PG_MEDICAL' && 'Postgraduate Medical (MD, MS)'}
+                      {selectedStream === 'PG_DENTAL' && 'Postgraduate Dental (MDS)'}
+                    </div>
+                    {isLocked && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Stream selection is locked. Contact support to change.
+                      </p>
+                    )}
+                    {changeRequested && (
+                      <div className="flex items-center mt-2 text-sm text-orange-600 dark:text-orange-400">
+                        <Clock className="w-4 h-4 mr-1" />
+                        Change request pending admin approval
+                      </div>
+                    )}
+                  </div>
+
+                  {isLocked && !changeRequested && (
+                    <button
+                      onClick={() => setShowStreamChangeDialog(true)}
+                      className="flex items-center px-3 py-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                    >
+                      <Repeat className="w-4 h-4 mr-2" />
+                      Request Change
+                    </button>
+                  )}
+                </div>
+
+                {isLocked && (
+                  <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+                      <p className="text-xs text-yellow-800 dark:text-yellow-400">
+                        Your stream selection is permanent to ensure data consistency.
+                        If you need to change it, click "Request Change" to submit a request to our admin team.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -891,6 +957,15 @@ const ProfilePage: React.FC = () => {
           </motion.div>
         )}
       </div>
+
+      {/* Request Stream Change Dialog */}
+      {selectedStream && (
+        <RequestStreamChangeDialog
+          isOpen={showStreamChangeDialog}
+          onClose={() => setShowStreamChangeDialog(false)}
+          currentStream={selectedStream}
+        />
+      )}
     </div>
   );
 };
