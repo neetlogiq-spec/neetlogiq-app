@@ -2,7 +2,7 @@
 
 ## Complete Supabase Database Configuration
 
-This guide provides step-by-step instructions for setting up the complete database schema, configuring streams, creating admin users, and testing all functionality.
+This guide provides step-by-step instructions for setting up the unified database schema that aligns with DATABASE_SCHEMAS.md.
 
 ---
 
@@ -14,56 +14,84 @@ This guide provides step-by-step instructions for setting up the complete databa
 
 ---
 
-## Step 1: Apply Database Migrations
+## Architecture Overview
 
-You have **two options** for applying migrations:
+The database schema combines:
+- **SQLite Structure** from DATABASE_SCHEMAS.md (foundation, colleges, counselling data)
+- **PostgreSQL Features** (foreign keys, triggers, JSONB, UUID)
+- **Application Features** (user management, subscriptions, recommendations)
 
-### Option A: Apply Consolidated Migration (Recommended)
+See **SCHEMA_MIGRATION_GUIDE.md** for detailed mapping documentation.
 
-Apply the single consolidated migration that includes everything:
+---
+
+## Step 1: Apply Unified Schema Migration
+
+**Use the new unified schema (20250114_unified_schema.sql):**
 
 ```sql
--- File: supabase/migrations/consolidated_all_migrations.sql
+-- File: supabase/migrations/20250114_unified_schema.sql
 ```
 
 **How to apply:**
-1. Go to Supabase Dashboard → SQL Editor
+1. Go to **Supabase Dashboard → SQL Editor**
 2. Create a new query
-3. Copy the entire contents of `supabase/migrations/consolidated_all_migrations.sql`
+3. Copy the entire contents of `supabase/migrations/20250114_unified_schema.sql`
 4. Paste into the SQL Editor
-5. Click "Run" or press Ctrl+Enter
+5. Click **Run** or press Ctrl+Enter
 6. Verify: "Success. No rows returned"
 
-**What this includes:**
-- Initial schema (users, colleges, courses, cutoffs, etc.)
-- Admin and audit log tables
-- Counselling documents tables
-- Subscriptions and payments
-- Stream configuration tables
-- User roles and permissions
-- Usage tracking and enforcement
-- Trial period management
-- Downgrade rules
-- Fuzzy search capabilities
+**What this creates:**
 
-### Option B: Apply Individual Migrations (Alternative)
+**Foundation Tables (8):**
+- `states` - 36 Indian states/UTs
+- `categories` - Admission categories (General, OBC, SC, ST, EWS, PwD)
+- `quotas` - 12 quota types (AIQ, State, Management, etc.)
+- `courses` - Course types and specializations
+- `sources` - Data sources (AIQ, KEA, STATE, MCC, DGHS, NBEMS)
+- `levels` - Education levels (UG, PG, DEN, DNB, DIPLOMA)
 
-If you prefer to apply migrations one by one, run them in this exact order:
+**College Tables (3):**
+- `medical_colleges` - Medical colleges with normalization and TF-IDF vectors
+- `dental_colleges` - Dental colleges with normalization
+- `dnb_colleges` - DNB institutions with normalization
 
-1. `001_initial_schema.sql` - Core tables
-2. `002_admin_audit_log.sql` - Admin functionality
-3. `20240615_create_counselling_documents.sql` - Counselling features
-4. `20240620_create_subscriptions.sql` - Payment system
-5. `20250113_add_stream_lock.sql` - Stream locking
-6. `20250114_add_user_roles.sql` - Role-based access
-7. `20250114_create_stream_config.sql` - Stream configuration
-8. `20250114_add_usage_tracking.sql` - Usage analytics
-9. `20250114_add_usage_enforcement_triggers.sql` - Limit enforcement
-10. `20250114_add_trial_period.sql` - Trial management
-11. `20250114_add_downgrade_rules.sql` - Subscription downgrades
-12. `20250114_add_fuzzy_search.sql` - Typo-tolerant search
+**Alias Tables (5):**
+- `college_aliases` - College name variations for matching
+- `course_aliases` - Course name variations
+- `state_aliases` - State name variations
+- `category_aliases` - Category name variations
+- `quota_aliases` - Quota name variations
 
-**Important:** Each migration must complete successfully before proceeding to the next.
+**Link Tables (3):**
+- `state_college_link` - State-college relationships
+- `state_course_college_link` - State-course-college combinations
+- `state_mappings` - Raw to normalized state mappings
+
+**Data Tables (4):**
+- `seat_data` - Seat matrix with college/course matching
+- `counselling_records` - Historical counselling data
+- `counselling_rounds` - Counselling round information
+- `partition_metadata` - Partition statistics
+
+**Application Tables (11):**
+- `user_profiles` - User account data
+- `user_roles` - Role-based access control
+- `admin_users` - Admin accounts
+- `subscriptions` - Payment subscriptions
+- `payment_transactions` - Payment history
+- `favorites` - User favorites
+- `recommendations` - College recommendations
+- `user_activity` - Activity tracking
+- `notifications` - User notifications
+- `stream_configurations` - Stream settings
+- `user_streams` - User stream access
+
+**Views (2):**
+- `colleges_unified` - Unified view of all college types
+- `v_counselling_details` - Complete counselling data with joins
+
+**Total:** 35+ tables, 50+ indexes, 10+ triggers
 
 ---
 
@@ -81,262 +109,179 @@ AND table_type = 'BASE TABLE'
 ORDER BY table_name;
 ```
 
-**Expected tables (minimum 25):**
-- admin_activity_log
-- admin_users
-- colleges
-- college_courses
-- college_facilities
-- counselling_bookings
-- counselling_documents
-- counselling_packages
-- course_variants
-- courses
-- cutoffs
-- live_seat_updates
-- notifications
-- payment_transactions
-- recommendations
-- stream_access_log
-- stream_configurations
-- stream_locks
-- subscriptions
-- user_activity
-- user_preferences
-- user_profiles
-- user_roles
-- user_streams
-- user_usage_tracking
+**Expected tables (35+):**
+```
+admin_users
+categories
+category_aliases
+college_aliases
+counselling_records
+counselling_rounds
+course_aliases
+courses
+dental_colleges
+dnb_colleges
+favorites
+levels
+medical_colleges
+notifications
+partition_metadata
+payment_transactions
+quota_aliases
+quotas
+recommendations
+seat_data
+sources
+state_aliases
+state_college_link
+state_course_college_link
+state_mappings
+states
+stream_configurations
+subscriptions
+user_activity
+user_profiles
+user_roles
+user_streams
+```
+
+**Verify views:**
+```sql
+SELECT
+  table_name
+FROM information_schema.views
+WHERE table_schema = 'public'
+ORDER BY table_name;
+```
+
+Expected: `colleges_unified`, `v_counselling_details`
 
 ---
 
-## Step 3: Insert Stream Configuration Data
+## Step 3: Populate Foundation Data
 
-The platform supports three educational streams. Insert the configuration for each:
-
-```sql
--- Insert UG (Undergraduate) Stream Configuration
-INSERT INTO stream_configurations (
-  stream_id,
-  stream_name,
-  stream_description,
-  is_enabled,
-  requires_subscription,
-  priority,
-  metadata
-) VALUES (
-  'UG',
-  'Undergraduate Medical (NEET UG)',
-  'MBBS and BDS courses through NEET UG counseling',
-  true,
-  false,
-  1,
-  jsonb_build_object(
-    'exam', 'NEET UG',
-    'courses', ARRAY['MBBS', 'BDS'],
-    'counseling_body', 'MCC',
-    'rounds', 4,
-    'max_choices', 100
-  )
-)
-ON CONFLICT (stream_id) DO UPDATE
-SET
-  stream_name = EXCLUDED.stream_name,
-  stream_description = EXCLUDED.stream_description,
-  is_enabled = EXCLUDED.is_enabled,
-  updated_at = NOW();
-
--- Insert PG Medical Stream Configuration
-INSERT INTO stream_configurations (
-  stream_id,
-  stream_name,
-  stream_description,
-  is_enabled,
-  requires_subscription,
-  priority,
-  metadata
-) VALUES (
-  'PG_MEDICAL',
-  'Postgraduate Medical (NEET PG)',
-  'MD/MS courses through NEET PG counseling',
-  true,
-  true,
-  2,
-  jsonb_build_object(
-    'exam', 'NEET PG',
-    'courses', ARRAY['MD', 'MS', 'PG Diploma'],
-    'counseling_body', 'MCC',
-    'rounds', 3,
-    'max_choices', 75
-  )
-)
-ON CONFLICT (stream_id) DO UPDATE
-SET
-  stream_name = EXCLUDED.stream_name,
-  stream_description = EXCLUDED.stream_description,
-  is_enabled = EXCLUDED.is_enabled,
-  updated_at = NOW();
-
--- Insert Diploma Stream Configuration
-INSERT INTO stream_configurations (
-  stream_id,
-  stream_name,
-  stream_description,
-  is_enabled,
-  requires_subscription,
-  priority,
-  metadata
-) VALUES (
-  'DIPLOMA',
-  'Diploma in Medical/Dental',
-  'Diploma courses for medical and dental streams',
-  true,
-  true,
-  3,
-  jsonb_build_object(
-    'exam', 'NEET UG',
-    'courses', ARRAY['Diploma in Medical', 'Diploma in Dental'],
-    'counseling_body', 'State Councils',
-    'rounds', 2,
-    'max_choices', 50
-  )
-)
-ON CONFLICT (stream_id) DO UPDATE
-SET
-  stream_name = EXCLUDED.stream_name,
-  stream_description = EXCLUDED.stream_description,
-  is_enabled = EXCLUDED.is_enabled,
-  updated_at = NOW();
-```
-
-**Verify stream insertion:**
+Run the foundation data population script to insert reference data:
 
 ```sql
-SELECT
-  stream_id,
-  stream_name,
-  is_enabled,
-  requires_subscription,
-  priority
-FROM stream_configurations
-ORDER BY priority;
+-- File: supabase/foundation_data_population.sql
 ```
 
-Expected output:
+**How to apply:**
+1. In SQL Editor, create a new query
+2. Copy the entire contents of `supabase/foundation_data_population.sql`
+3. Paste into the SQL Editor
+4. Click **Run**
+
+**What this inserts:**
+- **36 States/UTs** (Andhra Pradesh to Andaman and Nicobar Islands)
+- **11 Categories** (General, OBC-NCL, SC, ST, EWS, PwD variants)
+- **12 Quotas** (AIQ, State, Management, AIIMS, JIPMER, etc.)
+- **7 Sources** (AIQ, KEA, STATE, MCC, DGHS, NBEMS, MANUAL)
+- **5 Levels** (UG, PG, DEN, DNB, DIPLOMA)
+- **40 Courses** (MBBS, BDS, MD, MS, MDS, DNB, Diploma courses)
+- **4 Stream Configurations** (UG, PG_MEDICAL, DIPLOMA, DNB)
+- **4 User Roles** (super_admin, admin, moderator, user)
+
+**Verify data insertion:**
+
+```sql
+-- Check all foundation tables
+SELECT 'States' as table_name, COUNT(*) as count FROM states
+UNION ALL
+SELECT 'Categories', COUNT(*) FROM categories
+UNION ALL
+SELECT 'Quotas', COUNT(*) FROM quotas
+UNION ALL
+SELECT 'Sources', COUNT(*) FROM sources
+UNION ALL
+SELECT 'Levels', COUNT(*) FROM levels
+UNION ALL
+SELECT 'Courses', COUNT(*) FROM courses
+UNION ALL
+SELECT 'Stream Configurations', COUNT(*) FROM stream_configurations
+UNION ALL
+SELECT 'User Roles', COUNT(*) FROM user_roles;
 ```
-stream_id    | stream_name                  | is_enabled | requires_subscription | priority
--------------|------------------------------|------------|-----------------------|---------
-UG           | Undergraduate Medical        | true       | false                 | 1
-PG_MEDICAL   | Postgraduate Medical         | true       | true                  | 2
-DIPLOMA      | Diploma in Medical/Dental    | true       | true                  | 3
+
+**Expected output:**
+```
+table_name               | count
+-------------------------|------
+States                   | 36
+Categories               | 11
+Quotas                   | 12
+Sources                  | 7
+Levels                   | 5
+Courses                  | 40
+Stream Configurations    | 4
+User Roles               | 4
 ```
 
 ---
 
 ## Step 4: Create Super Admin User
 
-You need to create at least one super admin user to manage the platform.
+### 4.1: Create Auth User
 
-### 4.1: Create Auth User First
-
-You **cannot** create a super admin directly in SQL because Supabase Auth manages users.
-
-**Option 1: Create via Supabase Dashboard**
-1. Go to Authentication → Users
-2. Click "Add user"
-3. Enter email: `admin@example.com` (or your preferred admin email)
+**Option 1: Via Supabase Dashboard (Recommended)**
+1. Go to **Authentication → Users**
+2. Click **"Add user"**
+3. Enter email: `admin@yourdomain.com`
 4. Set a strong password
-5. Enable "Auto Confirm User"
-6. Click "Create user"
-7. Copy the User UUID (you'll need this)
+5. Enable **"Auto Confirm User"**
+6. Click **"Create user"**
+7. **Copy the User UUID** (you'll need this in the next step)
 
-**Option 2: Create via Sign-Up Flow**
+**Option 2: Via Sign-Up Flow**
 1. Use your application's sign-up page
 2. Register with your admin email
 3. Verify email if required
-4. Get the user UUID from the authentication table
+4. Get the user UUID from the auth.users table
 
 ### 4.2: Promote User to Super Admin
 
-Once you have the user UUID, run this SQL:
+Use the provided script:
 
 ```sql
--- Replace 'USER_UUID_HERE' with the actual UUID from Step 4.1
-DO $$
-DECLARE
-  admin_user_id UUID := 'USER_UUID_HERE'::uuid;
-  admin_role_id UUID;
-BEGIN
-  -- Create or get super_admin role
-  INSERT INTO user_roles (role_name, role_description, permissions)
-  VALUES (
-    'super_admin',
-    'Super Administrator with full platform access',
-    jsonb_build_object(
-      'can_manage_users', true,
-      'can_manage_content', true,
-      'can_manage_streams', true,
-      'can_view_analytics', true,
-      'can_manage_subscriptions', true,
-      'can_access_admin_panel', true
-    )
-  )
-  ON CONFLICT (role_name) DO UPDATE
-  SET permissions = EXCLUDED.permissions
-  RETURNING id INTO admin_role_id;
-
-  -- Assign super_admin role to user
-  UPDATE user_profiles
-  SET role_id = admin_role_id
-  WHERE user_id = admin_user_id;
-
-  -- Create admin_users entry
-  INSERT INTO admin_users (user_id, role, permissions, status)
-  VALUES (
-    admin_user_id,
-    'super_admin',
-    jsonb_build_object(
-      'full_access', true,
-      'can_create_admins', true
-    ),
-    'active'
-  )
-  ON CONFLICT (user_id) DO UPDATE
-  SET role = 'super_admin', status = 'active';
-
-  -- Grant access to all streams
-  INSERT INTO user_streams (user_id, stream_id, access_level)
-  VALUES
-    (admin_user_id, 'UG', 'full'),
-    (admin_user_id, 'PG_MEDICAL', 'full'),
-    (admin_user_id, 'DIPLOMA', 'full')
-  ON CONFLICT (user_id, stream_id) DO UPDATE
-  SET access_level = 'full';
-
-  RAISE NOTICE 'Super admin created successfully!';
-END $$;
+-- File: supabase/promote_to_super_admin.sql
 ```
+
+**How to use:**
+1. Open `supabase/promote_to_super_admin.sql`
+2. Replace `'USER_UUID_HERE'` with the actual UUID from Step 4.1
+3. Copy the modified SQL
+4. Paste into SQL Editor
+5. Click **Run**
+
+**What this does:**
+- Creates/gets super_admin role
+- Updates user profile with super_admin role
+- Creates admin_users entry
+- Grants full access to all streams (UG, PG_MEDICAL, DIPLOMA, DNB)
 
 **Verify admin creation:**
 
 ```sql
 SELECT
-  u.user_id,
-  u.role_id,
-  r.role_name,
-  a.role as admin_role,
-  a.status
-FROM user_profiles u
-LEFT JOIN user_roles r ON u.role_id = r.id
-LEFT JOIN admin_users a ON u.user_id = a.user_id
-WHERE a.role = 'super_admin';
+  up.user_id,
+  ur.role_name,
+  au.role as admin_role,
+  au.status,
+  up.subscription_tier,
+  (SELECT COUNT(*) FROM user_streams us WHERE us.user_id = up.user_id) as stream_access_count
+FROM user_profiles up
+LEFT JOIN user_roles ur ON up.role_id = ur.id
+LEFT JOIN admin_users au ON up.user_id = au.user_id
+WHERE au.role = 'super_admin';
 ```
+
+Expected: 1 row with role_name = 'super_admin', stream_access_count = 4
 
 ---
 
 ## Step 5: Set Up Environment Variables
 
-Add these environment variables to your Vercel/deployment platform:
+Add these to your **Vercel Dashboard → Settings → Environment Variables**:
 
 ```env
 # Supabase Configuration
@@ -352,13 +297,174 @@ NEXT_PUBLIC_GEMINI_API_KEY=ff2d76242389488a9db04a89eeedbf91.uuFP8YmmC5cLRk4Q
 ```
 
 **Where to find Supabase keys:**
-1. Go to Supabase Dashboard
-2. Click on your project
-3. Go to Settings → API
-4. Copy the keys as shown above
+1. Go to **Supabase Dashboard**
+2. Select your project
+3. Go to **Settings → API**
+4. Copy:
+   - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
+   - **anon public** key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - **service_role** key → `SUPABASE_SERVICE_ROLE_KEY` (⚠️ Keep secret!)
+
+---
+
+## Step 6: Test Database Connectivity
+
+Create a test to verify everything works:
+
+```sql
+-- Test foundation data
+SELECT
+  (SELECT COUNT(*) FROM states) as states_count,
+  (SELECT COUNT(*) FROM categories) as categories_count,
+  (SELECT COUNT(*) FROM quotas) as quotas_count,
+  (SELECT COUNT(*) FROM courses) as courses_count;
+
+-- Test views
+SELECT COUNT(*) FROM colleges_unified;
+
+-- Test triggers (insert a test record)
+INSERT INTO counselling_records (
+  id, all_india_rank, college_institute_raw, course_raw,
+  round_raw, year, partition_key, is_matched
+) VALUES (
+  'TEST-UG-2024-1-1', 1, 'Test College', 'MBBS',
+  '1', 2024, 'TEST-UG-2024', false
+);
+
+-- Verify trigger updated partition_metadata
+SELECT * FROM partition_metadata WHERE partition_key = 'TEST-UG-2024';
+
+-- Clean up test data
+DELETE FROM counselling_records WHERE id = 'TEST-UG-2024-1-1';
+DELETE FROM partition_metadata WHERE partition_key = 'TEST-UG-2024';
+```
+
+---
+
+## Step 7: Import College Data (Optional)
+
+If you have existing SQLite databases with college data:
+
+### Import Medical Colleges
+
+```sql
+-- Example import structure
+INSERT INTO medical_colleges (
+  id, name, state, address, college_type,
+  normalized_name, normalized_state, normalized_address,
+  composite_college_key, establishment_year, is_active
+) VALUES
+('MED0001', 'All India Institute of Medical Sciences', 'Delhi', 'Ansari Nagar, New Delhi',
+ 'Government', 'all india institute of medical sciences', 'delhi',
+ 'ansari nagar new delhi', 'all_india_institute_of_medical_sciences_delhi_ansari_nagar_new_delhi',
+ 1956, true);
+
+-- Repeat for all medical colleges...
+```
+
+### Import Dental Colleges
+
+```sql
+INSERT INTO dental_colleges (
+  id, name, state, address, college_type,
+  normalized_name, normalized_state, normalized_address,
+  composite_college_key, is_active
+) VALUES
+('DEN0001', 'Government Dental College & Hospital', 'Mumbai', 'Fort, Mumbai',
+ 'Government', 'government dental college hospital', 'maharashtra',
+ 'fort mumbai', 'government_dental_college_hospital_maharashtra_fort_mumbai', true);
+```
+
+### Import DNB Colleges
+
+```sql
+INSERT INTO dnb_colleges (
+  id, name, state, address, college_type,
+  normalized_name, normalized_state, normalized_address,
+  composite_college_key, is_active
+) VALUES
+('DNB0001', 'Apollo Hospital', 'Delhi', 'Sarita Vihar, New Delhi',
+ 'Private', 'apollo hospital', 'delhi',
+ 'sarita vihar new delhi', 'apollo_hospital_delhi_sarita_vihar_new_delhi', true);
+```
+
+---
+
+## Troubleshooting
+
+### Issue: Foreign key constraint violation
+
+**Cause:** Trying to insert data that references non-existent foreign keys
+
+**Solution:**
+```sql
+-- Check if referenced data exists
+SELECT * FROM states WHERE id = 'ST001';
+SELECT * FROM courses WHERE id = 'CRS001';
+
+-- Insert foundation data first, then college data
+```
+
+### Issue: Duplicate key error
+
+**Cause:** Trying to insert data with existing primary key
+
+**Solution:**
+```sql
+-- Use ON CONFLICT clause
+INSERT INTO states (...) VALUES (...)
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
+```
+
+### Issue: Trigger not firing
+
+**Cause:** Trigger function has an error
+
+**Solution:**
+```sql
+-- Check trigger function
+SELECT proname, prosrc FROM pg_proc WHERE proname = 'update_partition_metadata';
+
+-- Test trigger manually
+SELECT update_partition_metadata();
+```
+
+---
+
+## Verification Checklist
+
+- [ ] Unified schema migration applied successfully
+- [ ] 35+ tables created
+- [ ] 2 views created
+- [ ] Foundation data populated (36 states, 11 categories, 12 quotas, etc.)
+- [ ] Stream configurations inserted (4 streams)
+- [ ] User roles created (4 roles)
+- [ ] Super admin user created and verified
+- [ ] Environment variables configured in Vercel
+- [ ] Database connectivity tested
+- [ ] Triggers working correctly
+
+---
+
+## Next Steps
+
+1. **Import College Data** - Import medical, dental, and DNB colleges from SQLite databases
+2. **Import Seat Data** - Import seat matrix information
+3. **Import Counselling Data** - Import historical counselling records
+4. **Configure RLS** - Set up Row Level Security policies
+5. **Test Application** - Verify all application features work
+6. **Deploy** - Push to production
 
 ---
 
 ## Complete! 🎉
 
-Your database is now configured and ready for use.
+Your database is now configured with the unified schema matching DATABASE_SCHEMAS.md structure!
+
+**Schema Documentation:**
+- **SCHEMA_MIGRATION_GUIDE.md** - SQLite to PostgreSQL mapping details
+- **DATABASE_SCHEMAS.md** - Original SQLite schema documentation
+- **foundation_data_population.sql** - Foundation data insertion script
+- **promote_to_super_admin.sql** - Admin user promotion script
+
+**Status:** Ready for college data import and application testing
