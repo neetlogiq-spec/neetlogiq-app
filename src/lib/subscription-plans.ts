@@ -1,5 +1,19 @@
 /**
- * Subscription Plans Configuration
+ * @deprecated This file contains legacy pricing (₹999/3mo, ₹1999/year)
+ *
+ * DO NOT USE THIS FILE FOR NEW CODE!
+ *
+ * Current pricing is now managed in:
+ * - src/contexts/SubscriptionContext.tsx (₹149/month, ₹399/3mo, ₹699/6mo, ₹999/year)
+ * - src/app/pricing/page.tsx
+ *
+ * This file is kept for backwards compatibility only and should be migrated away from.
+ *
+ * @see src/contexts/SubscriptionContext.tsx
+ */
+
+/**
+ * Subscription Plans Configuration (DEPRECATED)
  *
  * Defines the available subscription tiers and their features
  */

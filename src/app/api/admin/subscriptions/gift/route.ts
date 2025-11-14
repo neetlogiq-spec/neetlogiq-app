@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { isDeveloperAccount } from '@/contexts/StreamContext';
+import { requireAdmin } from '@/lib/admin-auth';
 
 /**
  * POST /api/admin/subscriptions/gift
@@ -57,10 +57,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user is admin (developer account)
-    if (!isDeveloperAccount(adminUser.email)) {
+    // Check if user has admin privileges
+    const adminCheck = await requireAdmin(adminUser.id);
+    if (!adminCheck.allowed) {
       return NextResponse.json(
-        { error: 'Admin access required' },
+        { error: adminCheck.error || 'Admin access required' },
         { status: 403 }
       );
     }

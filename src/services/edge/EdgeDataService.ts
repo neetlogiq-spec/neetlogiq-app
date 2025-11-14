@@ -1,8 +1,8 @@
-// EdgeDataService - High-performance data processing using SQLite and WebAssembly
-// This service provides multi-level caching and WebAssembly optimization
+// EdgeDataService - High-performance data processing using PostgreSQL via Supabase
+// This service provides multi-level caching and database optimization
 
 import { CutoffRecord, MasterData, CutoffFilters } from '@/types/edge/data';
-import { parquetDataService } from '@/services/ParquetDataService';
+import { supabaseDataService } from '@/services/supabase-data-service';
 
 interface EdgeDataServiceConfig {
   dataPath: string;
@@ -37,10 +37,46 @@ class EdgeDataService {
     }
 
     try {
-      // Use parquet data service instead of mock data
-      return await parquetDataService.getCutoffs(filters);
+      // Convert EdgeDataService filters to SupabaseDataService filters
+      const supabaseFilters = {
+        collegeId: filters.college_id,
+        courseId: filters.course_id,
+        year: filters.year,
+        category: filters.category_id,
+        quota: filters.quota_id,
+        state: filters.state_id,
+        round: filters.round,
+        limit: 1000
+      };
+
+      const result = await supabaseDataService.searchCutoffs(supabaseFilters);
+
+      // Map Supabase cutoff format to CutoffRecord format
+      return result.data.map((cutoff: any) => ({
+        id: cutoff.id,
+        college_id: cutoff.college_id,
+        college_name: cutoff.college_name || '',
+        college_type: cutoff.college_type || 'Medical',
+        stream: cutoff.stream || 'Medical',
+        state_id: cutoff.state || '',
+        state_name: cutoff.state || '',
+        course_id: cutoff.course_id,
+        course_name: cutoff.course_name || '',
+        year: cutoff.year,
+        level: cutoff.level || 'UG',
+        counselling_body: cutoff.source || 'AIQ',
+        round: cutoff.round,
+        quota_id: cutoff.quota || '',
+        quota_name: cutoff.quota || '',
+        category_id: cutoff.category || '',
+        category_name: cutoff.category || '',
+        opening_rank: cutoff.opening_rank,
+        closing_rank: cutoff.closing_rank,
+        total_seats: cutoff.total_seats || 0,
+        ranks: []
+      }));
     } catch (error) {
-      console.error('Error loading cutoffs:', error);
+      console.error('Error loading cutoffs from Supabase:', error);
       // Fallback to mock data
       return await this.loadCutoffData(filters);
     }
@@ -52,10 +88,36 @@ class EdgeDataService {
     }
 
     try {
-      // Use parquet data service instead of mock data
-      return await parquetDataService.getMasterData();
+      const masterData = await supabaseDataService.getMasterData();
+
+      // Map to expected format
+      return {
+        states: masterData.states.map((state: any) => ({
+          id: state,
+          name: state
+        })),
+        categories: masterData.categories.map((cat: any) => ({
+          id: cat,
+          name: cat
+        })),
+        quotas: masterData.quotas.map((quota: any) => ({
+          id: quota,
+          name: quota
+        })),
+        courses: [],
+        colleges: masterData.colleges.map((college: any) => ({
+          ...college,
+          type: college.type || 'Medical',
+          management: college.management_type || 'Government',
+          university_affiliation: '',
+          website: '',
+          address: `${college.city}, ${college.state}`,
+          established_year: 2000,
+          recognition: 'MCI'
+        }))
+      };
     } catch (error) {
-      console.error('Error loading master data:', error);
+      console.error('Error loading master data from Supabase:', error);
       // Fallback to mock data
       return await this.loadMasterData();
     }
@@ -238,11 +300,43 @@ class EdgeDataService {
     }
   }
 
-  // Search functionality (placeholder for now)
+  // Search functionality using Supabase
   async searchCutoffs(query: string, limit: number = 10): Promise<CutoffRecord[]> {
     try {
-      // Use parquet data service for search
-      return await parquetDataService.searchCutoffs(query, limit);
+      // Simple search - could be enhanced with full-text search
+      const filters = { limit };
+      const result = await supabaseDataService.searchCutoffs(filters);
+
+      // Filter results by query
+      const filtered = result.data.filter((cutoff: any) =>
+        cutoff.college_name?.toLowerCase().includes(query.toLowerCase()) ||
+        cutoff.course_name?.toLowerCase().includes(query.toLowerCase())
+      ).slice(0, limit);
+
+      // Map to expected format
+      return filtered.map((cutoff: any) => ({
+        id: cutoff.id,
+        college_id: cutoff.college_id,
+        college_name: cutoff.college_name || '',
+        college_type: cutoff.college_type || 'Medical',
+        stream: cutoff.stream || 'Medical',
+        state_id: cutoff.state || '',
+        state_name: cutoff.state || '',
+        course_id: cutoff.course_id,
+        course_name: cutoff.course_name || '',
+        year: cutoff.year,
+        level: cutoff.level || 'UG',
+        counselling_body: cutoff.source || 'AIQ',
+        round: cutoff.round,
+        quota_id: cutoff.quota || '',
+        quota_name: cutoff.quota || '',
+        category_id: cutoff.category || '',
+        category_name: cutoff.category || '',
+        opening_rank: cutoff.opening_rank,
+        closing_rank: cutoff.closing_rank,
+        total_seats: cutoff.total_seats || 0,
+        ranks: []
+      }));
     } catch (error) {
       console.error('Error searching cutoffs:', error);
       return [];

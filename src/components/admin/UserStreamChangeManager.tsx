@@ -7,7 +7,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Check, X, Clock, Mail, User as UserIcon } from 'lucide-react';
+import { Check, X, Clock, Mail, User as UserIcon, Unlock } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 interface StreamChangeRequest {
@@ -122,6 +122,45 @@ export default function UserStreamChangeManager() {
     } catch (error) {
       console.error('Error rejecting request:', error);
       alert('Failed to reject request');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleUnlockStream = async (userId: string, userEmail: string) => {
+    if (!confirm(`Are you sure you want to unlock the stream for ${userEmail}? This will allow them to change their stream selection.`)) {
+      return;
+    }
+
+    const reason = prompt('Reason for unlocking (optional):');
+
+    setProcessing(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const response = await fetch('/api/admin/stream-unlock', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          reason: reason || 'No reason provided'
+        })
+      });
+
+      if (response.ok) {
+        alert('Stream unlocked successfully!');
+        loadRequests();
+      } else {
+        const data = await response.json();
+        alert(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error unlocking stream:', error);
+      alert('Failed to unlock stream');
     } finally {
       setProcessing(false);
     }
@@ -280,12 +319,22 @@ export default function UserStreamChangeManager() {
                       </div>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => setSelectedRequest(request)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                      Process Request
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedRequest(request)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      >
+                        Process Request
+                      </button>
+                      <button
+                        onClick={() => handleUnlockStream(request.user_id, request.user_email)}
+                        disabled={processing}
+                        className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                      >
+                        <Unlock className="w-4 h-4" />
+                        Unlock Stream
+                      </button>
+                    </div>
                   )}
                 </div>
               )}

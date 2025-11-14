@@ -8,9 +8,6 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "echo 'Linting temporarily disabled due to ESLint config issue'",
-    "convert:sqlite": "node scripts/convert-sqlite-to-parquet.js",
-    "convert:parquet": "node scripts/convert-to-parquet.js",
-    "convert:sqlite-parquet": "node scripts/convert-sqlite-to-parquet-simple.js",
     "test:performance": "node scripts/performance-test.js",
     "generate:embeddings": "node scripts/generate-embeddings.js",
     "build:wasm": "bash scripts/build-wasm.sh",
@@ -42,7 +39,6 @@
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.548.0",
     "next": "16.0.0",
-    "parquet-wasm": "^0.7.1",
     "postcss": "^8.5.6",
     "razorpay": "^2.9.4",
     "react": "19.2.0",
@@ -65,7 +61,6 @@
     "lz4js": "^0.2.0",
     "natural": "^8.1.0",
     "papaparse": "^5.5.3",
-    "parquetjs": "^0.11.2",
     "sqlite3": "^5.1.7",
     "xlsx": "^0.18.5"
   }

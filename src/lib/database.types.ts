@@ -166,6 +166,7 @@ export interface Database {
           stream_change_requested: boolean
           stream_change_request_date: string | null
           stream_change_request_reason: string | null
+          role: 'user' | 'admin' | 'super_admin'
           created_at: string
           updated_at: string
         }
@@ -187,6 +188,7 @@ export interface Database {
           stream_change_requested?: boolean
           stream_change_request_date?: string | null
           stream_change_request_reason?: string | null
+          role?: 'user' | 'admin' | 'super_admin'
           created_at?: string
           updated_at?: string
         }
@@ -208,6 +210,80 @@ export interface Database {
           stream_change_requested?: boolean
           stream_change_request_date?: string | null
           stream_change_request_reason?: string | null
+          role?: 'user' | 'admin' | 'super_admin'
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      admin_role_changes: {
+        Row: {
+          id: string
+          user_id: string
+          old_role: string | null
+          new_role: string
+          changed_by: string | null
+          changed_at: string
+          reason: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          old_role?: string | null
+          new_role: string
+          changed_by?: string | null
+          changed_at?: string
+          reason?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          old_role?: string | null
+          new_role?: string
+          changed_by?: string | null
+          changed_at?: string
+          reason?: string | null
+        }
+      }
+      stream_config: {
+        Row: {
+          id: string
+          stream_id: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL'
+          stream_name: string
+          description: string | null
+          enabled: boolean
+          features: Json
+          max_saved_colleges: number | null
+          max_comparisons: number | null
+          primary_color: string | null
+          icon_name: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          stream_id: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL'
+          stream_name: string
+          description?: string | null
+          enabled?: boolean
+          features?: Json
+          max_saved_colleges?: number | null
+          max_comparisons?: number | null
+          primary_color?: string | null
+          icon_name?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          stream_id?: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL'
+          stream_name?: string
+          description?: string | null
+          enabled?: boolean
+          features?: Json
+          max_saved_colleges?: number | null
+          max_comparisons?: number | null
+          primary_color?: string | null
+          icon_name?: string | null
           created_at?: string
           updated_at?: string
         }
