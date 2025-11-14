@@ -4,6 +4,7 @@ import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { StreamProvider } from '@/contexts/StreamContext'
+import { PremiumProvider } from '@/contexts/PremiumContext'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import LayoutWithStreamSelection from '@/components/layout/LayoutWithStreamSelection'
 import StreamGuard from '@/components/StreamGuard'
@@ -76,15 +77,17 @@ export default function RootLayout({
         <ErrorBoundary>
           <ThemeProvider>
             <AuthProvider>
-              <AuthGuard>
-                <StreamProvider>
-                  <StreamGuard>
-                    <LayoutWithStreamSelection>
-                      {children}
-                    </LayoutWithStreamSelection>
-                  </StreamGuard>
-                </StreamProvider>
-              </AuthGuard>
+              <PremiumProvider>
+                <AuthGuard>
+                  <StreamProvider>
+                    <StreamGuard>
+                      <LayoutWithStreamSelection>
+                        {children}
+                      </LayoutWithStreamSelection>
+                    </StreamGuard>
+                  </StreamProvider>
+                </AuthGuard>
+              </PremiumProvider>
             </AuthProvider>
           </ThemeProvider>
         </ErrorBoundary>

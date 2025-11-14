@@ -6,16 +6,16 @@ const API_CONFIG = {
   // Using '' ensures fetch goes to the current origin (e.g., http://localhost:3500).
   BASE_URL: process.env.NEXT_PUBLIC_API_URL || '',
   ENDPOINTS: {
-    // Route core data through unified endpoints that use parquet-backed queries on Next.js
-    COLLEGES: '/api/fresh/colleges',
-    COURSES: '/api/fresh/courses',
+    // Route core data through unified endpoints that use Supabase
+    COLLEGES: '/api/colleges',
+    COURSES: '/api/courses',
 
     // The remaining endpoints can still be served by Next.js or Workers.
     // If you later migrate them, adjust here consistently.
-    CUTOFFS: '/api/fresh/counselling',
-    SEARCH: '/api/fresh/search',
-    COMPARE: '/api/fresh/search',
-    FILTERS: '/api/fresh/colleges',
+    CUTOFFS: '/api/cutoffs',
+    SEARCH: '/api/colleges/search',
+    COMPARE: '/api/colleges/search',
+    FILTERS: '/api/colleges',
     ANALYTICS: '/api/fresh/stats',
     HEALTH: '/api/health',
     ADMIN: {

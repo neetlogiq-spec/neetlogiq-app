@@ -6,7 +6,6 @@ import { FileText, Calendar, CheckSquare, ArrowLeft, ExternalLink } from 'lucide
 import { useTheme } from '@/contexts/ThemeContext';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 import Link from 'next/link';
 import PDFViewer from '@/components/counselling/PDFViewer';
 import ImportantDates from '@/components/counselling/ImportantDates';
@@ -270,7 +269,6 @@ const KEAPage: React.FC = () => {
           </motion.div>
         </div>
 
-        <Footer />
       </div>
     </div>
   );

@@ -7,6 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { checkAdminAccess, logAdminAction } from '@/lib/admin-middleware';
 import type { StreamConfig } from '@/components/admin/StreamManagement';
 
 /**
@@ -17,15 +18,16 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Check admin authentication
+  const authCheck = await checkAdminAccess(request);
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: 401 }
+    );
+  }
+
   try {
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth(request);
-    if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 401 }
-      );
-    }
 
     const { id } = params;
 
@@ -66,15 +68,16 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Check admin authentication
+  const authCheck = await checkAdminAccess(request);
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: 401 }
+    );
+  }
+
   try {
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth(request);
-    if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 401 }
-      );
-    }
 
     const { id } = params;
     const updates: Partial<StreamConfig> = await request.json();
@@ -99,6 +102,15 @@ export async function PUT(
       updatedAt: new Date()
     } as StreamConfig;
 
+    // Log admin action
+    await logAdminAction(
+      authCheck.userId!,
+      'UPDATE',
+      'stream_config',
+      id,
+      updates
+    );
+
     console.log(`✅ Stream ${id} configuration updated`);
 
     return NextResponse.json({
@@ -111,25 +123,5 @@ export async function PUT(
       { error: 'Failed to update stream' },
       { status: 500 }
     );
-  }
-}
-
-/**
- * Check if request is from authenticated admin
- */
-async function checkAdminAuth(request: NextRequest): Promise<boolean> {
-  try {
-    const token = request.cookies.get('session')?.value ||
-                  request.headers.get('authorization')?.replace('Bearer ', '');
-
-    if (!token) {
-      return false;
-    }
-
-    // TODO: Verify token with Firebase Admin SDK
-    return true; // Placeholder - MUST implement proper auth
-  } catch (error) {
-    console.error('Auth check error:', error);
-    return false;
   }
 }

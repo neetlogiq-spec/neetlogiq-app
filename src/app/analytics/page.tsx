@@ -6,7 +6,6 @@ import { BarChart3, PieChart as PieChartIcon, TrendingUp, Users, Award, ArrowLef
 import { useTheme } from '@/contexts/ThemeContext';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 import Link from 'next/link';
 import {
   AreaChart,
@@ -630,7 +629,6 @@ const AnalyticsPage: React.FC = () => {
               </div>
             </div>
 
-            <Footer />
           </motion.div>
         )}
       </AnimatePresence>

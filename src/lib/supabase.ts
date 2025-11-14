@@ -10,42 +10,74 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
 
 // Validate environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
-// Warn if environment variables are missing (but don't throw during build)
-if (!supabaseUrl && typeof window !== 'undefined') {
-  console.error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
-}
-
-if (!supabaseAnonKey && typeof window !== 'undefined') {
-  console.error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
+// Validate required environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  const missing = [];
+  if (!supabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL');
+  if (!supabaseAnonKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  
+  const errorMsg = `❌ Missing required Supabase environment variables: ${missing.join(', ')}\n\nPlease add them to your .env.local file:\n${missing.map(v => `${v}=your-value-here`).join('\n')}`;
+  
+  if (typeof window !== 'undefined') {
+    console.error(errorMsg);
+  } else {
+    // Server-side: throw error to prevent silent failures
+    throw new Error(errorMsg);
+  }
 }
 
 // Client-side Supabase client (safe to use in browser)
-export const supabase = createClient<Database>(
-  supabaseUrl,
-  supabaseAnonKey,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    },
-    realtime: {
-      params: {
-        eventsPerSecond: 10
+// Use a singleton pattern to prevent multiple instances
+// Store in global scope to survive hot module reloads
+declare global {
+  // eslint-disable-next-line no-var
+  var __supabaseClient: ReturnType<typeof createClient<Database>> | undefined;
+}
+
+function getSupabaseClient() {
+  // In browser, check global scope first (survives HMR)
+  if (typeof window !== 'undefined' && globalThis.__supabaseClient) {
+    return globalThis.__supabaseClient;
+  }
+
+  // Create new instance
+  const instance = createClient<Database>(
+    supabaseUrl || 'https://placeholder.supabase.co',
+    supabaseAnonKey || 'placeholder-key',
+    {
+      auth: {
+        persistSession: typeof window !== 'undefined',
+        autoRefreshToken: typeof window !== 'undefined',
+        detectSessionInUrl: typeof window !== 'undefined',
+        storageKey: 'sb-dbkpoiatlynvhrcnpvgw-auth-token'
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10
+        }
       }
     }
+  );
+
+  // Store in global scope for browser (survives HMR)
+  if (typeof window !== 'undefined') {
+    globalThis.__supabaseClient = instance;
   }
-);
+
+  return instance;
+}
+
+export const supabase = getSupabaseClient();
 
 // Server-side Supabase client (admin access, bypasses RLS)
 // Only use this in API routes, never expose to client!
 export const supabaseAdmin = createClient<Database>(
-  supabaseUrl,
-  supabaseServiceKey,
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseServiceKey || supabaseAnonKey || 'placeholder-key',
   {
     auth: {
       autoRefreshToken: false,

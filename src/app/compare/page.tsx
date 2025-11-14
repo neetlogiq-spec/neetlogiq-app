@@ -7,7 +7,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { usePremium } from '@/contexts/PremiumContext';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 import CollegeSelector from '@/components/compare/CollegeSelector';
 import ComparisonResults from '@/components/compare/ComparisonResults';
 import ProgressIndicator from '@/components/compare/ProgressIndicator';
@@ -479,8 +478,6 @@ const ComparePage: React.FC = () => {
           ))}
         </AnimatePresence>
 
-            {/* Footer */}
-            <Footer />
           </motion.div>
         )}
       </AnimatePresence>

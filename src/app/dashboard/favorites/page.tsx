@@ -28,7 +28,7 @@ export default function FavoritesPage() {
         if (favoriteCollegeIds.length > 0) {
           const collegePromises = favoriteCollegeIds.map(async (collegeId) => {
             try {
-              const response = await fetch(`/api/fresh/colleges/${collegeId}`);
+              const response = await fetch(`/api/colleges/${collegeId}`);
               if (response.ok) {
                 const result = await response.json();
                 return result.data; // Extract data from API response
@@ -47,7 +47,7 @@ export default function FavoritesPage() {
         if (favoriteCourseIds.length > 0) {
           const coursePromises = favoriteCourseIds.map(async (courseId) => {
             try {
-              const response = await fetch(`/api/fresh/courses/${courseId}`);
+              const response = await fetch(`/api/courses/${courseId}`);
               if (response.ok) {
                 const result = await response.json();
                 return result.data; // Extract data from API response

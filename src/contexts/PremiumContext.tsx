@@ -73,7 +73,7 @@ export const PremiumProvider: React.FC<{ children: ReactNode }> = ({ children })
         .eq('status', 'active')
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle(); // Use maybeSingle() instead of single() to handle no results gracefully
 
       if (subError && subError.code !== 'PGRST116') {
         console.error('Error fetching subscription:', subError);

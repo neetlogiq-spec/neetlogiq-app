@@ -7,6 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { checkAdminAccess } from '@/lib/admin-middleware';
 import type { StreamConfig } from '@/components/admin/StreamManagement';
 
 /**
@@ -14,15 +15,16 @@ import type { StreamConfig } from '@/components/admin/StreamManagement';
  * Get all stream configurations
  */
 export async function GET(request: NextRequest) {
+  // Check admin authentication
+  const authCheck = await checkAdminAccess(request);
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: 401 }
+    );
+  }
+
   try {
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth(request);
-    if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 401 }
-      );
-    }
 
     // TODO: Load stream configurations from database
     // For now, return default configuration
@@ -165,22 +167,3 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * Check if request is from authenticated admin
- */
-async function checkAdminAuth(request: NextRequest): Promise<boolean> {
-  try {
-    const token = request.cookies.get('session')?.value ||
-                  request.headers.get('authorization')?.replace('Bearer ', '');
-
-    if (!token) {
-      return false;
-    }
-
-    // TODO: Verify token with Firebase Admin SDK
-    return true; // Placeholder - MUST implement proper auth
-  } catch (error) {
-    console.error('Auth check error:', error);
-    return false;
-  }
-}

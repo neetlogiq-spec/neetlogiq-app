@@ -45,7 +45,7 @@ export default function WatchlistWidget({ preferences }: WatchlistWidgetProps) {
         if (collegeItems.length > 0) {
           const collegePromises = collegeItems.map(async (item) => {
             try {
-              const response = await fetch(`/api/fresh/colleges/${item.itemId}`);
+              const response = await fetch(`/api/colleges/${item.itemId}`);
               if (response.ok) {
                 const result = await response.json();
                 return result.success && result.data ? result.data : null;
@@ -64,7 +64,7 @@ export default function WatchlistWidget({ preferences }: WatchlistWidgetProps) {
         if (courseItems.length > 0) {
           const coursePromises = courseItems.map(async (item) => {
             try {
-              const response = await fetch(`/api/fresh/courses/${item.itemId}`);
+              const response = await fetch(`/api/courses/${item.itemId}`);
               if (response.ok) {
                 const result = await response.json();
                 return result.success && result.data ? result.data : null;
@@ -136,7 +136,7 @@ export default function WatchlistWidget({ preferences }: WatchlistWidgetProps) {
       // Open college modal directly in dashboard
       setIsModalLoading(true);
       try {
-        const response = await fetch(`/api/fresh/colleges/${itemId}`);
+        const response = await fetch(`/api/colleges/${itemId}`);
         if (response.ok) {
           const result = await response.json();
           if (result.success && result.data) {

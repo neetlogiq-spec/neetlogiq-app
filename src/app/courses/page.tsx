@@ -11,7 +11,6 @@ import CourseCollegesModal from '@/components/modals/CourseCollegesModal';
 import InfiniteScrollTrigger from '@/components/ui/InfiniteScrollTrigger';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 
 interface Course {
   id?: string;
@@ -195,7 +194,7 @@ const CoursesPage: React.FC = () => {
       });
 
       // Call unified API
-      const response = await fetch(`/api/fresh/courses?${params}`);
+      const response = await fetch(`/api/courses?${params}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -272,7 +271,7 @@ const CoursesPage: React.FC = () => {
     
     // Fetch colleges for this course
     try {
-      const response = await fetch(`/api/fresh/courses/${course.id}/colleges`);
+      const response = await fetch(`/api/courses/${course.id}/colleges`);
       if (response.ok) {
         const data = await response.json();
         setColleges(data.data || []);
@@ -530,9 +529,8 @@ const CoursesPage: React.FC = () => {
             >
               <UnifiedSearchBar
                 placeholder="Search medical courses with AI-powered intelligence..."
-                onSearchResults={handleSearchResults}
-                debounceMs={300}
-                showAIInsight={true}
+                onResults={handleSearchResults}
+                enableFullDatabaseSearch={true}
               />
             </motion.div>
 
@@ -824,8 +822,6 @@ const CoursesPage: React.FC = () => {
         colleges={colleges}
           />
 
-            {/* Footer */}
-            <Footer />
           </div>
         </motion.div>
       )}

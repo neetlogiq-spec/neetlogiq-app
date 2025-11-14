@@ -25,6 +25,7 @@
     "deploy:all": "bash scripts/deploy-all.sh",
     "build:optimized": "npm run generate:static && npm run build",
     "migrate:postgres": "tsx scripts/migrate-to-postgres.ts",
+    "migrate:sqlite-to-supabase": "tsx scripts/migrate-sqlite-to-supabase.ts",
     "supabase:types": "supabase gen types typescript --local > src/lib/database.types.ts"
   },
   "dependencies": {
@@ -73,6 +74,7 @@
     "natural": "^8.1.0",
     "papaparse": "^5.5.3",
     "sqlite3": "^5.1.7",
+    "tsx": "^4.20.6",
     "vitest": "^3.1.6",
     "xlsx": "^0.18.5"
   }

@@ -27,7 +27,8 @@ import {
   Sun,
   Moon,
   Code,
-  Zap
+  Zap,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -69,11 +70,13 @@ const Header: React.FC = () => {
   ];
 
   const toolsItems = [
-    { name: 'AI Assistant', path: '/ai-assistant', icon: Bot },
+    { name: 'AI Assistant', path: '/smart', icon: Bot },
     { name: 'VibeSDK', path: '/vibe', icon: Code },
-    { name: 'Career Guidance', path: '/career-guidance', icon: Briefcase },
+    { name: 'Counselling', path: '/counselling', icon: Briefcase },
     { name: 'Trends', path: '/trends', icon: BarChart3 },
-    { name: 'Compare', path: '/compare', icon: GitCompare }
+    { name: 'Compare', path: '/compare', icon: GitCompare },
+    { name: 'Analytics', path: '/analytics', icon: BarChart3 },
+    { name: 'Recommendations', path: '/recommendations', icon: Sparkles }
   ];
 
   const aboutItem = {

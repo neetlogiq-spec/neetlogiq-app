@@ -148,6 +148,11 @@ export interface AuthContextType {
   // Stream selection
   showStreamSelection?: boolean;
   saveStreamSelection?: (stream: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL') => Promise<void>;
+  // Supabase-specific (optional, for backward compatibility)
+  supabaseUser?: any;
+  session?: any;
+  updateUserProfile?: (updates: any) => Promise<void>;
+  getSubscriptionInfo?: () => Promise<{ tier: string; endDate: string | null }>;
 }
 
 export interface SearchResult {

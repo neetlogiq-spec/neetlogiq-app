@@ -24,7 +24,6 @@ import CutoffsHeroSection from '@/components/cutoffs/CutoffsHeroSection';
 import SmartFilterDashboard from '@/components/cutoffs/SmartFilterDashboard';
 import CutoffExcelTable from '@/components/cutoffs/CutoffExcelTable';
 import CutoffDetailsModal from '@/components/cutoffs/CutoffDetailsModal';
-import Footer from '@/components/layout/Footer';
 import { UnifiedSearchBar } from '@/components/search/UnifiedSearchBar';
 import { useStreamDataService } from '@/services/StreamDataService';
 import { useVectorSearch } from '@/hooks/useVectorSearch';
@@ -503,8 +502,6 @@ const CutoffsPage: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Footer */}
-      <Footer />
 
       {/* Cutoff Details Modal */}
       <CutoffDetailsModal

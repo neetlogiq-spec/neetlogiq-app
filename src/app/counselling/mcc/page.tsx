@@ -6,7 +6,6 @@ import { FileText, Calendar, Download, CheckSquare, Clock, AlertCircle, ArrowLef
 import { useTheme } from '@/contexts/ThemeContext';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 import Link from 'next/link';
 import PDFViewer from '@/components/counselling/PDFViewer';
 import ImportantDates from '@/components/counselling/ImportantDates';
@@ -430,7 +429,6 @@ const MCCPage: React.FC = () => {
           </motion.div>
         </div>
 
-        <Footer />
       </div>
     </div>
   );

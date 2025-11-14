@@ -59,7 +59,7 @@ export default function WatchlistPage() {
       setIsModalOpen(true);
       
       try {
-        const response = await fetch(`/api/fresh/colleges/${item.itemId}`);
+        const response = await fetch(`/api/colleges/${item.itemId}`);
         if (response.ok) {
           const result = await response.json();
           setSelectedCollege(result.data);

@@ -36,7 +36,7 @@ export default function FavoritesWidget({ preferences }: FavoritesWidgetProps) {
         if (favoriteColleges.length > 0) {
           const collegePromises = favoriteColleges.map(async (collegeId) => {
             try {
-              const response = await fetch(`/api/fresh/colleges/${collegeId}`);
+              const response = await fetch(`/api/colleges/${collegeId}`);
               if (response.ok) {
                 const result = await response.json();
                 return result.data; // Extract data from API response
@@ -55,7 +55,7 @@ export default function FavoritesWidget({ preferences }: FavoritesWidgetProps) {
         if (favoriteCourses.length > 0) {
           const coursePromises = favoriteCourses.map(async (courseId) => {
             try {
-              const response = await fetch(`/api/fresh/courses/${courseId}`);
+              const response = await fetch(`/api/courses/${courseId}`);
               if (response.ok) {
                 const result = await response.json();
                 return result.data; // Extract data from API response
@@ -96,7 +96,7 @@ export default function FavoritesWidget({ preferences }: FavoritesWidgetProps) {
       // Open college modal directly in dashboard
       setIsModalLoading(true);
       try {
-        const response = await fetch(`/api/fresh/colleges/${itemId}`);
+        const response = await fetch(`/api/colleges/${itemId}`);
         if (response.ok) {
           const result = await response.json();
           if (result.success && result.data) {

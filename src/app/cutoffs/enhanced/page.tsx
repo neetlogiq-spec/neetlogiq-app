@@ -30,7 +30,6 @@ import CutoffsHeroSection from '@/components/cutoffs/CutoffsHeroSection';
 import SmartFilterDashboard from '@/components/cutoffs/SmartFilterDashboard';
 import EnhancedExcelTable from '@/components/cutoffs/EnhancedExcelTable';
 import CutoffDetailsModal from '@/components/cutoffs/CutoffDetailsModal';
-import Footer from '@/components/layout/Footer';
 import { UnifiedSearchBar } from '@/components/search/UnifiedSearchBar';
 import { useEdgeData } from '@/hooks/useEdgeData';
 import { useVectorSearch } from '@/hooks/useVectorSearch';
@@ -492,8 +491,6 @@ const EnhancedCutoffsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
 
       {/* Cutoff Details Modal */}
       <CutoffDetailsModal

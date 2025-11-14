@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/supabase';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
     const feesMax = searchParams.get('feesMax') ? Number(searchParams.get('feesMax')) : undefined;
     const rankMin = searchParams.get('rankMin') ? Number(searchParams.get('rankMin')) : undefined;
     const rankMax = searchParams.get('rankMax') ? Number(searchParams.get('rankMax')) : undefined;
-    const sortBy = searchParams.get('sortBy') || 'relevance';
+  const sortBy = searchParams.get('sortBy') || 'relevance';
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const supabase = supabaseAdmin;
 
     let queryBuilder = supabase
       .from('colleges')

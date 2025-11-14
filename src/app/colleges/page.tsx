@@ -15,7 +15,6 @@ import IntelligentFilters from '@/components/filters/IntelligentFilters';
 import LoadMoreButton from '@/components/ui/LoadMoreButton';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 import { College } from '@/types';
 
 interface CollegeWithCourseCount extends College {
@@ -211,8 +210,8 @@ const CollegesPage: React.FC = () => {
         ...newFilters
       });
 
-      // Call fresh API
-      const response = await fetch(`/api/fresh/colleges?${params}`);
+      // Call colleges API
+      const response = await fetch(`/api/colleges?${params}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -299,7 +298,7 @@ const CollegesPage: React.FC = () => {
 
     try {
       // Fetch college details with courses
-      const response = await fetch(`/api/fresh/colleges/${college.id}`);
+      const response = await fetch(`/api/colleges/${college.id}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -711,8 +710,6 @@ const CollegesPage: React.FC = () => {
         isLoading={isModalLoading}
           />
 
-            {/* Footer */}
-            <Footer />
           </div>
         </motion.div>
       )}
