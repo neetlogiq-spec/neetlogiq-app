@@ -6,8 +6,18 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { checkAdminAccess, logAdminAction } from '@/lib/admin-middleware';
 
 export async function GET(request: NextRequest) {
+  // Check admin authentication
+  const authCheck = await checkAdminAccess(request);
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: 401 }
+    );
+  }
+
   try {
     const { data: documents, error } = await supabase
       .from('counselling_documents')
@@ -37,6 +47,15 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Check admin authentication
+  const authCheck = await checkAdminAccess(request);
+  if (!authCheck.authorized) {
+    return NextResponse.json(
+      { success: false, error: authCheck.error },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await request.json();
 
@@ -65,6 +84,15 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Log admin action
+    await logAdminAction(
+      authCheck.userId!,
+      'CREATE',
+      'document',
+      data.id,
+      { title: body.title, category: body.category }
+    );
 
     return NextResponse.json({
       success: true,

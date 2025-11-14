@@ -8,7 +8,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Vortex } from '@/components/ui/vortex';
 import { LightVortex } from '@/components/ui/light-vortex';
-import Footer from '@/components/ui/Footer';
 
 const HomePage: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -249,9 +248,6 @@ const HomePage: React.FC = () => {
         </main>
 
       </div>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };

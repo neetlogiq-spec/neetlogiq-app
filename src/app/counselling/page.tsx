@@ -6,7 +6,6 @@ import { Sparkles, ArrowRight, FileText, Calendar, Download, CheckCircle2, Alert
 import { useTheme } from '@/contexts/ThemeContext';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 import Link from 'next/link';
 
 const CounsellingPage: React.FC = () => {
@@ -379,8 +378,6 @@ const CounsellingPage: React.FC = () => {
               </div>
             </motion.section>
 
-            {/* Footer */}
-            <Footer />
           </motion.div>
         )}
       </AnimatePresence>

@@ -7,6 +7,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+import { requireAdmin } from '@/lib/admin-auth';
 import { notificationService } from '@/services/NotificationService';
 import type { AdminNotification } from '@/components/admin/NotificationManagement';
 
@@ -16,12 +18,12 @@ import type { AdminNotification } from '@/components/admin/NotificationManagemen
  */
 export async function GET(request: NextRequest) {
   try {
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth(request);
-    if (!isAdmin) {
+    // Authenticate user and check admin access
+    const authResult = await authenticateAdmin(request);
+    if (!authResult.success) {
       return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 401 }
+        { error: authResult.error },
+        { status: authResult.status }
       );
     }
 
@@ -74,12 +76,12 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth(request);
-    if (!isAdmin) {
+    // Authenticate user and check admin access
+    const authResult = await authenticateAdmin(request);
+    if (!authResult.success) {
       return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 401 }
+        { error: authResult.error },
+        { status: authResult.status }
       );
     }
 
@@ -142,30 +144,59 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * Check if request is from authenticated admin
+ * Authenticate user and verify admin access
  */
-async function checkAdminAuth(request: NextRequest): Promise<boolean> {
+async function authenticateAdmin(request: NextRequest): Promise<{
+  success: boolean;
+  userId?: string;
+  error?: string;
+  status?: number;
+}> {
   try {
-    // Get session token from cookie or header
-    const token = request.cookies.get('session')?.value ||
-                  request.headers.get('authorization')?.replace('Bearer ', '');
-
-    if (!token) {
-      return false;
+    // Get authorization header
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) {
+      return {
+        success: false,
+        error: 'Not authenticated - Authorization header required',
+        status: 401
+      };
     }
 
-    // TODO: Verify token with Firebase Admin SDK
-    // For now, this is a placeholder
-    // In production, verify the token and check admin status
+    // Extract token
+    const token = authHeader.replace('Bearer ', '');
 
-    // Example with Firebase Admin:
-    // const decodedToken = await admin.auth().verifyIdToken(token);
-    // const isAdmin = await checkAdminRole(decodedToken.uid);
-    // return isAdmin;
+    // Verify token with Supabase
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
-    return true; // Placeholder - MUST implement proper auth
+    if (authError || !user) {
+      return {
+        success: false,
+        error: 'Invalid authentication token',
+        status: 401
+      };
+    }
+
+    // Check if user has admin privileges
+    const adminCheck = await requireAdmin(user.id);
+    if (!adminCheck.allowed) {
+      return {
+        success: false,
+        error: adminCheck.error || 'Admin access required',
+        status: 403
+      };
+    }
+
+    return {
+      success: true,
+      userId: user.id
+    };
   } catch (error) {
     console.error('Auth check error:', error);
-    return false;
+    return {
+      success: false,
+      error: 'Authentication failed',
+      status: 500
+    };
   }
 }

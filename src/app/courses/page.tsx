@@ -11,7 +11,6 @@ import CourseCollegesModal from '@/components/modals/CourseCollegesModal';
 import InfiniteScrollTrigger from '@/components/ui/InfiniteScrollTrigger';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
-import Footer from '@/components/ui/Footer';
 
 interface Course {
   id?: string;
@@ -824,8 +823,6 @@ const CoursesPage: React.FC = () => {
         colleges={colleges}
           />
 
-            {/* Footer */}
-            <Footer />
           </div>
         </motion.div>
       )}
