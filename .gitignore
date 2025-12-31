@@ -67,3 +67,7 @@ edge-native-app/data/counselling_data_partitioned.db
 data/sqlite/counselling_data_partitioned.db
 models/fine_tuned_embeddings/model.safetensors
 public/data/cutoffs/all-cutoffs.json
+
+# config files with sensitive data
+config.yaml
+*.config.yaml
