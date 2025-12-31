@@ -71,3 +71,11 @@ public/data/cutoffs/all-cutoffs.json
 # config files with sensitive data
 config.yaml
 *.config.yaml
+
+# large log files
+*.log
+logs/
+orchestrator.log
+
+# large database files (additional)
+data/sqlite/master_data.db
