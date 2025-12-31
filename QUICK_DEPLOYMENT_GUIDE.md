@@ -120,31 +120,7 @@ ORDER BY table_name;
 
 Click **Environment Variables** and add all these:
 
-```bash
-# Database
-NEXT_PUBLIC_SUPABASE_URL=https://dbkpoiatlynvhrcnpvgw.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRia3BvaWF0bHludmhyY25wdmd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwOTI1MjMsImV4cCI6MjA3ODY2ODUyM30.EDruaBGDqtzpxMz5oPflbtl9LXZDqFwNZ17_SNnHc54
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRia3BvaWF0bHludmhyY25wdmd3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzA5MjUyMywiZXhwIjoyMDc4NjY4NTIzfQ.Sczsq6ygE7-lTv8k0uG6pZWOZ0CbgvnWCB0q9PJvNtI
 
-# Razorpay (Test Mode)
-NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_RfEUcdWWMEdZnk
-RAZORPAY_KEY_SECRET=66S4hYnPAir6EkSuWvyXcZQD
-RAZORPAY_WEBHOOK_SECRET=test_webhook_secret_2025
-
-# Firebase (from Step 3)
-NEXT_PUBLIC_FIREBASE_API_KEY=<from Firebase config>
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<from Firebase config>
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=<from Firebase config>
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=<from Firebase config>
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=<from Firebase config>
-NEXT_PUBLIC_FIREBASE_APP_ID=<from Firebase config>
-
-# Cron Secret (generate: openssl rand -base64 32)
-CRON_SECRET=neetlogiq_cron_secret_2025_production
-
-# App URL (update after deployment)
-NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
-```
 
 **IMPORTANT:** Select environment for each variable:
 - ✅ Production
