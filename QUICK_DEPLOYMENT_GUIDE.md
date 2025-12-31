@@ -8,9 +8,6 @@
 
 **Option A: One-Click (Easiest)**
 
-1. Open: https://supabase.com/dashboard/project/dbkpoiatlynvhrcnpvgw/sql/new
-
-2. Copy the ENTIRE file: `supabase/migrations/consolidated_all_migrations.sql`
 
 3. Paste into SQL Editor
 
@@ -28,7 +25,7 @@ npm install -g supabase
 supabase login
 
 # Link to project
-supabase link --project-ref dbkpoiatlynvhrcnpvgw
+
 
 # Push all migrations
 supabase db push
@@ -212,7 +209,7 @@ Your platform is now deployed and functional!
 ### Monitoring:
 
 - **Vercel Logs:** https://vercel.com/dashboard
-- **Supabase Logs:** https://supabase.com/dashboard/project/dbkpoiatlynvhrcnpvgw/logs
+
 - **Razorpay Dashboard:** https://dashboard.razorpay.com/
 
 ---
