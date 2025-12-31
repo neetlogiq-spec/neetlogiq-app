@@ -34,6 +34,7 @@ interface CollegeSelectorProps {
   selectionMethod?: 'dropdown' | 'search';
   selectedStream?: string;
   selectedManagement?: string;
+  stateOptions?: { value: string; label: string }[];
 }
 
 const CollegeSelector: React.FC<CollegeSelectorProps> = ({
@@ -44,7 +45,8 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
   isDarkMode,
   selectionMethod = 'search',
   selectedStream = 'all',
-  selectedManagement = 'all'
+  selectedManagement = 'all',
+  stateOptions: propStateOptions
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,34 +65,57 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
     setLocalSelectionMethod(selectionMethod);
   }, [selectionMethod]);
 
-  // Filter options
-  const stateOptions = [
-    { value: 'all', label: 'All States' },
-    { value: 'delhi', label: 'Delhi' },
-    { value: 'maharashtra', label: 'Maharashtra' },
-    { value: 'karnataka', label: 'Karnataka' },
-    { value: 'tamil-nadu', label: 'Tamil Nadu' },
-    { value: 'kerala', label: 'Kerala' },
-    { value: 'west-bengal', label: 'West Bengal' },
-    { value: 'gujarat', label: 'Gujarat' },
-    { value: 'rajasthan', label: 'Rajasthan' },
-    { value: 'uttar-pradesh', label: 'Uttar Pradesh' },
-    { value: 'andhra-pradesh', label: 'Andhra Pradesh' },
-    { value: 'telangana', label: 'Telangana' },
-    { value: 'punjab', label: 'Punjab' },
-    { value: 'haryana', label: 'Haryana' }
-  ];
+  // Use prop state options if provided, otherwise use default fallback
+  const stateOptions = propStateOptions && propStateOptions.length > 0 
+    ? [{ value: 'all', label: 'All States' }, ...propStateOptions]
+    : [{ value: 'all', label: 'All States' }];
 
-  // Function to get filtered colleges based on state, stream, and management
+  // State for dropdown colleges (fetched from API)
+  const [dropdownColleges, setDropdownColleges] = useState<College[]>([]);
+  const [isLoadingDropdown, setIsLoadingDropdown] = useState(false);
+
+  // Fetch colleges for dropdown mode when filters change
+  useEffect(() => {
+    const fetchDropdownColleges = async () => {
+      if (localSelectionMethod !== 'dropdown') return;
+      
+      setIsLoadingDropdown(true);
+      try {
+        const params = new URLSearchParams({
+          limit: '50'
+        });
+        
+        if (selectedState && selectedState !== 'all') {
+          params.append('state', selectedState);
+        }
+        if (selectedStream && selectedStream !== 'all') {
+          params.append('stream', selectedStream);
+        }
+        if (selectedManagement && selectedManagement !== 'all') {
+          params.append('management', selectedManagement);
+        }
+        
+        const response = await fetch(`/api/compare/colleges?${params}`);
+        const data = await response.json();
+        
+        if (data.success && data.colleges) {
+          setDropdownColleges(data.colleges);
+        }
+      } catch (error) {
+        console.error('Error fetching dropdown colleges:', error);
+      } finally {
+        setIsLoadingDropdown(false);
+      }
+    };
+    
+    fetchDropdownColleges();
+  }, [localSelectionMethod, selectedState, selectedStream, selectedManagement]);
+
+  // Function to get filtered colleges for dropdown
   const getFilteredColleges = (state: string) => {
-    return mockColleges.filter(college => {
-      const stateMatch = state === 'all' || college.state.toLowerCase().replace(/\s+/g, '-') === state;
-      const streamMatch = selectedStream === 'all' || college.stream === selectedStream;
-      const managementMatch = selectedManagement === 'all' || 
-        (selectedManagement === 'government' && college.management === 'Government') ||
-        (selectedManagement === 'private' && college.management === 'Private') ||
-        (selectedManagement === 'deemed' && college.management === 'Deemed');
-      return stateMatch && streamMatch && managementMatch;
+    return dropdownColleges.filter(college => {
+      const stateMatch = state === 'all' || college.state?.toLowerCase().includes(state.toLowerCase().replace(/-/g, ' '));
+      return stateMatch;
     });
   };
 
@@ -98,7 +123,7 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
   const getPopularColleges = (state: string) => {
     const filteredColleges = getFilteredColleges(state);
     return filteredColleges
-      .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+      .sort((a, b) => (b.totalSeats || 0) - (a.totalSeats || 0))
       .slice(0, 3);
   };
 
@@ -190,16 +215,34 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
     }
 
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      const filtered = mockColleges.filter(college =>
-        college.name.toLowerCase().includes(term.toLowerCase()) ||
-        college.city.toLowerCase().includes(term.toLowerCase()) ||
-        college.state.toLowerCase().includes(term.toLowerCase())
-      );
-      setSuggestions(filtered);
+    try {
+      // Call real API
+      const params = new URLSearchParams({
+        search: term,
+        limit: '20'
+      });
+      
+      if (selectedStream && selectedStream !== 'all') {
+        params.append('stream', selectedStream);
+      }
+      if (selectedManagement && selectedManagement !== 'all') {
+        params.append('management', selectedManagement);
+      }
+      
+      const response = await fetch(`/api/compare/colleges?${params}`);
+      const data = await response.json();
+      
+      if (data.success && data.colleges) {
+        setSuggestions(data.colleges);
+      } else {
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error('Error searching colleges:', error);
+      setSuggestions([]);
+    } finally {
       setIsLoading(false);
-    }, 300);
+    }
   };
 
   const handleSelect = (college: College) => {
@@ -288,10 +331,10 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
       <div className={`relative rounded-2xl p-6 transition-all duration-300 group ${
         selectedCollege
           ? isDarkMode
-            ? 'bg-white/10 border-white/20 shadow-lg backdrop-blur-md'
+            ? 'bg-white/10 border-white/20 shadow-2xl backdrop-blur-md'
             : 'bg-white/80 border-gray-200/60 shadow-lg backdrop-blur-md'
           : isDarkMode
-            ? 'bg-white/5 border-2 border-dashed border-white/20 hover:border-white/40 hover:bg-white/10 backdrop-blur-md'
+            ? 'bg-white/5 border-2 border-dashed border-white/10 hover:border-white/20 hover:bg-white/10 backdrop-blur-sm'
             : 'bg-gray-50/50 border-2 border-dashed border-gray-200/50 hover:border-gray-400/70 hover:bg-gray-100/80 backdrop-blur-md'
       }`}>
         
@@ -344,8 +387,8 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
             </div>
 
             {/* Section 1: College Information */}
-            <div className={`p-3 rounded-xl backdrop-blur-sm ${
-              isDarkMode ? 'bg-white/10 border border-white/20' : 'bg-white/60 border border-gray-200/50'
+            <div className={`p-3 rounded-xl ${
+              isDarkMode ? 'bg-white/10 border border-white/20 backdrop-blur-md' : 'bg-white/60 border border-gray-200/50 backdrop-blur-sm'
             }`}>
               <h4 className={`text-sm font-semibold mb-2 ${
                 isDarkMode ? 'text-blue-400' : 'text-blue-600'
@@ -353,19 +396,19 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
                 College Information
               </h4>
               <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Type:</span>
-                  <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCollege.type}</span>
+                <div className="flex justify-between items-center py-1">
+                  <span className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>Type:</span>
+                  <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCollege.type}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Affiliated University:</span>
-                  <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className="flex justify-between items-center py-1">
+                  <span className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>Affiliated University:</span>
+                  <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     {selectedCollege.affiliatedUniversity || 'N/A'}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Management:</span>
-                  <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className="flex justify-between items-center py-1">
+                  <span className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>Management:</span>
+                  <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     {selectedCollege.management || 'N/A'}
                   </span>
                 </div>
@@ -373,8 +416,8 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
             </div>
 
             {/* Section 2: Courses and Seat Data */}
-            <div className={`p-3 rounded-xl backdrop-blur-sm ${
-              isDarkMode ? 'bg-white/10 border border-white/20' : 'bg-white/60 border border-gray-200/50'
+            <div className={`p-3 rounded-xl ${
+              isDarkMode ? 'bg-white/10 border border-white/20 backdrop-blur-md' : 'bg-white/60 border border-gray-200/50 backdrop-blur-sm'
             }`}>
               <h4 className={`text-sm font-semibold mb-2 ${
                 isDarkMode ? 'text-green-400' : 'text-green-600'
@@ -382,17 +425,17 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
                 Courses & Seats
               </h4>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Total Courses:</span>
-                  <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCollege.courses}</span>
+                <div className="flex justify-between items-center py-1 border-b border-white/5 last:border-0">
+                  <span className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>Total Courses:</span>
+                  <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCollege.courses}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Medical Courses:</span>
-                  <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCollege.medicalCourses}</span>
+                <div className="flex justify-between items-center py-1 border-b border-white/5 last:border-0">
+                  <span className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>Medical Courses:</span>
+                  <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCollege.medicalCourses}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Dental Courses:</span>
-                  <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCollege.dentalCourses}</span>
+                <div className="flex justify-between items-center py-1 border-b border-white/5 last:border-0">
+                  <span className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>Dental Courses:</span>
+                  <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCollege.dentalCourses}</span>
                 </div>
                 
                 {/* Course Selection Dropdown */}
@@ -402,7 +445,7 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
                     onChange={(e) => setSelectedCourseForSeats(e.target.value)}
                     className={`w-full p-2 rounded-lg text-sm ${
                       isDarkMode 
-                        ? 'bg-gray-700/50 border-gray-600 text-white' 
+                        ? 'bg-white/10 border-white/20 text-white/90 hover:bg-white/15 backdrop-blur-md' 
                         : 'bg-white border-gray-300 text-gray-900'
                     } border`}
                   >
@@ -426,10 +469,10 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
                         </div>
                         <div className="space-y-1 text-xs">
                           {selectedCollege.availableCourses?.map((course, index) => (
-                            <div key={index} className="flex justify-between">
-                              <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{course.name}:</span>
+                            <div key={index} className="flex justify-between items-center py-1 border-b border-white/5 last:border-0">
+                              <span className={`${isDarkMode ? 'text-slate-300/90' : 'text-gray-600'}`}>{course.name}:</span>
                               <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                {course.seats} seats
+                                {course.seats} <span className="text-[10px] font-normal opacity-80 uppercase">seats</span>
                               </span>
                             </div>
                           ))}
@@ -440,7 +483,7 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
                         <div className="text-xs font-medium text-green-600 dark:text-green-400 mb-1">
                           {selectedCourseForSeats} Seats
                         </div>
-                        <div className="text-sm font-semibold">
+                        <div className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           {getSelectedCourseSeats()?.seats || 0} seats available
                         </div>
                       </div>
@@ -451,10 +494,10 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
             </div>
 
             {/* Section 3: Cutoffs */}
-            <div className={`p-3 rounded-xl backdrop-blur-sm ${
-              isDarkMode ? 'bg-white/10 border border-white/20' : 'bg-white/60 border border-gray-200/50'
+            <div className={`p-3 rounded-xl border ${
+              isDarkMode ? 'bg-white/10 border-white/20 backdrop-blur-md' : 'bg-white/60 border-gray-200/50 backdrop-blur-sm'
             }`}>
-              <h4 className={`text-sm font-semibold mb-2 ${
+              <h4 className={`text-sm font-semibold mb-3 ${
                 isDarkMode ? 'text-purple-400' : 'text-purple-600'
               }`}>
                 Cutoffs
@@ -463,9 +506,9 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
                 <select 
                   value={selectedCourse}
                   onChange={(e) => handleCourseChange(e.target.value)}
-                  className={`w-full p-2 rounded-lg text-sm ${
+                  className={`w-full p-2 rounded-lg text-sm transition-all duration-300 ${
                     isDarkMode 
-                      ? 'bg-gray-700/50 border-gray-600 text-white' 
+                      ? 'bg-white/10 border-white/20 text-white/90 hover:bg-white/15 backdrop-blur-md' 
                       : 'bg-white border-gray-300 text-gray-900'
                   } border`}
                 >
@@ -478,9 +521,9 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
                 <select 
                   value={selectedYear}
                   onChange={(e) => handleYearChange(e.target.value)}
-                  className={`w-full p-2 rounded-lg text-sm ${
+                  className={`w-full p-2 rounded-lg text-sm transition-all duration-300 ${
                     isDarkMode 
-                      ? 'bg-gray-700/50 border-gray-600 text-white' 
+                      ? 'bg-white/10 border-white/20 text-white/90 hover:bg-white/15 backdrop-blur-md' 
                       : 'bg-white border-gray-300 text-gray-900'
                   } border`}
                 >
@@ -499,26 +542,26 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
                       {selectedCourse} - {selectedYear} Cutoff Data
                     </div>
                     <div className="space-y-1 text-xs">
-                      <div className="flex justify-between">
-                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Opening Rank:</span>
+                      <div className="flex justify-between items-center py-1">
+                        <span className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>Opening Rank:</span>
                         <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           {cutoffData.openingRank}
                         </span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Closing Rank:</span>
+                      <div className="flex justify-between items-center py-1">
+                        <span className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>Closing Rank:</span>
                         <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           {cutoffData.closingRank}
                         </span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Total Seats:</span>
+                      <div className="flex justify-between items-center py-1">
+                        <span className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>Total Seats:</span>
                         <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           {cutoffData.totalSeats}
                         </span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Category:</span>
+                      <div className="flex justify-between items-center py-1">
+                        <span className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>Category:</span>
                         <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           {cutoffData.category}
                         </span>
@@ -606,8 +649,8 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
               onClick={() => setIsOpen(false)}
             />
             <motion.div
-              className={`relative w-full max-w-md max-h-[80vh] rounded-2xl backdrop-blur-md ${
-                isDarkMode ? 'bg-gray-800/90 border border-gray-700/50' : 'bg-white/90 border border-gray-200/50'
+              className={`relative w-full max-w-md max-h-[80vh] rounded-2xl ${
+                isDarkMode ? 'bg-slate-950/95 border border-white/10' : 'bg-white/90 border border-gray-200/50 backdrop-blur-xl'
               } shadow-2xl`}
               initial={{ opacity: 0, scale: 0.8, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -706,9 +749,9 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
                       <select 
                         value={selectedState}
                         onChange={(e) => setSelectedState(e.target.value)}
-                        className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${
+                        className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all duration-300 ${
                           isDarkMode 
-                            ? 'bg-white/90 backdrop-blur-sm text-gray-900' 
+                            ? 'bg-white/10 border border-white/20 text-white/90 hover:bg-white/15 backdrop-blur-md' 
                             : 'bg-white/95 backdrop-blur-sm text-gray-900 shadow-sm border border-gray-200'
                         }`}
                       >
@@ -728,9 +771,9 @@ const CollegeSelector: React.FC<CollegeSelectorProps> = ({
                           const college = getFilteredColleges(selectedState).find(c => c.id === e.target.value);
                           if (college) handleSelect(college);
                         }}
-                        className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${
+                        className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all duration-300 ${
                           isDarkMode 
-                            ? 'bg-white/90 backdrop-blur-sm text-gray-900' 
+                            ? 'bg-white/5 border border-white/10 text-white/90 hover:bg-white/10' 
                             : 'bg-white/95 backdrop-blur-sm text-gray-900 shadow-sm border border-gray-200'
                         }`}
                       >

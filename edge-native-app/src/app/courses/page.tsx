@@ -1,13 +1,19 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
 import { motion } from 'framer-motion';
 import { BookOpen, GraduationCap, Search } from 'lucide-react';
+=======
+import { motion, AnimatePresence } from 'framer-motion';
+import { GraduationCap, Search, Sparkles, ArrowRight, BookOpen } from 'lucide-react';
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { UnifiedSearchBar } from '@/components/search/UnifiedSearchBar';
 import CourseCollegesModal from '@/components/modals/CourseCollegesModal';
 import InfiniteScrollTrigger from '@/components/ui/InfiniteScrollTrigger';
+import IntelligentFilters from '@/components/filters/IntelligentFilters';
 import { Vortex } from '@/components/ui/vortex';
 import LightVortex from '@/components/ui/LightVortex';
 import Footer from '@/components/ui/Footer';
@@ -41,8 +47,17 @@ const CoursesPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   // Filter state
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
   const [selectedStream, setSelectedStream] = useState('all');
   const [selectedBranch, setSelectedBranch] = useState('all');
+=======
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, any>>({});
+  const [selectedStream, setSelectedStream] = useState<string | string[]>('all');
+  const [selectedBranch, setSelectedBranch] = useState('all');
+  
+  // Use stream-aware data service
+  const { courses: streamCourses, colleges: streamColleges, currentStream, streamConfig } = useStreamDataService();
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
   
   // Data state
   const [courses, setCourses] = useState<Course[]>([]);
@@ -50,10 +65,14 @@ const CoursesPage: React.FC = () => {
   const [colleges, setColleges] = useState<College[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [searchActive, setSearchActive] = useState(false); // Track when search results are displayed
   
   // Modal state
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isCollegesModalOpen, setIsCollegesModalOpen] = useState(false);
+  const [isLoadingColleges, setIsLoadingColleges] = useState(false);
+  const [collegesCache, setCollegesCache] = useState<Record<string, College[]>>({});
+  const [prefetchingIds, setPrefetchingIds] = useState<Set<string>>(new Set());
   
   // Pagination state
   const [pagination, setPagination] = useState({
@@ -178,8 +197,18 @@ const CoursesPage: React.FC = () => {
       // Build query parameters
       const params = new URLSearchParams({
         page: newPage.toString(),
-        limit: '24',
-        ...newFilters
+        limit: '24'
+      });
+
+      // Add filters correctly
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value) {
+          if (Array.isArray(value)) {
+            params.append(key, value.join(','));
+          } else {
+            params.append(key, value.toString());
+          }
+        }
       });
 
       // Call unified API
@@ -228,6 +257,7 @@ const CoursesPage: React.FC = () => {
     }
 
     const nextPage = pagination.page + 1;
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
     loadCourses({}, nextPage, true);
   }, [isLoading, isLoadingMore, pagination.hasNext, pagination.page, loadCourses]);
 
@@ -246,33 +276,137 @@ const CoursesPage: React.FC = () => {
   const handleBranchChange = (branch: string) => {
     setSelectedBranch(branch);
     const filters: any = { branch: branch === 'all' ? null : branch };
+=======
+    const currentFilters: any = {};
+    
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
     if (selectedStream !== 'all') {
-      filters.stream = selectedStream;
+      currentFilters.streams = Array.isArray(selectedStream) ? selectedStream : [selectedStream];
     }
+    
+    if (selectedBranch !== 'all') {
+      currentFilters.branches = [selectedBranch];
+    }
+    
+    loadCourses(currentFilters, nextPage, true);
+  }, [isLoading, isLoadingMore, pagination.hasNext, pagination.page, selectedStream, selectedBranch, loadCourses]);
+  // Handle stream change
+  const handleStreamChange = (streams: string[] | undefined) => {
+    const streamValue = streams && streams.length > 0 ? streams : 'all';
+    setSelectedStream(streamValue);
+    
+    const filters: any = { 
+      streams: streams,
+      branches: selectedBranch === 'all' ? null : [selectedBranch] 
+    };
     loadCourses(filters, 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
+=======
+  // Handle generalized filter change
+  const handleFilterChange = (newFilters: Record<string, any>) => {
+    // Remove 'all' values from filters to prevent "ghost" active filter indicators
+    const cleanedFilters: Record<string, any> = {};
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value && value !== 'all') {
+        cleanedFilters[key] = value;
+      }
+    });
+    
+    setAppliedFilters(cleanedFilters);
+    const branch = newFilters.branch || 'all';
+    const courseType = newFilters.courseType || 'all';
+    setSelectedBranch(branch);
+    
+    const filters: any = { 
+      branches: branch === 'all' ? null : [branch],
+      courseType: courseType === 'all' ? null : courseType,
+      streams: Array.isArray(selectedStream) ? selectedStream : (selectedStream === 'all' ? null : [selectedStream])
+    };
+    loadCourses(filters, 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleClearFilters = () => {
+    setAppliedFilters({});
+    setSelectedStream('all');
+    setSelectedBranch('all');
+    loadCourses({}, 1);
+  };
+  // Pre-fetch colleges on hover for instant loading
+  const prefetchColleges = async (courseId: string) => {
+    if (collegesCache[courseId] || prefetchingIds.has(courseId)) return;
+    
+    setPrefetchingIds(prev => new Set(prev).add(courseId));
+    try {
+      const response = await fetch(`/api/courses/${courseId}/colleges`);
+      if (response.ok) {
+        const data = await response.json();
+        setCollegesCache(prev => ({
+          ...prev,
+          [courseId]: data.data || []
+        }));
+      }
+    } catch (error) {
+      console.error('Error prefetching colleges:', error);
+    } finally {
+      setPrefetchingIds(prev => {
+        const next = new Set(prev);
+        next.delete(courseId);
+        return next;
+      });
+    }
+  };
+
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
   // Handle opening colleges modal
   const handleViewColleges = async (course: Course) => {
+    const courseId = course.id || '';
     setSelectedCourse(course);
     setIsCollegesModalOpen(true);
     
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
     // Fetch colleges for this course
     try {
       const response = await fetch(`/api/fresh/courses/${course.id}/colleges`);
+=======
+    // Check cache first
+    if (collegesCache[courseId]) {
+      setColleges(collegesCache[courseId]);
+      setIsLoadingColleges(false);
+      return;
+    }
+
+    setIsLoadingColleges(true);
+    setColleges([]); // Clear previous data
+    
+    // Fetch colleges for this course (updated to use Supabase endpoint)
+    try {
+      const response = await fetch(`/api/courses/${courseId}/colleges`);
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
       if (response.ok) {
         const data = await response.json();
-        setColleges(data.data || []);
+        const results = data.data || [];
+        setColleges(results);
+        // Cache it
+        setCollegesCache(prev => ({
+          ...prev,
+          [courseId]: results
+        }));
       } else {
-        console.error('Failed to fetch colleges for course:', course.id);
+        console.error('Failed to fetch colleges for course:', courseId);
         setColleges([]);
       }
     } catch (error) {
       console.error('Error fetching colleges:', error);
       setColleges([]);
+    } finally {
+      setIsLoadingColleges(false);
     }
   };
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
 
   // Handle search results
   const handleSearchResults = async (searchResult: any) => {
@@ -280,16 +414,32 @@ const CoursesPage: React.FC = () => {
       const searchCourses = searchResult.results.map((result: any) => ({
         course_name: result.course_name,
         stream: result.stream,
+=======
+  // Handle search results - stabilized with useCallback
+  const handleSearchResults = useCallback(async (results: any[]) => {
+    if (results && results.length > 0) {
+      setSearchActive(true); // Mark search as active to prevent useEffect reset
+      const searchCourses = results.map((result: any) => ({
+        id: result.id || (result.course_name ? result.course_name.toLowerCase().replace(/\s+/g, '-') : Math.random().toString()),
+        course_name: result.course_name || result.name,
+        stream: result.stream || 'MEDICAL',
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
         branch: result.branch || '',
-        level: result.level,
-        duration: result.duration || 'N/A',
+        level: result.level || (result.stream === 'UG' ? 'Undergraduate' : 'Postgraduate'),
+        duration: result.duration || result.course_duration || '3 years',
         total_seats: result.total_seats || 0,
         total_colleges: result.total_colleges || 0,
         college_names: result.college_names || '',
         colleges: result.colleges || []
       }));
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
 
       const validSearchCourses = searchCourses.filter((course: any) => course.total_seats > 0);
+=======
+      
+      // Filter out courses with no seats if needed, or just show all
+      const validSearchCourses = searchCourses.filter((course: any) => (course.total_seats || 0) >= 0);
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
       setCourses(validSearchCourses);
       setFilteredCourses(validSearchCourses);
       setPagination({
@@ -299,9 +449,12 @@ const CoursesPage: React.FC = () => {
         totalItems: validSearchCourses.length,
         hasNext: false
       });
-    } else if (searchResult && searchResult.searchType === 'none') {
+    } else {
+      // If no results or cleared, reset search and reload initial courses
+      setSearchActive(false);
       loadCourses({}, 1);
     }
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
   };
 
   // Initial load
@@ -311,29 +464,109 @@ const CoursesPage: React.FC = () => {
 
   const getStreamIcon = (stream: string) => {
     switch (stream) {
-      case 'MEDICAL':
-        return BookOpen;
-      case 'DENTAL':
-        return BookOpen;
-      case 'DNB':
-        return BookOpen;
-      default:
-        return BookOpen;
+=======
+  }, [loadCourses]);
+  
+  // Initial load - only run once on mount, don't reset when search is active
+  useEffect(() => {
+    if (!searchActive) {
+      loadCourses();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array for initial load only
+  // Get emoji icon based on branch/course type (more granular than stream)
+  const getBranchEmoji = (courseName: string): string => {
+    const name = (courseName || '').toUpperCase();
+    
+    // UG courses
+    if (name === 'MBBS' || name === 'BDS') {
+      return '🎓'; // Graduation cap for UG
+    }
+    
+    // Super Specialty - DM, MCH
+    if (name.includes('DM ') || name.startsWith('DM') || name.includes('MCH') || name.includes('M.CH')) {
+      return '⭐'; // Star for Super Specialty
+    }
+    
+    // DNB courses
+    if (name.includes('DNB')) {
+      if (name.includes('DIPLOMA') || name.includes('DNB-')) {
+        return '📋'; // Clipboard for DNB-Diploma
+      }
+      return '🏥'; // Hospital for DNB
+    }
+    
+    // Dental PG - MDS
+    if (name.includes('MDS')) {
+      return '🦷'; // Tooth for Dental PG
+    }
+    
+    // Medical PG - MD, MS
+    if (name.includes('MD') || name.includes('MS') || name.includes('MPH')) {
+      return '🩺'; // Stethoscope for Medical PG
+    }
+    
+    // Diploma courses
+    if (name.includes('DIPLOMA') || name.includes('PG DIPLOMA')) {
+      return '📜'; // Scroll for Diploma
+    }
+    
+    // Default
+    return '📚'; // Books for unknown
   };
 
+  // Legacy function for backward compatibility (maps to stream-based icon)
+  const getStreamEmoji = (stream: string): string => {
+    switch (stream?.toUpperCase()) {
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
+      case 'MEDICAL':
+        return '🩺'; // Stethoscope
+      case 'DENTAL':
+        return '🦷'; // Tooth
+      case 'DNB':
+        return '🏥'; // Hospital
+      case 'medical':
+        return '🩺';
+      default:
+        return '📚'; // Books for unknown
+    }
+  };
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
+
+=======
+  
+  // Get icon color class based on stream (for background)
+  const getStreamIconColor = (stream: string) => {
+    switch (stream?.toUpperCase()) {
+      case 'MEDICAL':
+        return 'text-blue-500';
+      case 'DENTAL':
+        return 'text-emerald-500';
+      case 'DNB':
+        return 'text-purple-500';
+      case 'medical':
+        return 'text-blue-500';
+      default:
+        return 'text-gray-500';
+    }
+  };
+  
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
   const getStreamColor = (stream: string) => {
-    switch (stream) {
+    switch (stream?.toUpperCase()) {
       case 'MEDICAL':
         return 'from-blue-500 to-blue-600';
       case 'DENTAL':
-        return 'from-green-500 to-green-600';
+        return 'from-emerald-500 to-emerald-600';
       case 'DNB':
         return 'from-purple-500 to-purple-600';
+      case 'medical':
+        return 'from-blue-500 to-blue-600';
       default:
         return 'from-gray-500 to-gray-600';
     }
   };
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
 
   const streams = [
     { value: 'all', label: 'All Streams' },
@@ -350,6 +583,45 @@ const CoursesPage: React.FC = () => {
     { value: 'SS', label: 'SS (Super Specialty)' }
   ];
 
+=======
+  const filterConfig = {
+    available: [
+      {
+        key: 'branch',
+        label: 'Branch',
+        type: 'select' as const,
+        options: [
+          { value: 'all', label: 'All Branches' },
+          { value: 'UG', label: 'UG' },
+          { value: 'Dental PG', label: 'Dental PG' },
+          { value: 'Medical PG (MD/MS/MD&MS)', label: 'Medical PG (MD/MS/MD&MS)' },
+          { value: 'Diploma', label: 'Diploma' },
+          { value: 'DNB', label: 'DNB' },
+          { value: 'DNB- Diploma', label: 'DNB- Diploma' },
+          { value: 'SS (Super Specialty)', label: 'SS (Super Specialty)' },
+        ]
+      },
+      {
+        key: 'courseType',
+        label: 'Course Type',
+        type: 'select' as const,
+        options: [
+          { value: 'all', label: 'All Course Types' },
+          { value: 'MBBS', label: 'MBBS' },
+          { value: 'BDS', label: 'BDS' },
+          { value: 'MD', label: 'MD' },
+          { value: 'MS', label: 'MS' },
+          { value: 'MDS', label: 'MDS' },
+          { value: 'DM', label: 'DM' },
+          { value: 'MCH', label: 'MCH' },
+          { value: 'DNB', label: 'DNB' },
+          { value: 'DIPLOMA', label: 'Diploma' },
+          { value: 'MPH', label: 'MPH' },
+        ]
+      }
+    ]
+  };
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
   return (
     <div className="min-h-screen relative overflow-hidden transition-all duration-500">
         {/* Dynamic Background */}
@@ -419,13 +691,15 @@ const CoursesPage: React.FC = () => {
 
             {/* Advanced Search Bar */}
             <motion.div
-              className="max-w-3xl mx-auto mb-16"
+              className="max-w-3xl mx-auto mb-6"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 15 }}
               transition={{ duration: 0.2, delay: 0.2 }}
             >
               <UnifiedSearchBar
+                type="courses"
                 placeholder="Search medical courses with AI-powered intelligence..."
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
                 onSearchResults={handleSearchResults}
                 debounceMs={300}
                 showAIInsight={true}
@@ -433,12 +707,19 @@ const CoursesPage: React.FC = () => {
             </motion.div>
 
             {/* Stream and Branch Filters */}
+=======
+                onResults={handleSearchResults}
+              />
+            </motion.div>
+            {/* Intelligent Filters */}
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
             <motion.div
-              className="flex flex-col gap-8 mb-16"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 15 }}
               transition={{ duration: 0.2, delay: 0.25 }}
+              className="mb-6"
             >
+<<<<<<< Updated upstream:edge-native-app/src/app/courses/page.tsx
               {/* Stream Filters */}
               <div className="text-center">
                 <h3 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Filter by Stream</h3>
@@ -524,12 +805,23 @@ const CoursesPage: React.FC = () => {
                   ))}
                 </div>
               </div>
+=======
+              <IntelligentFilters
+                filters={filterConfig}
+                appliedFilters={appliedFilters}
+                onFilterChange={handleFilterChange}
+                onClearFilters={handleClearFilters}
+                type="courses"
+                streamFilter={selectedStream}
+                onStreamChange={handleStreamChange}
+              />
+>>>>>>> Stashed changes:src/components/courses/CoursesClient.tsx
             </motion.div>
 
             {/* Search Status */}
             {filteredCourses.length !== courses.length && (
               <motion.div
-                className="text-center mb-8"
+                className="text-center mb-4"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
@@ -583,7 +875,7 @@ const CoursesPage: React.FC = () => {
                 </>
               ) : filteredCourses.length > 0 ? (
                 filteredCourses.map((course, index) => {
-                  const IconComponent = getStreamIcon(course.stream || '');
+                  const branchEmoji = getBranchEmoji(course.course_name || course.name || '');
                   
                   return (
                     <motion.div
@@ -598,8 +890,8 @@ const CoursesPage: React.FC = () => {
                       }`}
                     >
                       <div className="text-center mb-4">
-                        <div className={`w-16 h-16 bg-gradient-to-r ${getStreamColor(course.stream || '')} rounded-2xl flex items-center justify-center mx-auto mb-3`}>
-                          <IconComponent className="w-8 h-8 text-white" />
+                        <div className="flex items-center justify-center mx-auto mb-3">
+                          <span className="text-5xl" role="img" aria-label={course.course_name || 'course'}>{branchEmoji}</span>
                         </div>
                         <h3 className={`text-xl font-semibold mb-2 ${
                           isDarkMode ? 'text-white' : 'text-gray-900'
@@ -632,7 +924,12 @@ const CoursesPage: React.FC = () => {
                       <div className="mb-4">
                         <button
                           onClick={() => handleViewColleges(course)}
-                          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-3 rounded-lg text-center font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center justify-center"
+                          onMouseEnter={() => course.id && prefetchColleges(course.id)}
+                          className={`w-full px-4 py-3 rounded-xl text-center font-medium transition-all duration-300 flex items-center justify-center ${
+                            isDarkMode 
+                              ? 'bg-white/20 text-white border border-white/30 shadow-sm hover:bg-white/30' 
+                              : 'bg-gray-900 text-white border border-gray-800 shadow-sm hover:bg-gray-800'
+                          }`}
                         >
                           <GraduationCap className="w-4 h-4 mr-2" />
                           <span>View Colleges ({course.total_colleges})</span>
@@ -714,10 +1011,11 @@ const CoursesPage: React.FC = () => {
 
         {/* Course Colleges Modal */}
           <CourseCollegesModal
-        isOpen={isCollegesModalOpen}
-        onClose={() => setIsCollegesModalOpen(false)}
+            isOpen={isCollegesModalOpen}
+            onClose={() => setIsCollegesModalOpen(false)}
             course={selectedCourse}
-        colleges={colleges}
+            colleges={colleges}
+            isLoading={isLoadingColleges}
           />
 
       {/* Footer */}

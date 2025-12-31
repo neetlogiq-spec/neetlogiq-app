@@ -4,10 +4,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+<<<<<<< Updated upstream
 import { supabaseAdmin } from '@/lib/supabase';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+=======
+import { getSupabaseDataService } from '@/services/supabase-data-service';
+>>>>>>> Stashed changes
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,6 +20,7 @@ export async function GET(request: NextRequest) {
     const limit = Number(searchParams.get('limit')) || 50;
     const offset = Number(searchParams.get('offset')) || 0;
 
+<<<<<<< Updated upstream
     // Parse filters
     const states = searchParams.get('states')?.split(',').filter(Boolean);
     const managementTypes = searchParams.get('management')?.split(',').filter(Boolean);
@@ -124,18 +129,33 @@ export async function GET(request: NextRequest) {
 
     const totalPages = Math.ceil((count || 0) / limit);
     const currentPage = Math.floor(offset / limit) + 1;
+=======
+    // Parse filters from query params
+    const filters = {
+      query: query || undefined,
+      states: searchParams.get('states')?.split(',').filter(Boolean),
+      stateIds: searchParams.get('stateIds')?.split(',').filter(Boolean),
+      managementTypes: searchParams.get('management')?.split(',').filter(Boolean) as any,
+      courseIds: searchParams.get('courseIds')?.split(',').filter(Boolean),
+      limit,
+      offset
+    };
+
+    const service = getSupabaseDataService();
+    const result = await service.searchColleges(filters);
+>>>>>>> Stashed changes
 
     return NextResponse.json({
       success: true,
-      data: data || [],
+      data: result.data || [],
       pagination: {
-        total: count || 0,
-        page: currentPage,
-        limit,
-        totalPages,
-        hasMore: (offset + limit) < (count || 0),
-        hasNext: (offset + limit) < (count || 0),
-        has_next: (offset + limit) < (count || 0)
+        total: result.count || 0,
+        page: result.page,
+        limit: result.pageSize,
+        totalPages: result.totalPages,
+        hasMore: (offset + limit) < (result.count || 0),
+        hasNext: (offset + limit) < (result.count || 0),
+        has_next: (offset + limit) < (result.count || 0)
       }
     });
 

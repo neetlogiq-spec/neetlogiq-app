@@ -18,7 +18,18 @@ import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import userPreferences from '@/services/userPreferences';
+<<<<<<< Updated upstream
 import { DashboardStats, UserPreferences } from '@/types/user';
+=======
+import QuickStats from '@/components/dashboard/QuickStats';
+import QuickActions from '@/components/dashboard/QuickActions';
+import RecentActivityWidget from '@/components/dashboard/RecentActivityWidget';
+import RecommendationsWidget from '@/components/dashboard/RecommendationsWidget';
+import UrgentActionsWidget from '@/components/dashboard/UrgentActionsWidget';
+import HeroSection from '@/components/dashboard/HeroSection';
+import { PremiumGate } from '@/components/premium/PremiumGate';
+import { FEATURE_KEYS } from '@/config/premium';
+>>>>>>> Stashed changes
 
 // Dashboard widget components
 import QuickStatsWidget from '@/components/dashboard/QuickStatsWidget';
@@ -266,9 +277,21 @@ export default function DashboardPage() {
               </div>
             </div>
 
+<<<<<<< Updated upstream
             {/* Full Width Sections */}
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <ProgressTracker />
+=======
+            {/* Right Column (1/3 width) */}
+            <div className="space-y-8">
+              
+              {/* Recommendations / Setup */}
+              <motion.div variants={itemVariants}>
+                <PremiumGate featureKey={FEATURE_KEYS.SMART_PREDICTIONS}>
+                  <RecommendationsWidget hasPreferences={hasPreferences} />
+                </PremiumGate>
+              </motion.div>
+>>>>>>> Stashed changes
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">

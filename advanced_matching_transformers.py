@@ -20,13 +20,13 @@ logger = logging.getLogger(__name__)
 class TransformerMatcher:
     """Advanced matching using transformer models for semantic similarity"""
 
-    def __init__(self, model_name: str = 'all-MiniLM-L6-v2', cache_dir: str = 'models/transformers'):
+    def __init__(self, model_name: str = 'BAAI/bge-base-en-v1.5', cache_dir: str = 'models/transformers'):
         """
         Initialize transformer matcher
 
         Args:
             model_name: Name of sentence transformer model
-                - 'all-MiniLM-L6-v2': Fast, good quality (default)
+                - 'BAAI/bge-base-en-v1.5': Balanced quality/speed (default)
                 - 'all-mpnet-base-v2': Best quality, slower
                 - 'paraphrase-multilingual-MiniLM-L12-v2': Multilingual support
             cache_dir: Directory to cache embeddings
@@ -218,8 +218,8 @@ class TransformerMatcher:
         else:
             candidates = master_colleges
 
-        # Get candidate names
-        candidate_names = [c.get('name', '') for c in candidates]
+        # Get candidate names (Use NORMALIZED name if available)
+        candidate_names = [c.get('normalized_name', c.get('name', '')) for c in candidates]
 
         # Find matches
         matches = self.find_best_match(college_name, candidate_names, threshold=threshold, top_k=5)
@@ -233,7 +233,10 @@ class TransformerMatcher:
         # Find the college dict
         best_college = None
         for c in candidates:
-            if c.get('name') == best_name:
+            # Check both normalized and raw name to find the original object
+            # (Since we matched against normalized name, but need to return the object)
+            cand_norm = c.get('normalized_name', c.get('name', ''))
+            if cand_norm == best_name:
                 best_college = c
                 break
 
@@ -265,7 +268,7 @@ class TransformerMatcher:
             colleges: List of college dictionaries
             force_rebuild: Force rebuild even if cached
         """
-        college_names = [c.get('name', '') for c in colleges]
+        college_names = [c.get('normalized_name', c.get('name', '')) for c in colleges]
 
         # Check if already cached
         uncached = []
@@ -356,7 +359,7 @@ class TransformerMatcher:
 
         for college in master_colleges:
             # Calculate name similarity
-            college_name_emb = self.get_embedding(college.get('name', ''))
+            college_name_emb = self.get_embedding(college.get('normalized_name', college.get('name', '')))
             name_sim = util.cos_sim(name_emb, college_name_emb).item()
 
             # Calculate address similarity
@@ -386,7 +389,7 @@ class TransformerMatcher:
 # Standalone usage example
 if __name__ == "__main__":
     # Initialize matcher
-    matcher = TransformerMatcher(model_name='all-MiniLM-L6-v2')
+    matcher = TransformerMatcher(model_name='BAAI/bge-base-en-v1.5')
 
     # Example colleges
     master_colleges = [

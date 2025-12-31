@@ -318,22 +318,24 @@ class EnhancedDataProcessor {
       .sort((a, b) => (a.recommendationRank || 0) - (b.recommendationRank || 0))
       .slice(0, 10);
 
-    // Find trending colleges
-    const trendingColleges = data
-      .filter(record => record.trendDirection === 'up')
-      .sort((a, b) => (b.predictionScore || 0) - (a.predictionScore || 0))
-      .slice(0, 5);
+    // Calculate trend distribution
+    const trends = {
+      up: data.filter(record => record.trendDirection === 'up').length,
+      down: data.filter(record => record.trendDirection === 'down').length,
+      stable: data.filter(record => record.trendDirection === 'stable').length
+    };
 
-    // Find stable options
-    const stableOptions = data
-      .filter(record => record.trendDirection === 'stable')
-      .sort((a, b) => (b.predictionScore || 0) - (a.predictionScore || 0))
-      .slice(0, 5);
+    // Calculate prediction confidence distribution
+    const predictions = {
+      highConfidence: data.filter(record => (record.predictionScore || 0) > 0.8).length,
+      mediumConfidence: data.filter(record => (record.predictionScore || 0) > 0.6 && (record.predictionScore || 0) <= 0.8).length,
+      lowConfidence: data.filter(record => (record.predictionScore || 0) <= 0.6).length
+    };
 
     return {
-      recommendations,
-      trendingColleges,
-      stableOptions
+      trends,
+      predictions,
+      recommendations
     };
   }
 

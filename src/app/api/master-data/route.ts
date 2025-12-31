@@ -27,15 +27,23 @@ export async function GET(request: NextRequest) {
         const states = await service.getAvailableStates();
         return NextResponse.json({
           success: true,
-          data: states.map(name => ({ name })),
+          data: states, // Now returns {id, name}[]
           type: 'states'
+        });
+
+      case 'courses':
+        const courses = await service.getAllCourses();
+        return NextResponse.json({
+          success: true,
+          data: courses, // Now returns {id, name}[]
+          type: 'courses'
         });
 
       case 'categories':
         const categories = await service.getAvailableCategories();
         return NextResponse.json({
           success: true,
-          data: categories.map(name => ({ name })),
+          data: categories.map(name => ({ id: name, name })),
           type: 'categories'
         });
 
@@ -43,7 +51,7 @@ export async function GET(request: NextRequest) {
         const quotas = await service.getAvailableQuotas();
         return NextResponse.json({
           success: true,
-          data: quotas.map(name => ({ name })),
+          data: quotas.map(name => ({ id: name, name })),
           type: 'quotas'
         });
 
@@ -51,20 +59,29 @@ export async function GET(request: NextRequest) {
         const years = await service.getAvailableYears();
         return NextResponse.json({
           success: true,
-          data: years.map(year => ({ year })),
+          data: years.map(year => ({ id: year.toString(), year })),
           type: 'years'
         });
 
       case 'all':
       default:
         const masterData = await service.getMasterData();
+        // Static college types for filter
+        const collegeTypes = [
+          { id: 'Government', name: 'Government' },
+          { id: 'Private', name: 'Private' },
+          { id: 'Deemed', name: 'Deemed' },
+          { id: 'Trust', name: 'Trust' }
+        ];
         return NextResponse.json({
           success: true,
           data: {
             colleges: masterData.colleges,
-            states: masterData.states.map(name => ({ name })),
-            categories: masterData.categories.map(name => ({ name })),
-            quotas: masterData.quotas.map(name => ({ name }))
+            states: masterData.states,
+            courses: masterData.courses,
+            categories: masterData.categories.map(name => ({ id: name, name })),
+            quotas: masterData.quotas.map(name => ({ id: name, name })),
+            collegeTypes
           },
           type: 'all'
         });

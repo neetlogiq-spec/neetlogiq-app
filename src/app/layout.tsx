@@ -1,17 +1,23 @@
 import type { Metadata, Viewport } from 'next'
+<<<<<<< Updated upstream
 import { Inter } from 'next/font/google'
+=======
+>>>>>>> Stashed changes
 import './globals.css'
-import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { StreamProvider } from '@/contexts/StreamContext'
+import { AuthProvider } from '@/contexts/AuthContext'
 import { PremiumProvider } from '@/contexts/PremiumContext'
-import { AuthGuard } from '@/components/auth/AuthGuard'
+import { UserPreferencesProvider } from '@/contexts/UserPreferencesContext'
 import LayoutWithStreamSelection from '@/components/layout/LayoutWithStreamSelection'
 import StreamGuard from '@/components/StreamGuard'
 import ErrorBoundary from '@/components/common/ErrorBoundary'
 
+<<<<<<< Updated upstream
 const inter = Inter({ subsets: ['latin'] })
 
+=======
+>>>>>>> Stashed changes
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -54,7 +60,6 @@ export default function RootLayout({
                     document.documentElement.classList.add('dark');
                     document.documentElement.style.colorScheme = 'dark';
                   } else if (!theme) {
-                    // Check system preference if no saved theme
                     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
                       document.documentElement.classList.add('dark');
                       document.documentElement.style.colorScheme = 'dark';
@@ -65,7 +70,6 @@ export default function RootLayout({
                     document.documentElement.style.colorScheme = 'light';
                   }
                 } catch (e) {
-                  // Ignore errors in case localStorage is not available
                   document.documentElement.style.colorScheme = 'light';
                 }
               })();
@@ -78,7 +82,11 @@ export default function RootLayout({
           <ThemeProvider>
             <AuthProvider>
               <PremiumProvider>
+<<<<<<< Updated upstream
                 <AuthGuard>
+=======
+                <UserPreferencesProvider>
+>>>>>>> Stashed changes
                   <StreamProvider>
                     <StreamGuard>
                       <LayoutWithStreamSelection>
@@ -86,7 +94,11 @@ export default function RootLayout({
                       </LayoutWithStreamSelection>
                     </StreamGuard>
                   </StreamProvider>
+<<<<<<< Updated upstream
                 </AuthGuard>
+=======
+                </UserPreferencesProvider>
+>>>>>>> Stashed changes
               </PremiumProvider>
             </AuthProvider>
           </ThemeProvider>

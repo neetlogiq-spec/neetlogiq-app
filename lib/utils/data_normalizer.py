@@ -94,19 +94,21 @@ class DataNormalizer:
 
         return name
 
-    def normalize_address(self, address: str) -> str:
+    def normalize_address(self, address: str, state: str = None) -> str:
         """
         Normalize address for matching.
 
         Process:
         1. Convert to uppercase
         2. Remove extra whitespace
-        3. Remove pincodes
-        4. Remove extra punctuation
-        5. Keep only important keywords
+        3. Remove state name (if provided) - prevents duplicate state in address
+        4. Remove pincodes
+        5. Remove extra punctuation
+        6. Keep only important keywords
 
         Args:
             address: Address to normalize
+            state: Optional state name to remove from address
 
         Returns:
             Normalized address
@@ -120,15 +122,60 @@ class DataNormalizer:
         # 2. Remove extra whitespace
         address = re.sub(r'\s+', ' ', address)
 
-        # 3. Remove 6-digit pincodes
+        # 3. Remove state name from address (if provided)
+        # This handles cases like "MANIPUR, POROMPAT, IMPHAL" where state=MANIPUR
+        if state:
+            address = self.remove_state_from_address(address, state)
+
+        # 4. Remove 6-digit pincodes
         address = re.sub(r'\b\d{6}\b', '', address)
 
-        # 4. Remove extra punctuation (keep hyphens, commas, spaces)
+        # 5. Remove extra punctuation (keep hyphens, commas, spaces)
         address = re.sub(r'[^\w\s\-,]', '', address)
 
-        # 5. Remove extra spaces
+        # 6. Remove extra spaces
         address = re.sub(r'\s+', ' ', address).strip()
 
+        return address
+
+    def remove_state_from_address(self, address: str, state: str) -> str:
+        """
+        Remove state name from address to avoid redundancy.
+        
+        Example:
+        - Address: "MANIPUR, POROMPAT, IMPHAL -EAST"
+        - State: "MANIPUR"
+        - Result: "POROMPAT, IMPHAL -EAST"
+        
+        Only removes the EXACT state name (with word boundaries) to prevent
+        cross-data removal (e.g., won't remove 'WEST' from 'WEST BENGAL').
+        
+        Args:
+            address: Address string
+            state: State name to remove
+            
+        Returns:
+            Address with state name removed
+        """
+        if not address or not state:
+            return address
+        
+        state = str(state).upper().strip()
+        address = str(address).upper().strip()
+        
+        # Build pattern to match state name with word boundaries
+        # Also handle common variations like trailing comma, leading comma
+        state_pattern = r'\b' + re.escape(state) + r'\b'
+        
+        # Remove state name
+        address = re.sub(state_pattern, '', address)
+        
+        # Clean up any resulting double commas or leading/trailing commas
+        address = re.sub(r',\s*,', ',', address)  # Double commas
+        address = re.sub(r'^\s*,\s*', '', address)  # Leading comma
+        address = re.sub(r'\s*,\s*$', '', address)  # Trailing comma
+        address = re.sub(r'\s+', ' ', address).strip()  # Extra spaces
+        
         return address
 
     def normalize_stream(self, stream: str) -> str:
@@ -236,10 +283,12 @@ class DataNormalizer:
                 normalized['college_name']
             )
 
-        # Normalize address
+        # Normalize address (pass state to remove redundant state name from address)
         if 'address' in normalized and normalized['address']:
+            state_for_removal = normalized.get('state') or normalized.get('normalized_state')
             normalized['normalized_address'] = self.normalize_address(
-                normalized['address']
+                normalized['address'],
+                state=state_for_removal
             )
 
         # Normalize stream

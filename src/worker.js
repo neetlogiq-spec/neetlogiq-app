@@ -324,7 +324,7 @@ async function handleStatic(request, env, url) {
   const filePath = url.pathname.replace('/api/static/', '');
   
   // For local development, serve from public directory
-  const response = await fetch(`http://localhost:3500${url.pathname}`);
+  const response = await fetch(`${url.origin}${url.pathname}`);
   
   if (response.ok) {
     return response;

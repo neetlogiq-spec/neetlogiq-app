@@ -58,7 +58,14 @@ const CollegesPage: React.FC = () => {
     totalItems: 0,
     hasNext: true
   });
+<<<<<<< Updated upstream:edge-native-app/src/app/colleges/page.tsx
 
+=======
+  
+  // Cache for college details to make modals instant
+  const [collegeDetailsCache, setCollegeDetailsCache] = useState<Record<string, any>>({});
+  const [prefetchingCollegeIds, setPrefetchingCollegeIds] = useState<Set<string>>(new Set());
+>>>>>>> Stashed changes:src/components/colleges/CollegesClient.tsx
   // Mock data for demonstration
   const mockColleges: College[] = [
     {
@@ -195,8 +202,27 @@ const CollegesPage: React.FC = () => {
       // Build query parameters
       const params = new URLSearchParams({
         page: newPage.toString(),
-        limit: pagination.limit.toString(),
-        ...newFilters
+        limit: pagination.limit.toString()
+      });
+
+      // Add filters with modern ID-based support
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value && value !== 'all') {
+          if (key === 'state' && (value as string).startsWith('STATE')) {
+            params.append('stateIds', value as string);
+          } else if (key === 'course' && (value as string).startsWith('CRS')) {
+            params.append('courseIds', value as string);
+          } else if (key === 'stream' && Array.isArray(value)) {
+            // Stream is an array - if all 3 streams are selected, treat as "all" (no filter)
+            // Only add filter if less than all streams are selected
+            if (value.length > 0 && value.length < 3) {
+              params.append('stream', value.join(','));
+            }
+            // If value.length === 3 or value.length === 0, don't add stream filter (show all)
+          } else {
+            params.append(key, value as string);
+          }
+        }
       });
 
       // Call fresh API
@@ -211,11 +237,11 @@ const CollegesPage: React.FC = () => {
       const mappedColleges: CollegeWithCourseCount[] = data.data.map((college: any) => ({
         id: college.id,
         name: college.name,
-        city: college.city || 'Unknown',
+        city: college.city || (college.address ? college.address.split(',')[0] : 'Unknown'),
         state: college.state,
-        type: college.type || 'MEDICAL',
-        college_type: college.type || 'MEDICAL', // Add college_type for the card component
-        stream: college.type || 'MEDICAL', // Use actual type instead of hardcoded 'Medical'
+        type: college.college_type || college.type || 'MEDICAL',
+        college_type: college.college_type || college.type || 'MEDICAL',
+        stream: college.college_type || college.type || 'MEDICAL',
         management_type: college.management_type || 'Government',
         established_year: college.established_year,
         website: college.website,
@@ -236,6 +262,7 @@ const CollegesPage: React.FC = () => {
         affiliation: college.affiliation,
         recognition: college.recognition,
         university_affiliation: college.university_affiliation,
+        university: college.university || college.university_affiliation,
         created_at: college.created_at,
         updated_at: college.updated_at,
         course_count: college.course_count
@@ -278,13 +305,59 @@ const CollegesPage: React.FC = () => {
     const nextPage = pagination.page + 1;
     loadColleges(appliedFilters, nextPage, true);
   }, [isLoading, isLoadingMore, pagination.hasNext, pagination.page, appliedFilters, loadColleges, isModalOpen]);
+<<<<<<< Updated upstream:edge-native-app/src/app/colleges/page.tsx
+=======
+  // Pre-fetch college details on hover
+  const prefetchCollegeDetails = async (collegeId: string) => {
+    if (collegeDetailsCache[collegeId] || prefetchingCollegeIds.has(collegeId)) return;
+    
+    setPrefetchingCollegeIds(prev => new Set(prev).add(collegeId));
+    try {
+      const response = await fetch(`/api/colleges/${collegeId}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setCollegeDetailsCache(prev => ({
+            ...prev,
+            [collegeId]: data
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error prefetching college details:', error);
+    } finally {
+      setPrefetchingCollegeIds(prev => {
+        const next = new Set(prev);
+        next.delete(collegeId);
+        return next;
+      });
+    }
+  };
+>>>>>>> Stashed changes:src/components/colleges/CollegesClient.tsx
 
   // Handle opening college details modal
   const handleOpenModal = useCallback(async (college: College) => {
     setSelectedCollege(college);
-    setIsModalLoading(true);
     setIsModalOpen(true);
+<<<<<<< Updated upstream:edge-native-app/src/app/colleges/page.tsx
 
+=======
+    
+    // Check cache first
+    if (collegeDetailsCache[college.id]) {
+      const cached = collegeDetailsCache[college.id];
+      setSelectedCollege({
+        ...college,
+        ...cached.college
+      });
+      setSelectedCollegeCourses(cached.courses || []);
+      setIsModalLoading(false);
+      return;
+    }
+
+    setSelectedCollegeCourses([]); // Clear previous data
+    setIsModalLoading(true);
+>>>>>>> Stashed changes:src/components/colleges/CollegesClient.tsx
     try {
       // Fetch college details with courses
       const response = await fetch(`/api/fresh/colleges/${college.id}`);
@@ -293,9 +366,20 @@ const CollegesPage: React.FC = () => {
       }
       
       const data = await response.json();
-      if (data.success && data.data) {
-        setSelectedCollege(data.data);
-        setSelectedCollegeCourses(data.data.coursesOffered || []);
+      if (data.success && data.college) {
+        // Cache it
+        setCollegeDetailsCache(prev => ({
+          ...prev,
+          [college.id]: data
+        }));
+
+        // API returns: { success, college, courses, cutoffs, stats, ... }
+        setSelectedCollege({
+          ...college,
+          ...data.college,
+          course_count: data.courses?.length || 0
+        });
+        setSelectedCollegeCourses(data.courses || []);
       } else {
         setSelectedCollegeCourses([]);
       }
@@ -305,9 +389,13 @@ const CollegesPage: React.FC = () => {
     } finally {
       setIsModalLoading(false);
     }
+<<<<<<< Updated upstream:edge-native-app/src/app/colleges/page.tsx
   }, []);
 
   // Handle closing college details modal
+=======
+  }, [collegeDetailsCache]);
+>>>>>>> Stashed changes:src/components/colleges/CollegesClient.tsx
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedCollege(null);
@@ -348,15 +436,64 @@ const CollegesPage: React.FC = () => {
         totalItems: 0,
         hasNext: true
       });
-      // Clear colleges array to show loading state
       setColleges([]);
       setCurrentSearchQuery("");
-      // Use setTimeout to ensure state is updated before calling loadColleges
-      setTimeout(() => {
-        loadColleges({}, 1);
-      }, 0);
+      setIsLoading(true);
+      loadColleges({}, 1);
     }
   }, [loadColleges]);
+<<<<<<< Updated upstream:edge-native-app/src/app/colleges/page.tsx
+=======
+  // Load master data for filters
+  useEffect(() => {
+    const fetchMasterData = async () => {
+      try {
+        const response = await fetch('/api/master-data?type=all');
+        const result = await response.json();
+        if (result.success && result.data) {
+          const formattedFilters = {
+            available: [
+              {
+                key: 'state',
+                label: 'State',
+                type: 'select' as const,
+                options: [
+                  { value: 'all', label: 'All States' },
+                  ...result.data.states.map((s: any) => ({ value: s.id, label: s.name }))
+                ]
+              },
+              {
+                key: 'course',
+                label: 'Course',
+                type: 'select' as const,
+                options: [
+                  { value: 'all', label: 'All Courses' },
+                  ...result.data.courses.map((c: any) => ({ value: c.id, label: c.name }))
+                ]
+              },
+              {
+                key: 'management',
+                label: 'Management Type',
+                type: 'select' as const,
+                options: [
+                  { value: 'all', label: 'All Types' },
+                  { value: 'Government', label: 'Government' },
+                  { value: 'Private', label: 'Private' },
+                  { value: 'Trust', label: 'Trust' },
+                  { value: 'Deemed', label: 'Deemed' }
+                ]
+              }
+            ]
+          };
+          setFilters(formattedFilters);
+        }
+      } catch (error) {
+        console.error('Failed to fetch master data:', error);
+      }
+    };
+    fetchMasterData();
+  }, []);
+>>>>>>> Stashed changes:src/components/colleges/CollegesClient.tsx
 
   // Initial load
   const hasLoaded = useRef(false);
@@ -365,8 +502,12 @@ const CollegesPage: React.FC = () => {
       hasLoaded.current = true;
       loadColleges();
     }
+<<<<<<< Updated upstream:edge-native-app/src/app/colleges/page.tsx
   }, []);
 
+=======
+  }, [loadColleges]);
+>>>>>>> Stashed changes:src/components/colleges/CollegesClient.tsx
   // Handle URL parameters for opening specific college modal
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -434,12 +575,92 @@ const CollegesPage: React.FC = () => {
               animate={{ opacity: isLoaded ? 1 : 0, scale: isLoaded ? 1 : 0.8 }}
               transition={{ duration: 0.25, delay: 0.1 }}
             >
+<<<<<<< Updated upstream:edge-native-app/src/app/colleges/page.tsx
               Medical Colleges
+=======
+              Colleges
+            </motion.h1>
+            
+            {/* Secondary Hook */}
+            <motion.p
+              className={`text-xl md:text-2xl mb-8 max-w-2xl mx-auto transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent' 
+                  : 'bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent'
+              }`}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              Explore 2,117+ colleges offering your dream courses
+            </motion.p>
+            
+            {/* Call to Action */}
+            <motion.div
+              className="mt-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+            >
+              <motion.button
+                onClick={handleStartExploring}
+                className={`group px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 flex items-center gap-3 mx-auto ${
+                  isDarkMode 
+                    ? 'bg-white/20 text-white border border-white/30 shadow-lg hover:bg-white/30' 
+                    : 'bg-gray-900 text-white border border-gray-800 shadow-lg hover:bg-gray-800'
+                }`}
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+                }}
+                whileTap={{ 
+                  scale: 0.95,
+                  boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)'
+                }}
+              >
+                <motion.div
+                  animate={{ rotate: [0, 15, -15, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  <Sparkles className="w-5 h-5" />
+                </motion.div>
+                Start Exploring
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </motion.button>
+            </motion.div>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="content"
+          className="fixed inset-0 z-20 overflow-y-auto pt-16"
+          id="main-scroll-container"
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="min-h-screen relative overflow-hidden transition-all duration-500">
+            {/* Content */}
+            <div className="relative z-20 min-h-screen flex flex-col">
+              {/* Main Content */}
+              <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-8 md:py-12">
+                <div className="text-center max-w-6xl w-full">
+                  {/* Page Title */}
+                  <motion.h1
+                    className={`text-4xl md:text-6xl font-bold mb-4 ${
+                      isDarkMode ? 'text-white' : 'text-black'
+                    }`}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: isLoaded ? 1 : 0, scale: isLoaded ? 1 : 0.8 }}
+                    transition={{ duration: 0.25, delay: 0.1 }}
+                  >
+              Explore Colleges
+>>>>>>> Stashed changes:src/components/colleges/CollegesClient.tsx
             </motion.h1>
 
             {/* Subtitle */}
             <motion.p
-              className={`text-xl md:text-2xl mb-12 max-w-3xl mx-auto ${
+              className={`text-lg md:text-xl mb-8 max-w-3xl mx-auto ${
                 isDarkMode 
                   ? 'bg-gradient-to-r from-purple-300 to-blue-400 bg-clip-text text-transparent' 
                   : 'bg-gradient-to-r from-purple-600 to-blue-700 bg-clip-text text-transparent'
@@ -453,7 +674,7 @@ const CollegesPage: React.FC = () => {
 
             {/* Advanced Search Bar */}
             <motion.div
-              className="max-w-3xl mx-auto mb-8"
+              className="max-w-3xl mx-auto mb-6"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
               transition={{ duration: 0.2, delay: 0.2 }}
@@ -464,13 +685,17 @@ const CollegesPage: React.FC = () => {
                 placeholder="Search medical colleges with unified AI intelligence..."
               />
             </motion.div>
+<<<<<<< Updated upstream:edge-native-app/src/app/colleges/page.tsx
 
             {/* Intelligent Filters */}
+=======
+            {/* Intelligent Filters & View Toggle */}
+>>>>>>> Stashed changes:src/components/colleges/CollegesClient.tsx
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
               transition={{ delay: 0.35, duration: 0.2 }}
-              className="mb-8"
+              className="mb-6"
             >
               <IntelligentFilters
                 key={JSON.stringify(filters)}
@@ -479,6 +704,7 @@ const CollegesPage: React.FC = () => {
                 onFilterChange={handleFilterChange}
                 onClearFilters={handleClearFilters}
                 type="colleges"
+<<<<<<< Updated upstream:edge-native-app/src/app/colleges/page.tsx
               />
             </motion.div>
 
@@ -490,9 +716,12 @@ const CollegesPage: React.FC = () => {
               className="flex justify-center mb-8"
             >
               <ViewToggle
+=======
+                streamFilter={(appliedFilters as any).stream}
+                onStreamChange={(streams: string[] | undefined) => handleFilterChange({ ...appliedFilters, stream: streams })}
+>>>>>>> Stashed changes:src/components/colleges/CollegesClient.tsx
                 currentView={viewType}
                 onViewChange={setViewType}
-                isDarkMode={isDarkMode}
               />
             </motion.div>
 
@@ -515,13 +744,14 @@ const CollegesPage: React.FC = () => {
                   {viewType === 'card' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {colleges.map((college, index) => (
-                        <ResponsiveCollegeCard
-                          key={`college-${college.id}-${index}`}
-                          college={college}
-                          index={index}
-                          courses={Array(college.course_count || 0).fill({})}
-                          onOpenModal={handleOpenModal}
-                        />
+                        <div key={`college-container-${college.id}-${index}`} onMouseEnter={() => prefetchCollegeDetails(college.id)}>
+                          <ResponsiveCollegeCard
+                            college={college}
+                            index={index}
+                            courses={Array(college.course_count || 0).fill({})}
+                            onOpenModal={handleOpenModal}
+                          />
+                        </div>
                       ))}
                       
                       {/* Skeleton cards for loading more */}
@@ -596,6 +826,7 @@ const CollegesPage: React.FC = () => {
               )}
           </div>
         </main>
+<<<<<<< Updated upstream:edge-native-app/src/app/colleges/page.tsx
         </div>
 
         {/* College Details Modal */}
@@ -610,6 +841,23 @@ const CollegesPage: React.FC = () => {
       {/* Footer */}
       <Footer />
       </div>
+=======
+          </div>
+        </div>
+      </motion.div>
+    )}
+    </AnimatePresence>
+    
+    {/* College Details Modal - Moved to root level for proper fixed positioning */}
+    <CollegeDetailsModal
+      isOpen={isModalOpen}
+      onClose={handleCloseModal}
+      college={selectedCollege}
+      courses={selectedCollegeCourses}
+      isLoading={isModalLoading}
+    />
+    </div>
+>>>>>>> Stashed changes:src/components/colleges/CollegesClient.tsx
   );
 };
 

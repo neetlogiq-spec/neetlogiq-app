@@ -78,10 +78,19 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
     displayName: 'Premium',
     description: 'Unlimited access to everything',
     price: {
+<<<<<<< Updated upstream
       monthly: 149,      // ₹149/month
       quarterly: 399,    // ₹133/month - 11% savings
       halfYearly: 699,   // ₹117/month - 21% savings
       yearly: 999        // ₹83/month - 44% savings
+=======
+      halfYearly: 799,   // ₹133/month
+      yearly: 1199       // ₹100/month
+    },
+    originalPrice: {
+      halfYearly: 999,   // Show strikethrough
+      yearly: 1499       // Show strikethrough
+>>>>>>> Stashed changes
     },
     razorpayPlanId: {
       monthly: 'plan_premium_monthly',

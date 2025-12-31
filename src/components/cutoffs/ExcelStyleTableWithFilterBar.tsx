@@ -16,7 +16,7 @@ import FilterBar from './FilterBar';
 
 interface Column {
   key: string;
-  label: string;
+  label: string | React.ReactNode;
   type: 'text' | 'number' | 'date' | 'select' | 'boolean';
   width?: number;
   minWidth?: number;
@@ -40,6 +40,7 @@ interface ExcelStyleTableProps {
   enableFreezeColumns?: boolean;
   enableExport?: boolean;
   enableFilterBar?: boolean;
+  rowClassName?: (row: any) => string;
 }
 
 interface SortState {
@@ -58,7 +59,8 @@ const ExcelStyleTable: React.FC<ExcelStyleTableProps> = ({
   enableColumnReorder = true,
   enableFreezeColumns = true,
   enableExport = true,
-  enableFilterBar = true
+  enableFilterBar = true,
+  rowClassName
 }) => {
   const [sortState, setSortState] = useState<SortState>({ column: null, direction: null });
   const [columnWidths, setColumnWidths] = useState<{ [key: string]: number }>({});
@@ -80,7 +82,9 @@ const ExcelStyleTable: React.FC<ExcelStyleTableProps> = ({
       
       const initialWidths: { [key: string]: number } = {};
       columns.forEach(col => {
-        initialWidths[col.key] = col.width || 150;
+        if (col.width) {
+          initialWidths[col.key] = col.width;
+        }
       });
       setColumnWidths(initialWidths);
     }
@@ -197,7 +201,7 @@ const ExcelStyleTable: React.FC<ExcelStyleTableProps> = ({
   // Export data
   const handleExport = () => {
     const csvContent = [
-      visibleColumns.map(col => col.label).join(','),
+      visibleColumns.map(col => typeof col.label === 'string' ? col.label : col.key).join(','),
       ...finalData.map(row =>
         visibleColumns.map(col => `"${row[col.key] || ''}"`).join(',')
       )
@@ -213,7 +217,7 @@ const ExcelStyleTable: React.FC<ExcelStyleTableProps> = ({
   };
 
   return (
-    <div className={`excel-style-table ${isDarkMode ? 'dark' : ''}`} style={{ height }}>
+    <div className={`excel-style-table ${isDarkMode ? 'dark' : ''} flex flex-col`} style={{ height }}>
       {/* Filter Bar */}
       {enableFilterBar && (
         <FilterBar
@@ -230,11 +234,10 @@ const ExcelStyleTable: React.FC<ExcelStyleTableProps> = ({
       <div 
         ref={tableRef}
         className={`flex-1 overflow-auto ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}
-        style={{ height: enableFilterBar ? `calc(${height} - 120px)` : `calc(${height} - 80px)` }}
       >
         <table className="border-collapse" style={{ minWidth: '100%' }}>
           {/* Header */}
-          <thead className={`sticky top-0 z-10 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+          <thead className={`sticky top-0 z-10 backdrop-blur-md ${isDarkMode ? 'bg-gray-800/95' : 'bg-gray-50/95'}`}>
             <tr>
               {visibleColumns.map((column, index) => (
                 <th
@@ -243,12 +246,13 @@ const ExcelStyleTable: React.FC<ExcelStyleTableProps> = ({
                     isDarkMode ? 'border-gray-700' : 'border-gray-200'
                   } ${frozenColumns.includes(column.key) ? 'sticky left-0 z-20' : ''}`}
                   style={{ 
-                    width: columnWidths[column.key] || column.width || 150,
-                    minWidth: column.minWidth || 120,
+                    // Use pixel width if defined, otherwise let table layout decide
+                    ...(columnWidths[column.key] || column.width ? { width: columnWidths[column.key] || column.width } : {}),
+                    minWidth: column.minWidth || 50,
                     maxWidth: column.maxWidth || 300
                   }}
                 >
-                  <div className={`flex items-center justify-between p-2 ${
+                  <div className={`flex items-center justify-between px-2 py-1.5 ${
                     isDarkMode ? 'text-gray-200' : 'text-gray-700'
                   } text-sm`}>
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
@@ -258,7 +262,7 @@ const ExcelStyleTable: React.FC<ExcelStyleTableProps> = ({
                       )}
                       
                       {/* Column Label */}
-                      <span className="font-medium truncate text-xs">{column.label}</span>
+                      <span className="font-bold truncate text-sm">{column.label}</span>
                       
                       {/* Sort Indicator */}
                       {column.sortable !== false && (
@@ -298,35 +302,56 @@ const ExcelStyleTable: React.FC<ExcelStyleTableProps> = ({
             </tr>
           </thead>
 
-          {/* Body */}
-          <tbody>
+          {/* Body - Golden Mean Design: Card-like rows with margins */}
+          <tbody className="space-y-1">
             {finalData.map((row, rowIndex) => (
-              <tr
+              <motion.tr
                 key={rowIndex}
-                className={`border-b ${
-                  isDarkMode ? 'border-gray-700 hover:bg-gray-800' : 'border-gray-200 hover:bg-gray-50'
-                } ${selectedRows.has(String(rowIndex)) ? isDarkMode ? 'bg-blue-500/10' : 'bg-blue-50' : ''}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(rowIndex * 0.015, 0.5), duration: 0.3 }}
+                className={`transition-all cursor-pointer rounded-lg ${
+                  isDarkMode 
+                    ? 'bg-gray-800/50 hover:bg-blue-900/30 hover:shadow-lg hover:shadow-blue-500/10' 
+                    : 'bg-white hover:bg-blue-50/70 hover:shadow-md hover:shadow-blue-200/50'
+                } ${
+                  isDarkMode ? 'border border-gray-700/50' : 'border border-gray-200/80 shadow-sm'
+                } ${selectedRows.has(String(rowIndex)) ? isDarkMode ? 'bg-blue-500/20 border-blue-500/30' : 'bg-blue-100 border-blue-300' : ''} ${rowClassName ? rowClassName(row) : ''}`}
+                style={{ marginBottom: '3px' }}
                 onClick={() => onRowClick?.(row)}
               >
                 {visibleColumns.map((column, colIndex) => (
-                <td
-                  key={column.key}
-                  className={`p-2 border-r text-xs ${
-                    isDarkMode ? 'border-gray-700 text-gray-200' : 'border-gray-200 text-gray-700'
+                  <td
+                    key={column.key}
+                    className={`px-2 py-2.5 text-sm ${
+                    colIndex === 0 ? 'rounded-l-lg' : ''
+                  } ${
+                    colIndex === visibleColumns.length - 1 ? 'rounded-r-lg' : ''
+                  } ${
+                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
                   } ${frozenColumns.includes(column.key) ? 'sticky left-0 z-10' : ''}`}
                   style={{ 
-                    width: columnWidths[column.key] || column.width || 150,
-                    minWidth: column.minWidth || 120,
+                    width: columnWidths[column.key] || column.width || 'auto',
+                    minWidth: column.minWidth || 50,
                     maxWidth: column.maxWidth || 300
                   }}
                 >
                   {column.render ? column.render(row[column.key], row) : String(row[column.key] || '')}
                 </td>
                 ))}
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
+
+        {/* Footer with record count */}
+        {finalData.length > 0 && (
+          <div className={`flex items-center justify-between p-4 border-t ${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              Showing {finalData.length} records
+            </span>
+          </div>
+        )}
 
         {/* Empty State */}
         {finalData.length === 0 && (

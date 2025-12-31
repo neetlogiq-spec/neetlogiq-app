@@ -27,7 +27,7 @@ class EdgeDataService {
   async init(): Promise<void> {
     if (this.initialized) return;
     
-    console.log('EdgeDataService initialized with SQLite backend');
+    console.log('EdgeDataService initialized with Supabase backend');
     this.initialized = true;
   }
 

@@ -143,18 +143,25 @@ const ResponsiveCollegeCard: React.FC<ResponsiveCollegeCardProps> = ({
             }`}>
               {college.name}
             </h3>
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin className={`w-4 h-4 ${
+            <div className="flex items-start gap-2 mb-2">
+              <MapPin className={`w-4 h-4 mt-0.5 shrink-0 ${
                 isDarkMode ? 'text-gray-400' : 'text-gray-500'
               }`} />
-              <span className={`text-sm ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                {college.address && college.address !== 'Unknown, India' && college.address !== `${college.state}, India` ? 
-                  `${college.address}${college.state ? `, ${college.state}` : ''}` : 
-                  college.state || 'Unknown'
-                }
-              </span>
+              <div className="flex flex-col min-w-0">
+                <span className={`text-sm line-clamp-2 leading-tight mb-0.5 ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`} title={college.address}>
+                  {college.address && college.address !== 'Unknown, India' && college.address !== `${college.state}, India` ? 
+                    college.address : 
+                    'Unknown Address'
+                  }
+                </span>
+                <span className={`text-xs font-bold tracking-wide uppercase ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  {college.state}
+                </span>
+              </div>
             </div>
           </div>
         </div>

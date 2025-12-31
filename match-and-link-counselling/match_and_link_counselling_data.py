@@ -86,6 +86,103 @@ class CounsellingDataMatcher:
         # Cache for memoization
         self._normalization_cache = {}
         self._fuzzy_match_cache = {}
+        
+        # STARTUP CHECKS: Ensure partition metadata integrity
+        self._ensure_partition_integrity()
+
+    def _ensure_partition_integrity(self):
+        """
+        Startup check: Full sync partition_metadata with actual counselling_records.
+        1. Creates missing partition_metadata entries for partitions in data
+        2. Updates all counts (total, matched, unmatched, needs_review) from actual data
+        3. Removes orphaned entries (metadata without data)
+        4. Creates cleanup trigger for future deletions
+        """
+        try:
+            conn = sqlite3.connect(self.counselling_db_path)
+            cursor = conn.cursor()
+            
+            # Check if tables exist
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='counselling_records'")
+            if not cursor.fetchone():
+                conn.close()
+                return  # No counselling_records table yet
+            
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='partition_metadata'")
+            if not cursor.fetchone():
+                conn.close()
+                return  # No partition_metadata table yet
+            
+            # 1. SYNC: Create or update partition_metadata for ALL partitions in data
+            cursor.execute("""
+                INSERT OR REPLACE INTO partition_metadata 
+                (partition_key, source, year, level, total_records, matched_records, 
+                 unmatched_records, needs_review_records, is_fully_matched, last_updated, is_active)
+                SELECT 
+                    partition_key,
+                    -- Extract source from partition_key (e.g., 'AIQ-UG-2024' -> 'AIQ')
+                    CASE 
+                        WHEN partition_key LIKE 'AIQ-%' THEN 'AIQ'
+                        WHEN partition_key LIKE 'KEA-%' THEN 'KEA'
+                        WHEN partition_key LIKE 'MCC-%' THEN 'MCC'
+                        ELSE SUBSTR(partition_key, 1, INSTR(partition_key, '-') - 1)
+                    END as source,
+                    -- Extract year from partition_key (last 4 chars)
+                    CAST(SUBSTR(partition_key, -4) AS INTEGER) as year,
+                    -- Extract level from partition_key (middle part)
+                    CASE 
+                        WHEN partition_key LIKE '%-UG-%' THEN 'UG'
+                        WHEN partition_key LIKE '%-PG-%' THEN 'PG'
+                        WHEN partition_key LIKE '%-DEN-%' THEN 'DEN'
+                        WHEN partition_key LIKE '%-DNB-%' THEN 'DNB'
+                        ELSE 'UG'
+                    END as level,
+                    COUNT(*) as total_records,
+                    SUM(CASE WHEN is_matched = 1 THEN 1 ELSE 0 END) as matched_records,
+                    SUM(CASE WHEN is_matched = 0 OR is_matched IS NULL THEN 1 ELSE 0 END) as unmatched_records,
+                    SUM(CASE WHEN needs_manual_review = 1 THEN 1 ELSE 0 END) as needs_review_records,
+                    CASE WHEN SUM(CASE WHEN is_matched = 0 OR is_matched IS NULL THEN 1 ELSE 0 END) = 0 THEN 1 ELSE 0 END as is_fully_matched,
+                    datetime('now') as last_updated,
+                    1 as is_active
+                FROM counselling_records
+                GROUP BY partition_key
+            """)
+            synced_count = cursor.rowcount
+            
+            if synced_count > 0:
+                console.print(f"[green]📊 Synced {synced_count} partition metadata entries[/green]")
+                logger.info(f"Synced {synced_count} partition metadata entries")
+            
+            # 2. CLEANUP: Remove orphaned partition_metadata entries (metadata without data)
+            cursor.execute("""
+                DELETE FROM partition_metadata 
+                WHERE partition_key NOT IN (
+                    SELECT DISTINCT partition_key FROM counselling_records
+                )
+            """)
+            deleted_count = cursor.rowcount
+            
+            if deleted_count > 0:
+                console.print(f"[yellow]🧹 Cleaned {deleted_count} orphaned partition_metadata entries[/yellow]")
+                logger.info(f"Cleaned {deleted_count} orphaned partition_metadata entries")
+            
+            # 3. TRIGGER: Create cleanup trigger (if not exists)
+            cursor.execute("""
+                CREATE TRIGGER IF NOT EXISTS cleanup_orphaned_partition_metadata
+                AFTER DELETE ON counselling_records
+                BEGIN
+                    DELETE FROM partition_metadata 
+                    WHERE partition_key NOT IN (
+                        SELECT DISTINCT partition_key FROM counselling_records
+                    );
+                END
+            """)
+            
+            conn.commit()
+            conn.close()
+            
+        except Exception as e:
+            logger.warning(f"Partition integrity check skipped: {e}")
 
     def load_config(self, config_path):
         """Load configuration from YAML file"""

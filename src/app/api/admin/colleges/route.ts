@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
     // Search filter
     if (search) {
-      query = query.or(`name.ilike.%${search}%,city.ilike.%${search}%,state.ilike.%${search}%`);
+      query = query.or(`name.ilike.%${search}%,address.ilike.%${search}%,state.ilike.%${search}%`);
     }
 
     // Pagination
@@ -80,7 +80,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       name,
-      city,
       state,
       management_type,
       college_type,
@@ -114,7 +113,6 @@ export async function POST(request: NextRequest) {
       .from('colleges')
       .insert({
         name,
-        city,
         state,
         management_type,
         college_type,
@@ -139,7 +137,7 @@ export async function POST(request: NextRequest) {
       'CREATE',
       'college',
       college.id,
-      { name, city, state }
+      { name, address, state }
     );
 
     return NextResponse.json({

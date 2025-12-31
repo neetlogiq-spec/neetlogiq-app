@@ -30,7 +30,15 @@ import {
   Target
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+<<<<<<< Updated upstream:edge-native-app/src/app/profile/page.tsx
 
+=======
+import { useStream } from '@/contexts/StreamContext';
+import RequestStreamChangeDialog from '@/components/user/RequestStreamChangeDialog';
+import { Vortex } from '@/components/ui/vortex';
+import LightVortex from '@/components/ui/LightVortex';
+import { useTheme } from '@/contexts/ThemeContext';
+>>>>>>> Stashed changes:src/components/profile/ProfileClient.tsx
 interface UserProfile {
   uid: string;
   email: string;
@@ -61,8 +69,13 @@ interface UserProfile {
     achievementPoints: number;
   };
 }
+<<<<<<< Updated upstream:edge-native-app/src/app/profile/page.tsx
 
 const ProfilePage: React.FC = () => {
+=======
+export default function ProfileClient() {
+  const { isDarkMode } = useTheme();
+>>>>>>> Stashed changes:src/components/profile/ProfileClient.tsx
   const { user, isAuthenticated, loading } = useAuth();
   const router = useRouter();
   
@@ -145,6 +158,7 @@ const ProfilePage: React.FC = () => {
         }
       };
       
+<<<<<<< Updated upstream:edge-native-app/src/app/profile/page.tsx
       setProfile(mockProfile);
       setFormData({
         firstName: mockProfile.firstName || '',
@@ -156,6 +170,53 @@ const ProfilePage: React.FC = () => {
         occupation: mockProfile.occupation || '',
         education: mockProfile.education || ''
       });
+=======
+      if (result.success && result.data) {
+        const profileData = result.data;
+        const mockProfile: UserProfile = {
+          uid: user?.uid || '',
+          email: user?.email || '',
+          displayName: user?.displayName || 'User',
+          photoURL: user?.photoURL,
+          firstName: profileData.first_name || user?.givenName || user?.displayName?.split(' ')[0] || '',
+          lastName: profileData.last_name || user?.displayName?.split(' ').slice(1).join(' ') || '',
+          phone: profileData.phone || '',
+          dateOfBirth: profileData.date_of_birth || '',
+          location: profileData.location || '',
+          bio: profileData.bio || '',
+          occupation: profileData.occupation || '',
+          education: profileData.education || '',
+          interests: profileData.interests || ['Medical Education', 'NEET Preparation', 'College Research'],
+          preferences: profileData.preferences || {
+            emailNotifications: true,
+            pushNotifications: true,
+            dataSharing: false,
+            theme: 'system',
+            language: 'en'
+          },
+          stats: {
+            joinedDate: profileData.created_at || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+            lastActive: new Date().toISOString(),
+            totalLogins: 45,
+            favoriteColleges: 12,
+            searchesPerformed: 156,
+            achievementPoints: 1250
+          }
+        };
+        
+        setProfile(mockProfile);
+        setFormData({
+          firstName: mockProfile.firstName || '',
+          lastName: mockProfile.lastName || '',
+          phone: mockProfile.phone || '',
+          dateOfBirth: mockProfile.dateOfBirth || '',
+          location: mockProfile.location || '',
+          bio: mockProfile.bio || '',
+          occupation: mockProfile.occupation || '',
+          education: mockProfile.education || ''
+        });
+      }
+>>>>>>> Stashed changes:src/components/profile/ProfileClient.tsx
     } catch (error) {
       console.error('Error loading profile:', error);
     } finally {
@@ -257,7 +318,7 @@ const ProfilePage: React.FC = () => {
 
   if (loading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-black' : 'bg-gray-50'}`}>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -268,14 +329,51 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6"
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Dynamic Background */}
+      {isDarkMode ? (
+        <Vortex
+          className="fixed inset-0 z-0"
+          particleCount={600}
+          baseHue={260}
+          rangeHue={80}
+          baseSpeed={0.15}
+          rangeSpeed={1.8}
+          baseRadius={1}
+          rangeRadius={2.5}
+          backgroundColor="#000000"
+          containerClassName="fixed inset-0"
         >
+          <div className="absolute inset-0 bg-black/30 z-10"></div>
+        </Vortex>
+      ) : (
+        <LightVortex
+          className="fixed inset-0 z-0"
+          particleCount={400}
+          baseHue={260}
+          baseSpeed={0.12}
+          rangeSpeed={1.5}
+          baseRadius={1.5}
+          rangeRadius={3}
+          backgroundColor="#ffffff"
+          containerClassName="fixed inset-0"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-50/30 via-indigo-50/20 to-pink-50/30 z-10"></div>
+        </LightVortex>
+      )}
+
+      <div className="relative z-10 min-h-screen pt-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`rounded-2xl shadow-lg p-6 mb-6 border transition-all duration-300 backdrop-blur-md ${
+              isDarkMode 
+                ? 'bg-white/10 border-white/20' 
+                : 'bg-white border-gray-200'
+            }`}
+          >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -298,13 +396,13 @@ const ProfilePage: React.FC = () => {
                 </button>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   {profile.displayName}
                 </h1>
-                <p className="text-gray-600 dark:text-gray-400">{profile.email}</p>
+                <p className={`${isDarkMode ? 'text-slate-200/90' : 'text-gray-600'}`}>{profile.email}</p>
                 <div className="flex items-center mt-2">
                   <Calendar className="w-4 h-4 text-gray-400 mr-1" />
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                  <span className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-500'}`}>
                     Joined {formatDate(profile.stats.joinedDate)}
                   </span>
                 </div>
@@ -315,29 +413,39 @@ const ProfilePage: React.FC = () => {
                 <Activity className="w-4 h-4 mr-1" />
                 <span className="text-sm font-medium">Active</span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                 Last active: {formatDate(profile.stats.lastActive)}
               </p>
             </div>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{profile.stats.totalLogins}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Total Logins</div>
+          <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t ${
+            isDarkMode ? 'border-white/10' : 'border-gray-200'
+          }`}>
+            <div className="text-center group">
+              <div className={`text-2xl font-bold transition-all duration-300 ${
+                isDarkMode ? 'text-blue-400' : 'text-blue-600'
+              }`}>{profile.stats.totalLogins}</div>
+              <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Total Logins</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{profile.stats.favoriteColleges}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Favorite Colleges</div>
+            <div className="text-center group">
+              <div className={`text-2xl font-bold transition-all duration-300 ${
+                isDarkMode ? 'text-green-400' : 'text-green-600'
+              }`}>{profile.stats.favoriteColleges}</div>
+              <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Favorite Colleges</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{profile.stats.searchesPerformed}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Searches</div>
+            <div className="text-center group">
+              <div className={`text-2xl font-bold transition-all duration-300 ${
+                isDarkMode ? 'text-purple-400' : 'text-purple-600'
+              }`}>{profile.stats.searchesPerformed}</div>
+              <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Searches</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{profile.stats.achievementPoints}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Points</div>
+            <div className="text-center group">
+              <div className={`text-2xl font-bold transition-all duration-300 ${
+                isDarkMode ? 'text-orange-400' : 'text-orange-600'
+              }`}>{profile.stats.achievementPoints}</div>
+              <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Points</div>
             </div>
           </div>
         </motion.div>
@@ -354,10 +462,14 @@ const ProfilePage: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                className={`flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300 ${
                   activeTab === tab.id
-                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    ? isDarkMode
+                      ? 'bg-white text-gray-900 shadow-lg'
+                      : 'bg-blue-600 text-white shadow-lg'
+                    : isDarkMode
+                      ? 'text-slate-300 hover:text-white hover:bg-white/10'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 <tab.icon className="w-4 h-4 mr-2" />
@@ -372,20 +484,28 @@ const ProfilePage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+            className={`rounded-2xl shadow-lg p-6 backdrop-blur-md border transition-all duration-300 ${
+              isDarkMode 
+                ? 'bg-white/10 border-white/20' 
+                : 'bg-white border-gray-200'
+            }`}
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-white">
+              <h2 className={`text-lg font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 Personal Information
               </h2>
               {!isEditing ? (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="flex items-center px-3 py-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                >
-                  <Edit2 className="w-4 h-4 mr-2" />
-                  Edit
-                </button>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
+                      isDarkMode 
+                        ? 'text-blue-400 hover:bg-white/5' 
+                        : 'text-blue-600 hover:bg-blue-50'
+                    }`}
+                  >
+                    <Edit2 className="w-4 h-4 mr-2" />
+                    Edit
+                  </button>
               ) : (
                 <div className="flex space-x-2">
                   <button
@@ -396,140 +516,168 @@ const ProfilePage: React.FC = () => {
                     <Save className="w-4 h-4 mr-2" />
                     {saving ? 'Saving...' : 'Save'}
                   </button>
-                  <button
-                    onClick={() => {
-                      setIsEditing(false);
-                      // Reset form data
-                      setFormData({
-                        firstName: profile.firstName || '',
-                        lastName: profile.lastName || '',
-                        phone: profile.phone || '',
-                        dateOfBirth: profile.dateOfBirth || '',
-                        location: profile.location || '',
-                        bio: profile.bio || '',
-                        occupation: profile.occupation || '',
-                        education: profile.education || ''
-                      });
-                    }}
-                    className="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Cancel
-                  </button>
+                    <button
+                      onClick={() => {
+                        setIsEditing(false);
+                        // Reset form data
+                        setFormData({
+                          firstName: profile.firstName || '',
+                          lastName: profile.lastName || '',
+                          phone: profile.phone || '',
+                          dateOfBirth: profile.dateOfBirth || '',
+                          location: profile.location || '',
+                          bio: profile.bio || '',
+                          occupation: profile.occupation || '',
+                          education: profile.education || ''
+                        });
+                      }}
+                      className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
+                        isDarkMode 
+                          ? 'text-slate-300 hover:bg-white/5' 
+                          : 'text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Cancel
+                    </button>
                 </div>
               )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                   First Name
                 </label>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                  />
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all ${
+                        isDarkMode 
+                          ? 'bg-white/5 border-white/10 text-white placeholder-slate-500' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } border`}
+                    />
                 ) : (
-                  <p className="text-gray-900 dark:text-white py-2">
+                  <p className={`py-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     {profile.firstName || 'Not provided'}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                   Last Name
                 </label>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                  />
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all ${
+                        isDarkMode 
+                          ? 'bg-white/5 border-white/10 text-white placeholder-slate-500' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } border`}
+                    />
                 ) : (
-                  <p className="text-gray-900 dark:text-white py-2">
+                  <p className={`py-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     {profile.lastName || 'Not provided'}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                   Phone Number
                 </label>
                 {isEditing ? (
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                  />
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all ${
+                        isDarkMode 
+                          ? 'bg-white/5 border-white/10 text-white placeholder-slate-500' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } border`}
+                    />
                 ) : (
-                  <p className="text-gray-900 dark:text-white py-2">
+                  <p className={`py-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     {profile.phone || 'Not provided'}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                   Date of Birth
                 </label>
                 {isEditing ? (
-                  <input
-                    type="date"
-                    name="dateOfBirth"
-                    value={formData.dateOfBirth}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                  />
+                    <input
+                      type="date"
+                      name="dateOfBirth"
+                      value={formData.dateOfBirth}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all ${
+                        isDarkMode 
+                          ? 'bg-white/5 border-white/10 text-white [color-scheme:dark]' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } border`}
+                    />
                 ) : (
-                  <p className="text-gray-900 dark:text-white py-2">
+                  <p className={`py-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     {profile.dateOfBirth ? formatDate(profile.dateOfBirth) : 'Not provided'}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                   Location
                 </label>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                  />
+                    <input
+                      type="text"
+                      name="location"
+                      value={formData.location}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all ${
+                        isDarkMode 
+                          ? 'bg-white/5 border-white/10 text-white placeholder-slate-500' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } border`}
+                    />
                 ) : (
-                  <p className="text-gray-900 dark:text-white py-2">
+                  <p className={`py-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     {profile.location || 'Not provided'}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                   Occupation
                 </label>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    name="occupation"
-                    value={formData.occupation}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                  />
+                    <input
+                      type="text"
+                      name="occupation"
+                      value={formData.occupation}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all ${
+                        isDarkMode 
+                          ? 'bg-white/5 border-white/10 text-white placeholder-slate-500' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } border`}
+                    />
                 ) : (
-                  <p className="text-gray-900 dark:text-white py-2">
+                  <p className={`py-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     {profile.occupation || 'Not provided'}
                   </p>
                 )}
@@ -590,6 +738,65 @@ const ProfilePage: React.FC = () => {
                 ))}
               </div>
             </div>
+<<<<<<< Updated upstream:edge-native-app/src/app/profile/page.tsx
+=======
+            {/* Stream Selection Section */}
+            {selectedStream && (
+              <div className="mt-6 p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Academic Stream
+                  </label>
+                  {isLocked && (
+                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                      <Lock className="w-3 h-3 mr-1" />
+                      Locked
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold text-gray-900 dark:text-white">
+                      {selectedStream === 'UG' && 'Undergraduate (MBBS, BDS)'}
+                      {selectedStream === 'PG_MEDICAL' && 'Postgraduate Medical (MD, MS)'}
+                      {selectedStream === 'PG_DENTAL' && 'Postgraduate Dental (MDS)'}
+                    </div>
+                    {isLocked && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Stream selection is locked. Contact support to change.
+                      </p>
+                    )}
+                    {changeRequested && (
+                      <div className="flex items-center mt-2 text-sm text-orange-600 dark:text-orange-400">
+                        <Clock className="w-4 h-4 mr-1" />
+                        Change request pending admin approval
+                      </div>
+                    )}
+                  </div>
+                  {isLocked && !changeRequested && (
+                    <button
+                      onClick={() => setShowStreamChangeDialog(true)}
+                      className="flex items-center px-3 py-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                    >
+                      <Repeat className="w-4 h-4 mr-2" />
+                      Request Change
+                    </button>
+                  )}
+                </div>
+                {isLocked && (
+                  <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 shrink-0" />
+                      <p className="text-xs text-yellow-800 dark:text-yellow-400">
+                        Your stream selection is permanent to ensure data consistency.
+                        If you need to change it, click "Request Change" to submit a request to our admin team.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+>>>>>>> Stashed changes:src/components/profile/ProfileClient.tsx
           </motion.div>
         )}
 
@@ -598,15 +805,19 @@ const ProfilePage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+            className={`rounded-2xl shadow-lg p-6 backdrop-blur-md border transition-all duration-300 ${
+              isDarkMode 
+                ? 'bg-white/10 border-white/20' 
+                : 'bg-white border-gray-200'
+            }`}
           >
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-6">
+            <h2 className={`text-lg font-medium mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               Preferences
             </h2>
 
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                <h3 className={`text-sm font-medium mb-3 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                   Notifications
                 </h3>
                 <div className="space-y-3">
@@ -636,7 +847,7 @@ const ProfilePage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                <h3 className={`text-sm font-medium mb-3 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                   Privacy
                 </h3>
                 <label className="flex items-center">
@@ -694,24 +905,34 @@ const ProfilePage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-6">
+            <div className={`rounded-2xl shadow-lg p-6 backdrop-blur-md border transition-all duration-300 ${
+              isDarkMode 
+                ? 'bg-white/10 border-white/20' 
+                : 'bg-white border-gray-200'
+            }`}>
+              <h2 className={`text-lg font-medium mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 Security Settings
               </h2>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div className={`flex items-center justify-between p-4 border rounded-lg ${
+                  isDarkMode ? 'border-white/10' : 'border-gray-200'
+                }`}>
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                    <h3 className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                       Password
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                       Last changed 3 months ago
                     </p>
                   </div>
                   <button
                     onClick={() => setShowPasswordChange(!showPasswordChange)}
-                    className="px-3 py-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                    className={`px-3 py-2 rounded-lg transition-colors ${
+                      isDarkMode 
+                        ? 'text-blue-400 hover:bg-white/5' 
+                        : 'text-blue-600 hover:bg-blue-50'
+                    }`}
                   >
                     Change Password
                   </button>
@@ -721,10 +942,12 @@ const ProfilePage: React.FC = () => {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg space-y-4"
+                    className={`p-4 rounded-lg space-y-4 ${
+                      isDarkMode ? 'bg-white/5' : 'bg-gray-50'
+                    }`}
                   >
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                         Current Password
                       </label>
                       <div className="relative">
@@ -733,7 +956,11 @@ const ProfilePage: React.FC = () => {
                           name="currentPassword"
                           value={passwordData.currentPassword}
                           onChange={handlePasswordChange}
-                          className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                          className={`w-full px-3 py-2 pr-10 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all ${
+                            isDarkMode 
+                              ? 'bg-white/5 border-white/10 text-white' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          } border`}
                         />
                         <button
                           type="button"
@@ -863,9 +1090,13 @@ const ProfilePage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+            className={`rounded-2xl shadow-lg p-6 backdrop-blur-md border transition-all duration-300 ${
+              isDarkMode 
+                ? 'bg-white/10 border-white/20' 
+                : 'bg-white border-gray-200'
+            }`}
           >
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-6">
+            <h2 className={`text-lg font-medium mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               Recent Activity
             </h2>
 
@@ -877,19 +1108,22 @@ const ProfilePage: React.FC = () => {
                 { action: 'Changed password', time: '1 week ago', icon: Lock },
                 { action: 'Signed up for NeetLogIQ', time: formatDate(profile.stats.joinedDate), icon: Award }
               ].map((activity, index) => (
-                <div key={index} className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg">
-                  <div className="flex-shrink-0">
-                    <activity.icon className="w-5 h-5 text-gray-400" />
+                <div key={index} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+                }`}>
+                  <div className="shrink-0">
+                    <activity.icon className={`w-5 h-5 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`} />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-900 dark:text-white">{activity.action}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</p>
+                    <p className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{activity.action}</p>
+                    <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>{activity.time}</p>
                   </div>
                 </div>
               ))}
             </div>
           </motion.div>
         )}
+        </div>
       </div>
     </div>
   );

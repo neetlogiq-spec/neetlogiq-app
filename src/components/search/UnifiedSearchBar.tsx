@@ -4,29 +4,39 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, X, Loader2, Clock } from 'lucide-react';
 
 interface Suggestion {
-  value: string;
+  id?: string;
   label: string;
+  value: string;
   secondary?: string;
   name?: string;
-  city?: string;
-  state?: string;
-  managementType?: string;
 }
 
 interface UnifiedSearchBarProps {
   data?: any[];
+  collegesData?: any[]; // Alias for data
   onResults: (results: any[]) => void;
   placeholder?: string;
   className?: string;
-  enableFullDatabaseSearch?: boolean; // New prop to enable full DB search
+  enableFullDatabaseSearch?: boolean;
+  type?: 'colleges' | 'courses' | 'cutoffs';
+  contentType?: 'colleges' | 'courses' | 'cutoffs'; // Added for backward compatibility
+  showSuggestions?: boolean;
+  showAIInsight?: boolean;
+  debounceMs?: number;
 }
 
 export function UnifiedSearchBar({
   data = [],
+  collegesData,
   onResults,
   placeholder = "Search colleges, courses, or cutoffs...",
   className = "",
-  enableFullDatabaseSearch = true // Default to full database search
+  enableFullDatabaseSearch = true,
+  type = 'colleges',
+  contentType,
+  showSuggestions: initialShowSuggestions = true,
+  showAIInsight = false,
+  debounceMs = 400
 }: UnifiedSearchBarProps) {
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -35,9 +45,28 @@ export function UnifiedSearchBar({
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Use effective type from either type or contentType prop
+  const searchType = contentType || type;
+  // Use data or collegesData alias
+  const searchData = data.length > 0 ? data : (collegesData || []);
+
+  // Dynamic configuration based on type
+  const config = {
+    historyKey: `${searchType}SearchHistory`,
+    autocompleteUrl: searchType === 'colleges' ? '/api/colleges/autocomplete' : 
+                     searchType === 'courses' ? '/api/courses/autocomplete' :
+                     '/api/colleges/autocomplete', // Fallback for cutoffs
+    searchUrl: searchType === 'colleges' ? '/api/colleges/search' : 
+               searchType === 'courses' ? '/api/courses' :
+               '/api/cutoffs',
+    resultCountLabel: searchType === 'colleges' ? '🔍 Searching 2,117+ colleges' : 
+                      searchType === 'courses' ? '🔍 Searching all courses' :
+                      '🔍 Searching all cutoffs'
+  };
+
   // Load search history from localStorage on mount
   useEffect(() => {
-    const history = localStorage.getItem('collegeSearchHistory');
+    const history = localStorage.getItem(config.historyKey);
     if (history) {
       try {
         setSearchHistory(JSON.parse(history));
@@ -45,7 +74,7 @@ export function UnifiedSearchBar({
         console.error('Failed to load search history:', e);
       }
     }
-  }, []);
+  }, [config.historyKey]);
 
   // Save to search history
   const saveToHistory = (searchTerm: string) => {
@@ -55,7 +84,7 @@ export function UnifiedSearchBar({
     ].slice(0, 10); // Keep last 10 searches
 
     setSearchHistory(updated);
-    localStorage.setItem('collegeSearchHistory', JSON.stringify(updated));
+    localStorage.setItem(config.historyKey, JSON.stringify(updated));
   };
 
   // Fetch autocomplete suggestions from API
@@ -67,7 +96,7 @@ export function UnifiedSearchBar({
 
     try {
       const response = await fetch(
-        `/api/colleges/autocomplete?q=${encodeURIComponent(searchQuery)}&limit=5`
+        `${config.autocompleteUrl}?q=${encodeURIComponent(searchQuery)}&limit=5`
       );
 
       if (!response.ok) {
@@ -96,9 +125,9 @@ export function UnifiedSearchBar({
     setIsSearching(true);
 
     try {
-      const response = await fetch(
-        `/api/colleges/search?q=${encodeURIComponent(searchQuery)}&limit=100`
-      );
+      // For courses, we use the main courses API which already supports query
+      const url = `${config.searchUrl}${config.searchUrl.includes('?') ? '&' : '?'}q=${encodeURIComponent(searchQuery)}&limit=100`;
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error('Search failed');
@@ -107,7 +136,9 @@ export function UnifiedSearchBar({
       const result = await response.json();
 
       if (result.success) {
-        onResults(result.data || []);
+        // Special handling for courses API response structure which is { success, data, pagination }
+        const data = result.data || result.results || [];
+        onResults(data);
         saveToHistory(searchQuery);
       } else {
         console.error('Search error:', result.error);
@@ -129,13 +160,16 @@ export function UnifiedSearchBar({
     }
 
     const queryLower = searchQuery.toLowerCase();
-    const results = data.filter(item => {
+    const results = searchData.filter(item => {
       const searchableText = [
         item.name,
+        item.course_name, // Added for courses
+        item.college, // Added for cutoffs
         item.city,
         item.state,
         item.management_type,
-        item.type
+        item.type,
+        item.stream // Added for courses
       ].join(' ').toLowerCase();
 
       return searchableText.includes(queryLower);
@@ -146,45 +180,42 @@ export function UnifiedSearchBar({
 
   // Debounced search
   useEffect(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
+    const autocompleteTimer = setTimeout(() => {
+      if (query.trim()) {
+        fetchAutocompleteSuggestions(query);
+      }
+    }, 150);
 
-    if (!query.trim()) {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      onResults([]);
-      return;
-    }
+    const searchTimer = setTimeout(() => {
+      if (!query.trim()) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        onResults([]);
+        return;
+      }
 
-    // Fetch autocomplete suggestions
-    debounceTimerRef.current = setTimeout(() => {
-      fetchAutocompleteSuggestions(query);
-    }, 150); // Quick autocomplete
-
-    // Perform search after longer delay
-    debounceTimerRef.current = setTimeout(() => {
       if (enableFullDatabaseSearch) {
         searchFullDatabase(query);
       } else {
         searchClientSide(query);
       }
-    }, 400); // Debounced search
+    }, debounceMs);
 
     return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
+      clearTimeout(autocompleteTimer);
+      clearTimeout(searchTimer);
     };
-  }, [query]);
+  }, [query, debounceMs]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
 
   const handleSuggestionClick = (suggestion: Suggestion | string) => {
-    const searchTerm = typeof suggestion === 'string' ? suggestion : suggestion.value;
-    setQuery(searchTerm);
+    // Use label for display in search bar, but value for the actual search
+    const displayTerm = typeof suggestion === 'string' ? suggestion : (suggestion.label || suggestion.name || suggestion.value);
+    const searchTerm = typeof suggestion === 'string' ? suggestion : (suggestion.label || suggestion.name || suggestion.value);
+    setQuery(displayTerm);
     setShowSuggestions(false);
 
     if (enableFullDatabaseSearch) {
@@ -324,8 +355,8 @@ export function UnifiedSearchBar({
           ) : (
             <span>
               {enableFullDatabaseSearch
-                ? '🔍 Searching 2,117+ colleges'
-                : 'Searching loaded colleges'}
+                ? config.resultCountLabel
+                : `Searching loaded ${searchType}`}
             </span>
           )}
         </div>

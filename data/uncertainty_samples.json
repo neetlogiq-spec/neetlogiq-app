@@ -1,0 +1,7252 @@
+[
+  {
+    "id": 0,
+    "query": "AIIMS New Delhi",
+    "prediction": "AIG HOSPITAL",
+    "confidence": 0.2682708363980055,
+    "context": {
+      "course": "MBBS",
+      "state": null,
+      "component_scores": {
+        "faiss": 0.2576766312122345,
+        "semantic": 0.515353262424469,
+        "spacy_ner": 0.0,
+        "validator": 0.09391214698553085,
+        "ensemble": 0.2682708363980055
+      }
+    },
+    "timestamp": "2025-11-18T12:47:20.468730",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 1,
+    "query": "Government Medical College",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7542142140865326,
+    "context": {
+      "course": "MBBS",
+      "state": null,
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "validator": 0.996856689453125,
+        "ensemble": 0.7542142140865326
+      }
+    },
+    "timestamp": "2025-11-18T12:47:32.699661",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 2,
+    "query": "BITS Pilani",
+    "prediction": "SARAKSHI NETRALAYA",
+    "confidence": 0.3367726355791092,
+    "context": {
+      "course": "B.Tech",
+      "state": null,
+      "component_scores": {
+        "faiss": 0.16466856002807617,
+        "semantic": 0.32933712005615234,
+        "spacy_ner": 0.0,
+        "validator": 0.7213500142097473,
+        "ensemble": 0.3367726355791092
+      }
+    },
+    "timestamp": "2025-11-18T12:47:43.812085",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 3,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:02:53.298465",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 4,
+    "query": "KD MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "prediction": "KD MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:02:53.334868",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 5,
+    "query": "AUTONOMOUS STATE MEDICAL COLLEGE",
+    "prediction": "AUTONOMOUS STATE MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:02:53.364421",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 6,
+    "query": "SDM COLLEGE OF MEDICAL SCIENCES AND HOSPITAL",
+    "prediction": "SDM COLLEGE OF MEDICAL SCIENCES AND HOSPITAL",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:02:53.397168",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 7,
+    "query": "EMPLOYEES STATE INSURANCE - PGIMSR, ESI-HOSPITAL",
+    "prediction": "EMPLOYEES STATE INSURANCE - PGIMSR, ESI-HOSPITAL",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "DELHI",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:02:53.434966",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 8,
+    "query": "RAM KRISHNA COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "prediction": "RAM KRISHNA COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "MADHYA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:02:53.465480",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 9,
+    "query": "SHRI RAWATPURA SARKAR INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "SHRI RAWATPURA SARKAR INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7850000149011611,
+    "context": {
+      "course": null,
+      "state": "CHATTISGARH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000149011611
+      }
+    },
+    "timestamp": "2025-11-18T13:02:53.497503",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 10,
+    "query": "PKG MEDICAL COLLEGE",
+    "prediction": "PKG MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:02:53.526687",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 11,
+    "query": "HERITAGE INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "HERITAGE INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7549999791383744,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.9999999403953552,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7549999791383744
+      }
+    },
+    "timestamp": "2025-11-18T13:02:53.553658",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 12,
+    "query": "SRI JAYADEVA INSTITUTE OF CARDIOLOGY",
+    "prediction": "SRI JAYADEVA INSTITUTE OF CARDIOLOGY",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:02:53.583333",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 13,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:02:59.768077",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 14,
+    "query": "KD MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "prediction": "KD MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:02:59.804764",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 15,
+    "query": "AUTONOMOUS STATE MEDICAL COLLEGE",
+    "prediction": "AUTONOMOUS STATE MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:02:59.836347",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 16,
+    "query": "SDM COLLEGE OF MEDICAL SCIENCES AND HOSPITAL",
+    "prediction": "SDM COLLEGE OF MEDICAL SCIENCES AND HOSPITAL",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:02:59.866189",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 17,
+    "query": "EMPLOYEES STATE INSURANCE - PGIMSR, ESI-HOSPITAL",
+    "prediction": "EMPLOYEES STATE INSURANCE - PGIMSR, ESI-HOSPITAL",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "DELHI",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:02:59.898184",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 18,
+    "query": "RAM KRISHNA COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "prediction": "RAM KRISHNA COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "MADHYA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:02:59.929130",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 19,
+    "query": "SHRI RAWATPURA SARKAR INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "SHRI RAWATPURA SARKAR INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7850000149011611,
+    "context": {
+      "course": null,
+      "state": "CHATTISGARH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000149011611
+      }
+    },
+    "timestamp": "2025-11-18T13:02:59.963289",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 20,
+    "query": "PKG MEDICAL COLLEGE",
+    "prediction": "PKG MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:02:59.991196",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 21,
+    "query": "HERITAGE INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "HERITAGE INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7549999791383744,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.9999999403953552,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7549999791383744
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.022100",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 22,
+    "query": "SRI JAYADEVA INSTITUTE OF CARDIOLOGY",
+    "prediction": "SRI JAYADEVA INSTITUTE OF CARDIOLOGY",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.049260",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 23,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.078427",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 24,
+    "query": "KD MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "prediction": "KD MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.105183",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 25,
+    "query": "AUTONOMOUS STATE MEDICAL COLLEGE",
+    "prediction": "AUTONOMOUS STATE MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.131594",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 26,
+    "query": "SDM COLLEGE OF MEDICAL SCIENCES AND HOSPITAL",
+    "prediction": "SDM COLLEGE OF MEDICAL SCIENCES AND HOSPITAL",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.162330",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 27,
+    "query": "EMPLOYEES STATE INSURANCE - PGIMSR, ESI-HOSPITAL",
+    "prediction": "EMPLOYEES STATE INSURANCE - PGIMSR, ESI-HOSPITAL",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "DELHI",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.191533",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 28,
+    "query": "RAM KRISHNA COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "prediction": "RAM KRISHNA COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "MADHYA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.220139",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 29,
+    "query": "SHRI RAWATPURA SARKAR INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "SHRI RAWATPURA SARKAR INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7850000149011611,
+    "context": {
+      "course": null,
+      "state": "CHATTISGARH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000149011611
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.250249",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 30,
+    "query": "PKG MEDICAL COLLEGE",
+    "prediction": "PKG MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.278117",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 31,
+    "query": "HERITAGE INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "HERITAGE INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7549999791383744,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.9999999403953552,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7549999791383744
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.304743",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 32,
+    "query": "SRI JAYADEVA INSTITUTE OF CARDIOLOGY",
+    "prediction": "SRI JAYADEVA INSTITUTE OF CARDIOLOGY",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.332397",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 33,
+    "query": "TATA MEMORIAL CENTRE",
+    "prediction": "TATA MEMORIAL CENTRE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.359378",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 34,
+    "query": "DR RAM MANOHAR LOHIA INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "DR RAM MANOHAR LOHIA INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.392685",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 35,
+    "query": "KPC MEDICAL COLLEGE",
+    "prediction": "KPC MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.420714",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 36,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TELANGANA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.445640",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 37,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.470915",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 38,
+    "query": "DR BS KUSHWAH INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "DR BS KUSHWAH INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.502141",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 39,
+    "query": "NORTH EASTERN INDIRA GANDHI REGIONAL INSTITUTE OF HEALTH AND MEDICAL SCIENCES",
+    "prediction": "NORTH EASTERN INDIRA GANDHI REGIONAL INSTITUTE OF HEALTH AND MEDICAL SCIENCES",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "MEGHALAYA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.535387",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 40,
+    "query": "BANKURA SAMMILANI MEDICAL COLLEGE",
+    "prediction": "BANKURA SAMMILANI MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.564965",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 41,
+    "query": "BABA KINA RAM AUTONOMOUS STATE MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "BABA KINA RAM AUTONOMOUS STATE MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000566244125,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.595796",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 42,
+    "query": "TRICHY SRM MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "prediction": "TRICHY SRM MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "confidence": 0.7850000566244125,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.626570",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 43,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "RAJASTHAN",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.651973",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 44,
+    "query": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000298023223,
+    "context": {
+      "course": null,
+      "state": "HARYANA",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000298023223
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.680604",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 45,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.706258",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 46,
+    "query": "DR SOMERVEL MEMORIAL CSI HOSPITAL AND MEDICAL COLLEGE",
+    "prediction": "DR SOMERVEL MEMORIAL CSI HOSPITAL AND MEDICAL COLLEGE",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.738062",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 47,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TELANGANA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.772497",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 48,
+    "query": "AJAY SANGAAL INSTITUTE OF MEDICAL SCIENCES AND AYUSHMAN HOSPITAL",
+    "prediction": "AJAY SANGAAL INSTITUTE OF MEDICAL SCIENCES AND AYUSHMAN HOSPITAL",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.807830",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 49,
+    "query": "SHRI LAL BAHADUR SHASTRI GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "SHRI LAL BAHADUR SHASTRI GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "HIMACHAL PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.838892",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 50,
+    "query": "GMERS MEDICAL COLLEGE",
+    "prediction": "GMERS MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "GUJARAT",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.867565",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 51,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.894882",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 52,
+    "query": "SREE MOOKAMBIKA INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "SREE MOOKAMBIKA INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.924811",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 53,
+    "query": "SETH GS MEDICAL COLLEGE AND KEM HOSPITAL",
+    "prediction": "SETH GS MEDICAL COLLEGE AND KEM HOSPITAL",
+    "confidence": 0.7850000149011611,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000149011611
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.955196",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 54,
+    "query": "CHINTPURNI MEDICAL COLLEGE",
+    "prediction": "CHINTPURNI MEDICAL COLLEGE",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "PUNJAB",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:00.985892",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 55,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TELANGANA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.013295",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 56,
+    "query": "LADY HARDINGE MEDICAL COLLEGE",
+    "prediction": "LADY HARDINGE MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "NEW DELHI",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.041421",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 57,
+    "query": "LOKMANYA TILAK MUNICIPAL MEDICAL COLLEGE",
+    "prediction": "LOKMANYA TILAK MUNICIPAL MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.071893",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 58,
+    "query": "KILPAUK MEDICAL COLLEGE",
+    "prediction": "KILPAUK MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.099362",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 59,
+    "query": "GOVERNMENT MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.128043",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 60,
+    "query": "S N MEDICAL COLLEGE",
+    "prediction": "S N MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.155627",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 61,
+    "query": "PALAKKAD INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "PALAKKAD INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.185685",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 62,
+    "query": "TINSUKIA MEDICAL COLLEGE",
+    "prediction": "TINSUKIA MEDICAL COLLEGE",
+    "confidence": 0.7549999791383744,
+    "context": {
+      "course": null,
+      "state": "ASSAM",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.9999999403953552,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7549999791383744
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.214859",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 63,
+    "query": "SMT KASHIBAI NAVALE MEDICAL COLLEGE AND GENERAL HOSPITAL",
+    "prediction": "SMT KASHIBAI NAVALE MEDICAL COLLEGE AND GENERAL HOSPITAL",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.249280",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 64,
+    "query": "SYMBIOSIS MEDICAL COLLEGE FOR WOMEN",
+    "prediction": "SYMBIOSIS MEDICAL COLLEGE FOR WOMEN",
+    "confidence": 0.7550000342726707,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.4999999701976776,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000342726707
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.279069",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 65,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.304871",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 66,
+    "query": "GAUHATI MEDICAL COLLEGE",
+    "prediction": "GAUHATI MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "ASSAM",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.333976",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 67,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.360329",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 68,
+    "query": "PURULIA GOVERNMENT MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "PURULIA GOVERNMENT MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000834465027,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.000000238418579,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000834465027
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.390210",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 69,
+    "query": "SWAMINAYARAN INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "SWAMINAYARAN INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "GUJARAT",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.422723",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 70,
+    "query": "AKASH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "AKASH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7850000566244125,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.453958",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 71,
+    "query": "MAYO INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "MAYO INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.484159",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 72,
+    "query": "UNITED INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "UNITED INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7550000759959221,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.4999999701976776,
+        "semantic": 1.000000238418579,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000759959221
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.511851",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 73,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.539900",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 74,
+    "query": "KD MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "prediction": "KD MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.569911",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 75,
+    "query": "AUTONOMOUS STATE MEDICAL COLLEGE",
+    "prediction": "AUTONOMOUS STATE MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.598233",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 76,
+    "query": "SDM COLLEGE OF MEDICAL SCIENCES AND HOSPITAL",
+    "prediction": "SDM COLLEGE OF MEDICAL SCIENCES AND HOSPITAL",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.628799",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 77,
+    "query": "EMPLOYEES STATE INSURANCE - PGIMSR, ESI-HOSPITAL",
+    "prediction": "EMPLOYEES STATE INSURANCE - PGIMSR, ESI-HOSPITAL",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "DELHI",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.658504",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 78,
+    "query": "RAM KRISHNA COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "prediction": "RAM KRISHNA COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "MADHYA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.687874",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 79,
+    "query": "SHRI RAWATPURA SARKAR INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "SHRI RAWATPURA SARKAR INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7850000149011611,
+    "context": {
+      "course": null,
+      "state": "CHATTISGARH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000149011611
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.718011",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 80,
+    "query": "PKG MEDICAL COLLEGE",
+    "prediction": "PKG MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.747263",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 81,
+    "query": "HERITAGE INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "HERITAGE INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7549999791383744,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.9999999403953552,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7549999791383744
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.782476",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 82,
+    "query": "SRI JAYADEVA INSTITUTE OF CARDIOLOGY",
+    "prediction": "SRI JAYADEVA INSTITUTE OF CARDIOLOGY",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.814827",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 83,
+    "query": "TATA MEMORIAL CENTRE",
+    "prediction": "TATA MEMORIAL CENTRE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.843182",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 84,
+    "query": "DR RAM MANOHAR LOHIA INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "DR RAM MANOHAR LOHIA INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.872980",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 85,
+    "query": "KPC MEDICAL COLLEGE",
+    "prediction": "KPC MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.900879",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 86,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TELANGANA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.929190",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 87,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.957083",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 88,
+    "query": "DR BS KUSHWAH INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "DR BS KUSHWAH INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:01.988976",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 89,
+    "query": "NORTH EASTERN INDIRA GANDHI REGIONAL INSTITUTE OF HEALTH AND MEDICAL SCIENCES",
+    "prediction": "NORTH EASTERN INDIRA GANDHI REGIONAL INSTITUTE OF HEALTH AND MEDICAL SCIENCES",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "MEGHALAYA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.019968",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 90,
+    "query": "BANKURA SAMMILANI MEDICAL COLLEGE",
+    "prediction": "BANKURA SAMMILANI MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.047769",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 91,
+    "query": "BABA KINA RAM AUTONOMOUS STATE MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "BABA KINA RAM AUTONOMOUS STATE MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000566244125,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.079484",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 92,
+    "query": "TRICHY SRM MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "prediction": "TRICHY SRM MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE",
+    "confidence": 0.7850000566244125,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.111436",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 93,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "RAJASTHAN",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.138372",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 94,
+    "query": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000298023223,
+    "context": {
+      "course": null,
+      "state": "HARYANA",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000298023223
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.167701",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 95,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.197910",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 96,
+    "query": "DR SOMERVEL MEMORIAL CSI HOSPITAL AND MEDICAL COLLEGE",
+    "prediction": "DR SOMERVEL MEMORIAL CSI HOSPITAL AND MEDICAL COLLEGE",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.228296",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 97,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TELANGANA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.257473",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 98,
+    "query": "AJAY SANGAAL INSTITUTE OF MEDICAL SCIENCES AND AYUSHMAN HOSPITAL",
+    "prediction": "AJAY SANGAAL INSTITUTE OF MEDICAL SCIENCES AND AYUSHMAN HOSPITAL",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.288181",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 99,
+    "query": "SHRI LAL BAHADUR SHASTRI GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "SHRI LAL BAHADUR SHASTRI GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "HIMACHAL PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.317635",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 100,
+    "query": "GMERS MEDICAL COLLEGE",
+    "prediction": "GMERS MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "GUJARAT",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.347127",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 101,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.374443",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 102,
+    "query": "SREE MOOKAMBIKA INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "SREE MOOKAMBIKA INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.405096",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 103,
+    "query": "SETH GS MEDICAL COLLEGE AND KEM HOSPITAL",
+    "prediction": "SETH GS MEDICAL COLLEGE AND KEM HOSPITAL",
+    "confidence": 0.7850000149011611,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000149011611
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.435506",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 104,
+    "query": "CHINTPURNI MEDICAL COLLEGE",
+    "prediction": "CHINTPURNI MEDICAL COLLEGE",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "PUNJAB",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.464273",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 105,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TELANGANA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.491935",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 106,
+    "query": "LADY HARDINGE MEDICAL COLLEGE",
+    "prediction": "LADY HARDINGE MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "NEW DELHI",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.519563",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 107,
+    "query": "LOKMANYA TILAK MUNICIPAL MEDICAL COLLEGE",
+    "prediction": "LOKMANYA TILAK MUNICIPAL MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.548512",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 108,
+    "query": "KILPAUK MEDICAL COLLEGE",
+    "prediction": "KILPAUK MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.577377",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 109,
+    "query": "GOVERNMENT MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000417232513,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.606440",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 110,
+    "query": "S N MEDICAL COLLEGE",
+    "prediction": "S N MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.633711",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 111,
+    "query": "PALAKKAD INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "PALAKKAD INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.663588",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 112,
+    "query": "TINSUKIA MEDICAL COLLEGE",
+    "prediction": "TINSUKIA MEDICAL COLLEGE",
+    "confidence": 0.7549999791383744,
+    "context": {
+      "course": null,
+      "state": "ASSAM",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.9999999403953552,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7549999791383744
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.692681",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 113,
+    "query": "SMT KASHIBAI NAVALE MEDICAL COLLEGE AND GENERAL HOSPITAL",
+    "prediction": "SMT KASHIBAI NAVALE MEDICAL COLLEGE AND GENERAL HOSPITAL",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.723864",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 114,
+    "query": "SYMBIOSIS MEDICAL COLLEGE FOR WOMEN",
+    "prediction": "SYMBIOSIS MEDICAL COLLEGE FOR WOMEN",
+    "confidence": 0.7550000342726707,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.4999999701976776,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000342726707
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.755316",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 115,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.791553",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 116,
+    "query": "GAUHATI MEDICAL COLLEGE",
+    "prediction": "GAUHATI MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "ASSAM",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.824397",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 117,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.853331",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 118,
+    "query": "PURULIA GOVERNMENT MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "PURULIA GOVERNMENT MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000834465027,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.000000238418579,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000834465027
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.882725",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 119,
+    "query": "SWAMINAYARAN INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "SWAMINAYARAN INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "GUJARAT",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.915374",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 120,
+    "query": "AKASH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "AKASH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7850000566244125,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.947850",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 121,
+    "query": "MAYO INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "MAYO INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:02.976687",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 122,
+    "query": "UNITED INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "UNITED INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7550000759959221,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.4999999701976776,
+        "semantic": 1.000000238418579,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000759959221
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.005798",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 123,
+    "query": "PRAGJYOTISHPUR MEDICAL COLLEGE",
+    "prediction": "PRAGJYOTISHPUR MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "ASSAM",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.037250",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 124,
+    "query": "MADHUBANI MEDICAL COLLEGE",
+    "prediction": "MADHUBANI MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "BIHAR",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.067649",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 125,
+    "query": "PT B D SHARMA POSTGRADUATE INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "PT B D SHARMA POSTGRADUATE INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7549999791383744,
+    "context": {
+      "course": null,
+      "state": "HARYANA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.9999999403953552,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7549999791383744
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.100080",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 126,
+    "query": "MADHA MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "MADHA MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.129609",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 127,
+    "query": "T S MISRA MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "T S MISRA MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.163810",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 128,
+    "query": "BHASKAR MEDICAL COLLEGE",
+    "prediction": "BHASKAR MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "TELANGANA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.192276",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 129,
+    "query": "GS MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "GS MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000149011611,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000149011611
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.223593",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 130,
+    "query": "AUTONOMOUS STATE MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "AUTONOMOUS STATE MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.254988",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 131,
+    "query": "SANJEEVAN MEDICAL FOUNDATION ENT POST GRADUATE TRAINING INSTITUTE",
+    "prediction": "SANJEEVAN MEDICAL FOUNDATION ENT POST GRADUATE TRAINING INSTITUTE",
+    "confidence": 0.7849999940395356,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 0.9999999403953552,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999940395356
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.288703",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 132,
+    "query": "DR PSI MEDICAL COLLEGE ",
+    "prediction": "DR PSI MEDICAL COLLEGE ",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "ANDHRA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.319839",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 133,
+    "query": "SREE GOKULAM MEDICAL COLLEGE TRUST AND RESEARCH FOUNDATION",
+    "prediction": "SREE GOKULAM MEDICAL COLLEGE TRUST AND RESEARCH FOUNDATION",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.350933",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 134,
+    "query": "DARBHANGA MEDICAL COLLEGE",
+    "prediction": "DARBHANGA MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "BIHAR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.382127",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 135,
+    "query": "DR VRK WOMENS MEDICAL COLLEGE",
+    "prediction": "DR VRK WOMENS MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "TELANGANA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.414181",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 136,
+    "query": "SANTINIKETAN MEDICAL COLLEGE",
+    "prediction": "SANTINIKETAN MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.443754",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 137,
+    "query": "CHANDULAL CHANDRAKAR MEMORIAL GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "CHANDULAL CHANDRAKAR MEMORIAL GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7850000149011611,
+    "context": {
+      "course": null,
+      "state": "CHATTISGARH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000149011611
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.475600",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 138,
+    "query": "VEER SURENDRA SAI INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "VEER SURENDRA SAI INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7850000566244125,
+    "context": {
+      "course": null,
+      "state": "ORISSA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.508264",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 139,
+    "query": "MEDICAL COLLEGE",
+    "prediction": "MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "GUJARAT",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.536207",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 140,
+    "query": "DR D Y PATIL MEDICAL COLLEGE",
+    "prediction": "DR D Y PATIL MEDICAL COLLEGE",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.566242",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 141,
+    "query": "JIET MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "JIET MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000149011611,
+    "context": {
+      "course": null,
+      "state": "RAJASTHAN",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000149011611
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.596856",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 142,
+    "query": "THOOTHUKUDI MEDICAL COLLEGE",
+    "prediction": "THOOTHUKUDI MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.627314",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 143,
+    "query": "SRI PADMAVATHI MEDICAL COLLEGE FOR WOMEN",
+    "prediction": "SRI PADMAVATHI MEDICAL COLLEGE FOR WOMEN",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "ANDHRA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.658797",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 144,
+    "query": "PARUL INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "PARUL INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7849999940395356,
+    "context": {
+      "course": null,
+      "state": "GUJARAT",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 0.9999999403953552,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999940395356
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.690890",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 145,
+    "query": "SRI CHAMUNDESHWARI MEDICAL COLLEGE HOSPITAL AND RESEARCH INSTITUTE",
+    "prediction": "SRI CHAMUNDESHWARI MEDICAL COLLEGE HOSPITAL AND RESEARCH INSTITUTE",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.724325",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 146,
+    "query": "ALL INDIA INSTITUTE OF HYGIENE AND PUBLIC HEALTH",
+    "prediction": "ALL INDIA INSTITUTE OF HYGIENE AND PUBLIC HEALTH",
+    "confidence": 0.7850000566244125,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.758821",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 147,
+    "query": "GOVERNMENT MEDICAL COLLEGE ",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.790585",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 148,
+    "query": "MALABAR CANCER CENTRE POST GRADUATE INSTITUTE OF ONCOLOGY SCIENCES AND RESEARCH",
+    "prediction": "MALABAR CANCER CENTRE POST GRADUATE INSTITUTE OF ONCOLOGY SCIENCES AND RESEARCH",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.830023",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 149,
+    "query": "JAWAHAR LAL NEHRU MEDICAL COLLEGE",
+    "prediction": "JAWAHAR LAL NEHRU MEDICAL COLLEGE",
+    "confidence": 0.7549999925494194,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.4999999701976776,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7549999925494194
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.862690",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 150,
+    "query": "RAJKIYA ALLOPATHIC MEDICAL COLLEGE",
+    "prediction": "RAJKIYA ALLOPATHIC MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.893835",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 151,
+    "query": "MADURAI MEDICAL COLLEGE",
+    "prediction": "MADURAI MEDICAL COLLEGE",
+    "confidence": 0.7550000715255737,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000715255737
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.925104",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 152,
+    "query": "TIRUNELVELI MEDICAL COLLEGE",
+    "prediction": "TIRUNELVELI MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.955356",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 153,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "ANDHRA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:03.985813",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 154,
+    "query": "D Y PATIL UNIVERSITY SCHOOL OF MEDICINE",
+    "prediction": "D Y PATIL UNIVERSITY SCHOOL OF MEDICINE",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.019345",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 155,
+    "query": "DR B BOROOAH CANCER INSTITUTE (REGIONAL CANCER CENTRE)",
+    "prediction": "DR B BOROOAH CANCER INSTITUTE (REGIONAL CANCER CENTRE)",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "ASSAM",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.052956",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 156,
+    "query": "GMERS MEDICAL COLLEGE",
+    "prediction": "GMERS MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "GUJARAT",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.084054",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 157,
+    "query": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "UTTARAKHAND",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.115201",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 158,
+    "query": "PRATHIMA RELIEF INSTITUE OF MEDICAL SCIENCES",
+    "prediction": "PRATHIMA RELIEF INSTITUE OF MEDICAL SCIENCES",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "TELANGANA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.149142",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 159,
+    "query": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": null,
+      "state": "RAJASTHAN",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.180115",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 160,
+    "query": "MAULANA AZAD MEDICAL COLLEGE",
+    "prediction": "MAULANA AZAD MEDICAL COLLEGE",
+    "confidence": 0.7550000566244125,
+    "context": {
+      "course": null,
+      "state": "NEW DELHI",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.211293",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 161,
+    "query": "PACIFIC MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "PACIFIC MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000298023223,
+    "context": {
+      "course": null,
+      "state": "RAJASTHAN",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000298023223
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.241368",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 162,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.272737",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 163,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.302937",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 164,
+    "query": "SHRI RAMKRISHNA INSTITUTE OF MEDICAL SCIENCES AND SANAKA HOSPITALS",
+    "prediction": "SHRI RAMKRISHNA INSTITUTE OF MEDICAL SCIENCES AND SANAKA HOSPITALS",
+    "confidence": 0.7849999791383744,
+    "context": {
+      "course": null,
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.9999999403953552,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999791383744
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.337815",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 165,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "GUJARAT",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.367583",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 166,
+    "query": "BGS MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "BGS MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000834465027,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.000000238418579,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000834465027
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.399883",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 167,
+    "query": "INDIRA GANDHI MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "INDIRA GANDHI MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7850000566244125,
+    "context": {
+      "course": null,
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000566244125
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.432777",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 168,
+    "query": "SHRI KALYAN GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "SHRI KALYAN GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": null,
+      "state": "RAJASTHAN",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.464547",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 169,
+    "query": "GMERS MEDICAL COLLEGE",
+    "prediction": "GMERS MEDICAL COLLEGE",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "GUJARAT",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.494631",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 170,
+    "query": "KIDWAI MEMORIAL INSTITUTE OF ONCOLOGY",
+    "prediction": "KIDWAI MEMORIAL INSTITUTE OF ONCOLOGY",
+    "confidence": 0.755,
+    "context": {
+      "course": null,
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.755
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.525430",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 171,
+    "query": "GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7550000417232513,
+    "context": {
+      "course": null,
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000417232513
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.554827",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 172,
+    "query": "TOMO RIBA INSTITUTE OF HEALTH AND MEDICAL SCIENCES",
+    "prediction": "TOMO RIBA INSTITUTE OF HEALTH AND MEDICAL SCIENCES",
+    "confidence": 0.7850000298023223,
+    "context": {
+      "course": null,
+      "state": "ARUNACHAL PRADESH",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7850000298023223
+      }
+    },
+    "timestamp": "2025-11-18T13:03:04.590050",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 173,
+    "query": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7106022423505782,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.7024089694023132,
+        "ensemble": 0.7106022423505782
+      }
+    },
+    "timestamp": "2025-11-18T13:14:11.784638",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 174,
+    "query": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7106022423505782,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.7024089694023132,
+        "ensemble": 0.7106022423505782
+      }
+    },
+    "timestamp": "2025-11-18T13:14:15.073044",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 175,
+    "query": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7106022423505782,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.7024089694023132,
+        "ensemble": 0.7106022423505782
+      }
+    },
+    "timestamp": "2025-11-18T13:15:00.280566",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 176,
+    "query": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7106022423505782,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.7024089694023132,
+        "ensemble": 0.7106022423505782
+      }
+    },
+    "timestamp": "2025-11-18T13:15:05.312929",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 177,
+    "query": "AARUPADAI VEEDU MEDICAL COLLEGE",
+    "prediction": "AARUPADAI VEEDU MEDICAL COLLEGE",
+    "confidence": 0.7529914397001266,
+    "context": {
+      "course": "MBBS",
+      "state": "PUDUCHERRY",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "validator": 0.9919655919075012,
+        "ensemble": 0.7529914397001266
+      }
+    },
+    "timestamp": "2025-11-18T13:15:08.947890",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 178,
+    "query": "ABHISHEK I MISHRA MEMORIAL MEDICAL COLLEGE AND RESEARCH",
+    "prediction": "ABHISHEK I MISHRA MEMORIAL MEDICAL COLLEGE AND RESEARCH",
+    "confidence": 0.7795529639720917,
+    "context": {
+      "course": "MBBS",
+      "state": "CHATTISGARH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.000000238418579,
+        "spacy_ner": 0.4,
+        "validator": 0.978211522102356,
+        "ensemble": 0.7795529639720917
+      }
+    },
+    "timestamp": "2025-11-18T13:15:13.487914",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 179,
+    "query": "ACHARYA HARIHAR REGIONAL CANCER CENTRE",
+    "prediction": "ACHARYA HARIHAR REGIONAL CANCER CENTRE",
+    "confidence": 0.5410651127994061,
+    "context": {
+      "course": "MBBS",
+      "state": "ORISSA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.14426039159297943,
+        "ensemble": 0.5410651127994061
+      }
+    },
+    "timestamp": "2025-11-18T13:15:18.357534",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 180,
+    "query": "ACHARYA SHRI CHANDER COLLEGE OF MEDICAL SCIENCES",
+    "prediction": "ACHARYA SHRI CHANDER COLLEGE OF MEDICAL SCIENCES",
+    "confidence": 0.778981897830963,
+    "context": {
+      "course": "MBBS",
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.9759275913238525,
+        "ensemble": 0.778981897830963
+      }
+    },
+    "timestamp": "2025-11-18T13:15:23.037782",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 181,
+    "query": "ACPM MEDICAL COLLEGE",
+    "prediction": "ACPM MEDICAL COLLEGE",
+    "confidence": 0.7450041967630386,
+    "context": {
+      "course": "MBBS",
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.9600167870521545,
+        "ensemble": 0.7450041967630386
+      }
+    },
+    "timestamp": "2025-11-18T13:15:27.045859",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 182,
+    "query": "ACS MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "ACS MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7393393522500992,
+    "context": {
+      "course": "MBBS",
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.8173571825027466,
+        "ensemble": 0.7393393522500992
+      }
+    },
+    "timestamp": "2025-11-18T13:15:31.968703",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 183,
+    "query": "ACSR GOVERNMENT MEDICAL COLLEGE NELLORE",
+    "prediction": "ACSR GOVERNMENT MEDICAL COLLEGE NELLORE",
+    "confidence": 0.7545917677879334,
+    "context": {
+      "course": "MBBS",
+      "state": "ANDHRA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.9983670711517334,
+        "ensemble": 0.7545917677879334
+      }
+    },
+    "timestamp": "2025-11-18T13:15:37.058593",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 184,
+    "query": "ADESH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "ADESH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7594539409875869,
+    "context": {
+      "course": "MBBS",
+      "state": "PUNJAB",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.8978157639503479,
+        "ensemble": 0.7594539409875869
+      }
+    },
+    "timestamp": "2025-11-18T13:15:42.269067",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 185,
+    "query": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7024831956624984,
+    "context": {
+      "course": "MBBS",
+      "state": "HARYANA",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.6699326634407043,
+        "ensemble": 0.7024831956624984
+      }
+    },
+    "timestamp": "2025-11-18T13:15:47.826761",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 186,
+    "query": "ADICHUNCHANAGIRI INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "ADICHUNCHANAGIRI INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7461305040121078,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 0.9999998807907104,
+        "spacy_ner": 0.2,
+        "validator": 0.9645220637321472,
+        "ensemble": 0.7461305040121078
+      }
+    },
+    "timestamp": "2025-11-18T13:15:54.123065",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 187,
+    "query": "AGARTALA GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "AGARTALA GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7545943009853363,
+    "context": {
+      "course": "MBBS",
+      "state": "TRIPURA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.9983771443367004,
+        "ensemble": 0.7545943009853363
+      }
+    },
+    "timestamp": "2025-11-18T13:15:59.604154",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 188,
+    "query": "AJAY SANGAAL INSTITUTE OF MEDICAL SCIENCES AND AYUSHMAN HOSPITAL",
+    "prediction": "AJAY SANGAAL INSTITUTE OF MEDICAL SCIENCES AND AYUSHMAN HOSPITAL",
+    "confidence": 0.7420567280054092,
+    "context": {
+      "course": "MBBS",
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.8282267451286316,
+        "ensemble": 0.7420567280054092
+      }
+    },
+    "timestamp": "2025-11-18T13:16:05.533185",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 189,
+    "query": "AKASH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "AKASH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7127453392744064,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.7109811305999756,
+        "ensemble": 0.7127453392744064
+      }
+    },
+    "timestamp": "2025-11-18T13:16:11.129432",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 190,
+    "query": "AL FALAH SCHOOL OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "AL FALAH SCHOOL OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7767839139699936,
+    "context": {
+      "course": "MBBS",
+      "state": "HARYANA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.9671354293823242,
+        "ensemble": 0.7767839139699936
+      }
+    },
+    "timestamp": "2025-11-18T13:16:17.138808",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 191,
+    "query": "AL-AMEEN MEDICAL COLLEGE",
+    "prediction": "AL-AMEEN MEDICAL COLLEGE",
+    "confidence": 0.7492054569721222,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "validator": 0.9768216609954834,
+        "ensemble": 0.7492054569721222
+      }
+    },
+    "timestamp": "2025-11-18T13:16:22.776887",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 192,
+    "query": "AL-AZHAR MEDICAL COLLEGE AND SUPER SPECIALITY HOSPITAL",
+    "prediction": "AL-AZHAR MEDICAL COLLEGE AND SUPER SPECIALITY HOSPITAL",
+    "confidence": 0.7518332487344741,
+    "context": {
+      "course": "MBBS",
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.867332935333252,
+        "ensemble": 0.7518332487344741
+      }
+    },
+    "timestamp": "2025-11-18T13:16:28.922742",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 193,
+    "query": "ALL INDIA INSTITUTE OF HYGIENE AND PUBLIC HEALTH",
+    "prediction": "ALL INDIA INSTITUTE OF HYGIENE AND PUBLIC HEALTH",
+    "confidence": 0.6821081346273422,
+    "context": {
+      "course": "MBBS",
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.5884323120117188,
+        "ensemble": 0.6821081346273422
+      }
+    },
+    "timestamp": "2025-11-18T13:16:34.599418",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 194,
+    "query": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.6898057049512862,
+    "context": {
+      "course": "MBBS",
+      "state": "PUNJAB",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.6192228198051453,
+        "ensemble": 0.6898057049512862
+      }
+    },
+    "timestamp": "2025-11-18T13:16:40.309983",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 195,
+    "query": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.6898057049512862,
+    "context": {
+      "course": "MBBS",
+      "state": "MADHYA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.6192228198051453,
+        "ensemble": 0.6898057049512862
+      }
+    },
+    "timestamp": "2025-11-18T13:16:45.720423",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 196,
+    "query": "AIIMS DELHI",
+    "prediction": "DELHI HOSPITAL AND NURSING HOME",
+    "confidence": 0.539554585814476,
+    "context": {
+      "course": "",
+      "state": "DELHI",
+      "component_scores": {
+        "faiss": 0.2732153534889221,
+        "semantic": 0.5464307069778442,
+        "spacy_ner": 0.2,
+        "ensemble": 0.539554585814476
+      }
+    },
+    "timestamp": "2025-11-18T13:20:05.375421",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 197,
+    "query": "BANGALORE MEDICAL COLLEGE",
+    "prediction": "BANGALORE MEDICAL COLLEGE AND RESEARCH INSTITUTE",
+    "confidence": 0.7306554588675499,
+    "context": {
+      "course": "",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.4743741452693939,
+        "semantic": 0.9487483501434326,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7306554588675499
+      }
+    },
+    "timestamp": "2025-11-18T13:20:05.538483",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 198,
+    "query": "MADRAS MEDICAL COLLEGE",
+    "prediction": "MADRAS MEDICAL COLLEGE",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": "",
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T13:20:05.573843",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 199,
+    "query": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7106022423505782,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.7024089694023132,
+        "ensemble": 0.7106022423505782
+      }
+    },
+    "timestamp": "2025-11-18T13:20:08.720010",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 200,
+    "query": "AARUPADAI VEEDU MEDICAL COLLEGE",
+    "prediction": "AARUPADAI VEEDU MEDICAL COLLEGE",
+    "confidence": 0.7529914397001266,
+    "context": {
+      "course": "MBBS",
+      "state": "PUDUCHERRY",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "validator": 0.9919655919075012,
+        "ensemble": 0.7529914397001266
+      }
+    },
+    "timestamp": "2025-11-18T13:20:12.172106",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 201,
+    "query": "ABHISHEK I MISHRA MEMORIAL MEDICAL COLLEGE AND RESEARCH",
+    "prediction": "ABHISHEK I MISHRA MEMORIAL MEDICAL COLLEGE AND RESEARCH",
+    "confidence": 0.7795529639720917,
+    "context": {
+      "course": "MBBS",
+      "state": "CHATTISGARH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.000000238418579,
+        "spacy_ner": 0.4,
+        "validator": 0.978211522102356,
+        "ensemble": 0.7795529639720917
+      }
+    },
+    "timestamp": "2025-11-18T13:20:15.603945",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 202,
+    "query": "ACHARYA HARIHAR REGIONAL CANCER CENTRE",
+    "prediction": "ACHARYA HARIHAR REGIONAL CANCER CENTRE",
+    "confidence": 0.5410651127994061,
+    "context": {
+      "course": "MBBS",
+      "state": "ORISSA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.14426039159297943,
+        "ensemble": 0.5410651127994061
+      }
+    },
+    "timestamp": "2025-11-18T13:20:18.733949",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 203,
+    "query": "ACHARYA SHRI CHANDER COLLEGE OF MEDICAL SCIENCES",
+    "prediction": "ACHARYA SHRI CHANDER COLLEGE OF MEDICAL SCIENCES",
+    "confidence": 0.778981897830963,
+    "context": {
+      "course": "MBBS",
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.9759275913238525,
+        "ensemble": 0.778981897830963
+      }
+    },
+    "timestamp": "2025-11-18T13:20:21.948646",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 204,
+    "query": "ACPM MEDICAL COLLEGE",
+    "prediction": "ACPM MEDICAL COLLEGE",
+    "confidence": 0.7450041967630386,
+    "context": {
+      "course": "MBBS",
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.9600167870521545,
+        "ensemble": 0.7450041967630386
+      }
+    },
+    "timestamp": "2025-11-18T13:20:24.909111",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 205,
+    "query": "ACS MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "ACS MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7393393522500992,
+    "context": {
+      "course": "MBBS",
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.8173571825027466,
+        "ensemble": 0.7393393522500992
+      }
+    },
+    "timestamp": "2025-11-18T13:20:28.459496",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 206,
+    "query": "ACSR GOVERNMENT MEDICAL COLLEGE NELLORE",
+    "prediction": "ACSR GOVERNMENT MEDICAL COLLEGE NELLORE",
+    "confidence": 0.7545917677879334,
+    "context": {
+      "course": "MBBS",
+      "state": "ANDHRA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.9983670711517334,
+        "ensemble": 0.7545917677879334
+      }
+    },
+    "timestamp": "2025-11-18T13:20:32.097696",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 207,
+    "query": "ADESH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "ADESH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7594539409875869,
+    "context": {
+      "course": "MBBS",
+      "state": "PUNJAB",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.8978157639503479,
+        "ensemble": 0.7594539409875869
+      }
+    },
+    "timestamp": "2025-11-18T13:20:35.307570",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 208,
+    "query": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7024831956624984,
+    "context": {
+      "course": "MBBS",
+      "state": "HARYANA",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.6699326634407043,
+        "ensemble": 0.7024831956624984
+      }
+    },
+    "timestamp": "2025-11-18T13:20:38.405616",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 209,
+    "query": "MEDICAL COLLEGE",
+    "prediction": "MEDICAL COLLEGE",
+    "confidence": 0.7343666154146195,
+    "context": {
+      "course": "MBBS",
+      "state": "DELHI",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.917466402053833,
+        "ensemble": 0.7343666154146195
+      }
+    },
+    "timestamp": "2025-11-18T13:20:41.441388",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 210,
+    "query": "XYZ INSTITUTE",
+    "prediction": "ZYDUS MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.49277653694152834,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.295004665851593,
+        "semantic": 0.590009331703186,
+        "spacy_ner": 0.0,
+        "validator": 0.8500884175300598,
+        "ensemble": 0.49277653694152834
+      }
+    },
+    "timestamp": "2025-11-18T13:20:44.613003",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 211,
+    "query": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7106022423505782,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.7024089694023132,
+        "ensemble": 0.7106022423505782
+      }
+    },
+    "timestamp": "2025-11-18T13:20:47.937310",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 212,
+    "query": "AARUPADAI VEEDU MEDICAL COLLEGE",
+    "prediction": "AARUPADAI VEEDU MEDICAL COLLEGE",
+    "confidence": 0.7529914397001266,
+    "context": {
+      "course": "MBBS",
+      "state": "PUDUCHERRY",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "validator": 0.9919655919075012,
+        "ensemble": 0.7529914397001266
+      }
+    },
+    "timestamp": "2025-11-18T13:20:51.046718",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 213,
+    "query": "ABHISHEK I MISHRA MEMORIAL MEDICAL COLLEGE AND RESEARCH",
+    "prediction": "ABHISHEK I MISHRA MEMORIAL MEDICAL COLLEGE AND RESEARCH",
+    "confidence": 0.7795529639720917,
+    "context": {
+      "course": "MBBS",
+      "state": "CHATTISGARH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.000000238418579,
+        "spacy_ner": 0.4,
+        "validator": 0.978211522102356,
+        "ensemble": 0.7795529639720917
+      }
+    },
+    "timestamp": "2025-11-18T13:20:54.464325",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 214,
+    "query": "ACHARYA HARIHAR REGIONAL CANCER CENTRE",
+    "prediction": "ACHARYA HARIHAR REGIONAL CANCER CENTRE",
+    "confidence": 0.5410651127994061,
+    "context": {
+      "course": "MBBS",
+      "state": "ORISSA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.14426039159297943,
+        "ensemble": 0.5410651127994061
+      }
+    },
+    "timestamp": "2025-11-18T13:20:57.700094",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 215,
+    "query": "ACHARYA SHRI CHANDER COLLEGE OF MEDICAL SCIENCES",
+    "prediction": "ACHARYA SHRI CHANDER COLLEGE OF MEDICAL SCIENCES",
+    "confidence": 0.778981897830963,
+    "context": {
+      "course": "MBBS",
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.9759275913238525,
+        "ensemble": 0.778981897830963
+      }
+    },
+    "timestamp": "2025-11-18T13:21:00.963307",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 216,
+    "query": "ACPM MEDICAL COLLEGE",
+    "prediction": "ACPM MEDICAL COLLEGE",
+    "confidence": 0.7450041967630386,
+    "context": {
+      "course": "MBBS",
+      "state": "MAHARASHTRA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.9600167870521545,
+        "ensemble": 0.7450041967630386
+      }
+    },
+    "timestamp": "2025-11-18T13:21:04.019583",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 217,
+    "query": "ACS MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "ACS MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7393393522500992,
+    "context": {
+      "course": "MBBS",
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.8173571825027466,
+        "ensemble": 0.7393393522500992
+      }
+    },
+    "timestamp": "2025-11-18T13:21:07.154223",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 218,
+    "query": "ACSR GOVERNMENT MEDICAL COLLEGE NELLORE",
+    "prediction": "ACSR GOVERNMENT MEDICAL COLLEGE NELLORE",
+    "confidence": 0.7545917677879334,
+    "context": {
+      "course": "MBBS",
+      "state": "ANDHRA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.9983670711517334,
+        "ensemble": 0.7545917677879334
+      }
+    },
+    "timestamp": "2025-11-18T13:21:10.385677",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 219,
+    "query": "ADESH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "prediction": "ADESH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH",
+    "confidence": 0.7594539409875869,
+    "context": {
+      "course": "MBBS",
+      "state": "PUNJAB",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.8978157639503479,
+        "ensemble": 0.7594539409875869
+      }
+    },
+    "timestamp": "2025-11-18T13:21:13.661640",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 220,
+    "query": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.7024831956624984,
+    "context": {
+      "course": "MBBS",
+      "state": "HARYANA",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.6699326634407043,
+        "ensemble": 0.7024831956624984
+      }
+    },
+    "timestamp": "2025-11-18T13:21:16.941401",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 221,
+    "query": "ADICHUNCHANAGIRI INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "ADICHUNCHANAGIRI INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.7461305040121078,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 0.9999998807907104,
+        "spacy_ner": 0.2,
+        "validator": 0.9645220637321472,
+        "ensemble": 0.7461305040121078
+      }
+    },
+    "timestamp": "2025-11-18T13:21:20.264107",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 222,
+    "query": "AGARTALA GOVERNMENT MEDICAL COLLEGE",
+    "prediction": "AGARTALA GOVERNMENT MEDICAL COLLEGE",
+    "confidence": 0.7545943009853363,
+    "context": {
+      "course": "MBBS",
+      "state": "TRIPURA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.9983771443367004,
+        "ensemble": 0.7545943009853363
+      }
+    },
+    "timestamp": "2025-11-18T13:21:23.395429",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 223,
+    "query": "AJAY SANGAAL INSTITUTE OF MEDICAL SCIENCES AND AYUSHMAN HOSPITAL",
+    "prediction": "AJAY SANGAAL INSTITUTE OF MEDICAL SCIENCES AND AYUSHMAN HOSPITAL",
+    "confidence": 0.7420567280054092,
+    "context": {
+      "course": "MBBS",
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.8282267451286316,
+        "ensemble": 0.7420567280054092
+      }
+    },
+    "timestamp": "2025-11-18T13:21:26.945965",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 224,
+    "query": "AKASH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "AKASH INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7127453392744064,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.7109811305999756,
+        "ensemble": 0.7127453392744064
+      }
+    },
+    "timestamp": "2025-11-18T13:21:30.866835",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 225,
+    "query": "AL FALAH SCHOOL OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "AL FALAH SCHOOL OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7767839139699936,
+    "context": {
+      "course": "MBBS",
+      "state": "HARYANA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.9671354293823242,
+        "ensemble": 0.7767839139699936
+      }
+    },
+    "timestamp": "2025-11-18T13:21:35.242422",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 226,
+    "query": "AL-AMEEN MEDICAL COLLEGE",
+    "prediction": "AL-AMEEN MEDICAL COLLEGE",
+    "confidence": 0.7492054569721222,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "validator": 0.9768216609954834,
+        "ensemble": 0.7492054569721222
+      }
+    },
+    "timestamp": "2025-11-18T13:21:39.326418",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 227,
+    "query": "AL-AZHAR MEDICAL COLLEGE AND SUPER SPECIALITY HOSPITAL",
+    "prediction": "AL-AZHAR MEDICAL COLLEGE AND SUPER SPECIALITY HOSPITAL",
+    "confidence": 0.7518332487344741,
+    "context": {
+      "course": "MBBS",
+      "state": "KERALA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.867332935333252,
+        "ensemble": 0.7518332487344741
+      }
+    },
+    "timestamp": "2025-11-18T13:21:43.600016",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 228,
+    "query": "ALL INDIA INSTITUTE OF HYGIENE AND PUBLIC HEALTH",
+    "prediction": "ALL INDIA INSTITUTE OF HYGIENE AND PUBLIC HEALTH",
+    "confidence": 0.6821081346273422,
+    "context": {
+      "course": "MBBS",
+      "state": "WEST BENGAL",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.5884323120117188,
+        "ensemble": 0.6821081346273422
+      }
+    },
+    "timestamp": "2025-11-18T13:21:48.172193",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 229,
+    "query": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.6898057049512862,
+    "context": {
+      "course": "MBBS",
+      "state": "PUNJAB",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.6192228198051453,
+        "ensemble": 0.6898057049512862
+      }
+    },
+    "timestamp": "2025-11-18T13:21:52.308150",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 230,
+    "query": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "prediction": "ALL INDIA INSTITUTE OF MEDICAL SCIENCES",
+    "confidence": 0.6898057049512862,
+    "context": {
+      "course": "MBBS",
+      "state": "MADHYA PRADESH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.6192228198051453,
+        "ensemble": 0.6898057049512862
+      }
+    },
+    "timestamp": "2025-11-18T13:21:56.491792",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 231,
+    "query": "BANGALORE MEDICAL COLLEGE",
+    "prediction": "BANGALORE MEDICAL COLLEGE AND RESEARCH INSTITUTE",
+    "confidence": 0.726123106777668,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.4743741452693939,
+        "semantic": 0.9487483501434326,
+        "spacy_ner": 0.2,
+        "validator": 0.9818705916404724,
+        "ensemble": 0.726123106777668
+      }
+    },
+    "timestamp": "2025-11-18T13:24:02.821896",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 232,
+    "query": "AIIMS DELHI",
+    "prediction": "DELHI HOSPITAL AND NURSING HOME",
+    "confidence": 0.30016247287392617,
+    "context": {
+      "course": "MBBS",
+      "state": "DELHI",
+      "component_scores": {
+        "faiss": 0.2732153534889221,
+        "semantic": 0.5464307069778442,
+        "spacy_ner": 0.2,
+        "validator": 0.0424315482378006,
+        "ensemble": 0.30016247287392617
+      }
+    },
+    "timestamp": "2025-11-18T13:24:06.124000",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 233,
+    "query": "MADRAS MEDICAL",
+    "prediction": "MADRAS MEDICAL COLLEGE",
+    "confidence": 0.7150734743475914,
+    "context": {
+      "course": "MBBS",
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.43139156699180603,
+        "semantic": 0.8627830743789673,
+        "spacy_ner": 0.4,
+        "validator": 0.9810060262680054,
+        "ensemble": 0.7150734743475914
+      }
+    },
+    "timestamp": "2025-11-18T13:24:09.213830",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 234,
+    "query": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "prediction": "A J INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE",
+    "confidence": 0.7106022423505782,
+    "context": {
+      "course": "MBBS",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.7024089694023132,
+        "ensemble": 0.7106022423505782
+      }
+    },
+    "timestamp": "2025-11-18T13:24:12.513974",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 235,
+    "query": "AARUPADAI VEEDU MEDICAL COLLEGE",
+    "prediction": "AARUPADAI VEEDU MEDICAL COLLEGE",
+    "confidence": 0.7529914397001266,
+    "context": {
+      "course": "MBBS",
+      "state": "PUDUCHERRY",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.2,
+        "validator": 0.9919655919075012,
+        "ensemble": 0.7529914397001266
+      }
+    },
+    "timestamp": "2025-11-18T13:24:16.319139",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 236,
+    "query": "ABHISHEK I MISHRA MEMORIAL MEDICAL COLLEGE AND RESEARCH",
+    "prediction": "ABHISHEK I MISHRA MEMORIAL MEDICAL COLLEGE AND RESEARCH",
+    "confidence": 0.7795529639720917,
+    "context": {
+      "course": "MBBS",
+      "state": "CHATTISGARH",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.000000238418579,
+        "spacy_ner": 0.4,
+        "validator": 0.978211522102356,
+        "ensemble": 0.7795529639720917
+      }
+    },
+    "timestamp": "2025-11-18T13:24:19.855966",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 237,
+    "query": "ACHARYA HARIHAR REGIONAL CANCER CENTRE",
+    "prediction": "ACHARYA HARIHAR REGIONAL CANCER CENTRE",
+    "confidence": 0.5410651127994061,
+    "context": {
+      "course": "MBBS",
+      "state": "ORISSA",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "validator": 0.14426039159297943,
+        "ensemble": 0.5410651127994061
+      }
+    },
+    "timestamp": "2025-11-18T13:24:23.101338",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 238,
+    "query": "ACHARYA SHRI CHANDER COLLEGE OF MEDICAL SCIENCES",
+    "prediction": "ACHARYA SHRI CHANDER COLLEGE OF MEDICAL SCIENCES",
+    "confidence": 0.778981897830963,
+    "context": {
+      "course": "MBBS",
+      "state": "JAMMU AND KASHMIR",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.9759275913238525,
+        "ensemble": 0.778981897830963
+      }
+    },
+    "timestamp": "2025-11-18T13:24:26.449003",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 239,
+    "query": "ACS MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "ACS MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.6930087512731552,
+    "context": {
+      "course": "TAMIL NADU",
+      "state": "MEDICAL",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0000001192092896,
+        "spacy_ner": 0.4,
+        "validator": 0.6320347785949707,
+        "ensemble": 0.6930087512731552
+      }
+    },
+    "timestamp": "2025-11-18T17:57:56.785998",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 240,
+    "query": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "prediction": "ADESH MEDICAL COLLEGE AND HOSPITAL",
+    "confidence": 0.6862649655342101,
+    "context": {
+      "course": "HARYANA",
+      "state": "MEDICAL",
+      "component_scores": {
+        "faiss": 0.5000001192092896,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "validator": 0.6050597429275513,
+        "ensemble": 0.6862649655342101
+      }
+    },
+    "timestamp": "2025-11-18T17:58:00.295873",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 241,
+    "query": "AIIMS DELHI",
+    "prediction": "DELHI HOSPITAL AND NURSING HOME",
+    "confidence": 0.539554585814476,
+    "context": {
+      "course": "",
+      "state": "DELHI",
+      "component_scores": {
+        "faiss": 0.2732153534889221,
+        "semantic": 0.5464307069778442,
+        "spacy_ner": 0.2,
+        "ensemble": 0.539554585814476
+      }
+    },
+    "timestamp": "2025-11-18T18:12:40.124968",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 242,
+    "query": "BANGALORE MEDICAL COLLEGE",
+    "prediction": "BANGALORE MEDICAL COLLEGE AND RESEARCH INSTITUTE",
+    "confidence": 0.7306554588675499,
+    "context": {
+      "course": "",
+      "state": "KARNATAKA",
+      "component_scores": {
+        "faiss": 0.4743741452693939,
+        "semantic": 0.9487483501434326,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7306554588675499
+      }
+    },
+    "timestamp": "2025-11-18T18:12:40.331738",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 243,
+    "query": "MADRAS MEDICAL COLLEGE",
+    "prediction": "MADRAS MEDICAL COLLEGE",
+    "confidence": 0.7849999999999999,
+    "context": {
+      "course": "",
+      "state": "TAMIL NADU",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 1.0,
+        "spacy_ner": 0.4,
+        "ensemble": 0.7849999999999999
+      }
+    },
+    "timestamp": "2025-11-18T18:12:40.379649",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 244,
+    "query": "MEDICAL COLLEGE",
+    "prediction": "MEDICAL COLLEGE",
+    "confidence": 0.7550000149011612,
+    "context": {
+      "course": "",
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.5000000596046448,
+        "semantic": 1.0,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7550000149011612
+      }
+    },
+    "timestamp": "2025-11-18T18:12:40.424088",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 245,
+    "query": "KINGS GEORGE'S MEDICAL UNIVERSITY",
+    "prediction": "KING GEORGE MEDICAL UNIVERSITY",
+    "confidence": 0.7328017088770866,
+    "context": {
+      "course": "",
+      "state": "UTTAR PRADESH",
+      "component_scores": {
+        "faiss": 0.4766333997249603,
+        "semantic": 0.9532667398452759,
+        "spacy_ner": 0.2,
+        "ensemble": 0.7328017088770866
+      }
+    },
+    "timestamp": "2025-11-18T18:12:40.483386",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 246,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:09.777660",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 247,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:09.778813",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 248,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:10.275181",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 249,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:10.288384",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 250,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:10.583802",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 251,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:10.600990",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 252,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:10.748065",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 253,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:10.761599",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 254,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:10.913291",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 255,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:10.934979",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 256,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.085173",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 257,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.102582",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 258,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.256273",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 259,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.270330",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 260,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.430494",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 261,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.445185",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 262,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.608497",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 263,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.625097",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 264,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.780705",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 265,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.797233",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 266,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.948745",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 267,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:11.987539",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 268,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.106230",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 269,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.144738",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 270,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.262136",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 271,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.306331",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 272,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.425095",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 273,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.465029",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 274,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.588240",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 275,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.629366",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 276,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.755515",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 277,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.797015",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 278,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.920641",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 279,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:12.974781",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 280,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.094989",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 281,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.137382",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 282,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.257567",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 283,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.298185",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 284,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.428239",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 285,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.467088",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 286,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.589260",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 287,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.631670",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 288,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.763935",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 289,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.812284",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 290,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.936220",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 291,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:13.977859",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 292,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.114297",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 293,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.155073",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 294,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.279750",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 295,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.324217",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 296,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.449971",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 297,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.491129",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 298,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.619969",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 299,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.664613",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 300,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.794177",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 301,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.836847",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 302,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:14.966190",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 303,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.007361",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 304,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.137060",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 305,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.189467",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 306,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.309952",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 307,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.353735",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 308,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.477095",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 309,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.519794",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 310,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.645424",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 311,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.688023",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 312,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.820235",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 313,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.865506",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 314,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:15.998084",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 315,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.038514",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 316,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.167077",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 317,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.208627",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 318,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.358036",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 319,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.393391",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 320,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.541545",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 321,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.594966",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 322,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.724587",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 323,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.766566",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 324,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.881996",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 325,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:16.920305",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 326,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.039316",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 327,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.080266",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 328,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.205664",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 329,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.248561",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 330,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.378905",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 331,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.429817",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 332,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.544622",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 333,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.584447",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 334,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.704619",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 335,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.746570",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 336,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.862226",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 337,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:17.905711",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 338,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:18.021778",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 339,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:18.067311",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 340,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:18.181215",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  },
+  {
+    "id": 341,
+    "query": "",
+    "prediction": "",
+    "confidence": 0.3956685017794371,
+    "context": {
+      "course": "",
+      "state": "",
+      "component_scores": {
+        "faiss": 0.5,
+        "semantic": 0.05905286222696304,
+        "spacy_ner": 0.0,
+        "ensemble": 0.3956685017794371
+      }
+    },
+    "timestamp": "2025-12-05T01:26:18.229145",
+    "human_reviewed": false,
+    "correction": null,
+    "feedback": null,
+    "method": "active_learning_flag"
+  }
+]

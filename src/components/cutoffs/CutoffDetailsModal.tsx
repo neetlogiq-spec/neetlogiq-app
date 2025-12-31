@@ -9,18 +9,20 @@ interface CutoffDetails {
   college: string;
   course: string;
   category: string;
-  year: string;
-  openingRank: number;
-  closingRank: number;
+  year: string | number;
+  openingRank?: number;
+  closingRank?: number;
   totalSeats: number;
-  trend: 'up' | 'down' | 'stable';
-  change: string;
-  description: string;
+  trend?: 'up' | 'down' | 'stable';
+  change?: string;
+  description?: string;
   stream: string;
   state: string;
-  management: string;
-  counsellingType: 'AIQ' | 'KEA';
-  round: number;
+  management?: string;
+  collegeType?: string;
+  counsellingType?: string;
+  counsellingBody?: string;
+  round?: number;
   quota?: string;
 }
 
@@ -182,7 +184,7 @@ const CutoffDetailsModal: React.FC<CutoffDetailsModalProps> = ({
                       <span className={`text-xs px-2 py-1 rounded ${
                         isDarkMode ? 'bg-white/10 text-white/70' : 'bg-gray-100 text-gray-700'
                       }`}>
-                        {cutoff.management}
+                        {cutoff.management || cutoff.collegeType}
                       </span>
                     </div>
                   </div>
@@ -235,7 +237,7 @@ const CutoffDetailsModal: React.FC<CutoffDetailsModalProps> = ({
                                 ? (isDarkMode ? 'bg-blue-900/30 text-blue-300' : 'bg-blue-100 text-blue-800')
                                 : (isDarkMode ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-800')
                             }`}>
-                              {cutoffData.counsellingType}
+                              {cutoffData.counsellingType || cutoffData.counsellingBody}
                             </span>
                             <span className={`px-2 py-1 rounded text-xs font-medium ${
                               isDarkMode ? 'bg-purple-900/30 text-purple-300' : 'bg-purple-100 text-purple-800'

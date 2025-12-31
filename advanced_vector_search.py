@@ -2,122 +2,200 @@
 """
 Advanced Vector Search System
 FAISS-based fuzzy embedding search with hybrid scoring
+(With Numpy Fallback for macOS stability)
 """
 
 import numpy as np
-import faiss
 from typing import List, Dict, Tuple, Optional
 import pickle
 from pathlib import Path
 import logging
-from sentence_transformers import SentenceTransformer
 from rapidfuzz import fuzz
+import warnings
+
+# Suppress verbose tokenizer warnings
+warnings.filterwarnings("ignore", message=".*fast tokenizer.*")
+warnings.filterwarnings("ignore", message=".*XLMRobertaTokenizerFast.*")
 import json
+import os
 
 logger = logging.getLogger(__name__)
 
+class NumpyIndex:
+    """Simple Numpy-based Index for exact search (Crash-proof fallback)"""
+    def __init__(self, dim: int):
+        self.dim = dim
+        self.vectors = None
+        self.ntotal = 0
+
+    def add(self, vectors: np.ndarray):
+        if self.vectors is None:
+            self.vectors = vectors
+        else:
+            self.vectors = np.vstack((self.vectors, vectors))
+        self.ntotal = len(self.vectors)
+
+    def search(self, query_vectors: np.ndarray, k: int) -> Tuple[np.ndarray, np.ndarray]:
+        # L2 distance: ||u - v||^2 = ||u||^2 + ||v||^2 - 2 <u, v>
+        # But for normalized vectors (cosine similarity), we can just use dot product
+        # Here we implement L2 to match FAISS behavior
+        
+        dists = []
+        indices = []
+        
+        for q in query_vectors:
+            # Calculate L2 distance to all vectors
+            # dist = np.linalg.norm(self.vectors - q, axis=1)
+            # Optimization: (a-b)^2 = a^2 + b^2 - 2ab
+            # Since we want nearest neighbors (min distance)
+            
+            # Simple Euclidean distance
+            diff = self.vectors - q
+            dist_sq = np.sum(diff**2, axis=1)
+            
+            # Get top k
+            idx = np.argsort(dist_sq)[:k]
+            dst = dist_sq[idx]
+            
+            dists.append(dst)
+            indices.append(idx)
+            
+        return np.array(dists), np.array(indices)
+
+    def reset(self):
+        self.vectors = None
+        self.ntotal = 0
+        
+    @property
+    def is_trained(self):
+        return True
+
 class VectorSearchEngine:
-    """High-performance vector search with FAISS"""
+    """High-performance vector search with FAISS (or Numpy fallback)"""
 
     def __init__(
         self,
-        embedding_dim: int = 384,
+        embedding_dim: int = 768,  # BGE-base-en-v1.5 uses 768 dims
         index_type: str = 'flat',
-        model_name: str = 'all-MiniLM-L6-v2',
+        model_name: str = 'BAAI/bge-base-en-v1.5',  # Faster model (3-5x vs BGE-M3)
         cache_dir: str = 'models/vector_search'
     ):
-        """
-        Initialize vector search engine
-
-        Args:
-            embedding_dim: Dimension of embeddings (384 for MiniLM, 768 for BERT)
-            index_type: 'flat' (exact), 'ivf' (fast approximate), 'hnsw' (best quality)
-            model_name: Sentence transformer model
-            cache_dir: Directory for caching
-        """
         self.embedding_dim = embedding_dim
         self.index_type = index_type
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self.use_bge_m3 = 'bge-m3' in model_name.lower()
 
-        # Load transformer model
+        # Load transformer model - prioritize FlagEmbedding for BGE-M3
         logger.info(f"Loading embedding model: {model_name}")
-        self.model = SentenceTransformer(model_name)
+        self.model = None
+        if self.use_bge_m3:
+            try:
+                from FlagEmbedding import BGEM3FlagModel
+                self.model = BGEM3FlagModel(model_name, use_fp16=True)
+                logger.info("  ✓ Loaded via FlagEmbedding (optimal for BGE-M3)")
+            except Exception as e:
+                logger.warning(f"  FlagEmbedding failed: {e}, falling back to SentenceTransformer")
+        
+        # Fallback to SentenceTransformer
+        if self.model is None:
+            from sentence_transformers import SentenceTransformer
+            self.model = SentenceTransformer(model_name)
+            self.use_bge_m3 = False
+            logger.info("  ✓ Loaded via SentenceTransformer")
 
-        # Initialize FAISS index
-        self.index = self._create_index(index_type, embedding_dim)
+        # Initialize Index
+        self.use_faiss = False
+        try:
+            import faiss
+            self.index = self._create_index(index_type, embedding_dim)
+            self.use_faiss = True
+            logger.info(f"✅ Using FAISS for vector search ({index_type})")
+        except (ImportError, Exception) as e:
+            logger.warning(f"⚠️  FAISS not available or failed ({e}). Using Numpy fallback.")
+            self.index = NumpyIndex(embedding_dim)
 
         # Metadata storage (maps index ID to college data)
         self.id_to_data = {}
         self.data_to_id = {}
         self.next_id = 0
 
-    def _create_index(self, index_type: str, dim: int) -> faiss.Index:
+    def _create_index(self, index_type: str, dim: int):
         """Create FAISS index based on type"""
-
+        import faiss
         if index_type == 'flat':
-            # Exact search (slower but accurate)
             index = faiss.IndexFlatL2(dim)
-            logger.info("Created FLAT index (exact search)")
-
         elif index_type == 'ivf':
-            # IVF index (fast approximate search)
-            nlist = 100  # number of clusters
+            nlist = 100
             quantizer = faiss.IndexFlatL2(dim)
             index = faiss.IndexIVFFlat(quantizer, dim, nlist)
-            logger.info("Created IVF index (approximate search)")
-
         elif index_type == 'hnsw':
-            # HNSW index (hierarchical navigable small world - best quality)
-            M = 32  # number of connections
+            M = 32
             index = faiss.IndexHNSWFlat(dim, M)
-            logger.info("Created HNSW index (high quality approximate search)")
-
         else:
             raise ValueError(f"Unknown index type: {index_type}")
-
         return index
 
     def add_colleges(self, colleges: List[Dict], force_rebuild: bool = False):
-        """
-        Add colleges to the index
-
-        Args:
-            colleges: List of college dictionaries
-            force_rebuild: Force rebuild even if index exists
-        """
+        """Add colleges to the index"""
         index_file = self.cache_dir / f"faiss_{self.index_type}.index"
         metadata_file = self.cache_dir / f"metadata_{self.index_type}.pkl"
 
         # Load cached index if exists
         if not force_rebuild and index_file.exists() and metadata_file.exists():
             logger.info("Loading cached index...")
-            self.index = faiss.read_index(str(index_file))
-            with open(metadata_file, 'rb') as f:
-                cache_data = pickle.load(f)
-                self.id_to_data = cache_data['id_to_data']
-                self.data_to_id = cache_data['data_to_id']
-                self.next_id = cache_data['next_id']
-            logger.info(f"Loaded {self.next_id} colleges from cache")
-            return
+            try:
+                if self.use_faiss:
+                    import faiss
+                    self.index = faiss.read_index(str(index_file))
+                else:
+                    # For numpy, we just rebuild (it's fast) or load if we implemented save
+                    # For now, just rebuild to be safe
+                    pass 
+                
+                with open(metadata_file, 'rb') as f:
+                    cache_data = pickle.load(f)
+                    self.id_to_data = cache_data['id_to_data']
+                    self.data_to_id = cache_data['data_to_id']
+                    self.next_id = cache_data['next_id']
+                
+                # If we loaded metadata but not index (Numpy case), we need to rebuild vectors.
+                # But we don't have the raw vectors cached separately. 
+                # So for Numpy, we might just want to rebuild always or cache vectors.
+                # Simpler: If Numpy, just rebuild.
+                if self.use_faiss:
+                    logger.info(f"Loaded {self.next_id} colleges from cache")
+                    return
+            except Exception as e:
+                logger.warning(f"Failed to load cache: {e}. Rebuilding...")
 
         logger.info(f"Building index for {len(colleges)} colleges...")
 
-        # Generate embeddings
+        # Generate embeddings - handle both FlagEmbedding and SentenceTransformer
         college_names = [c.get('name', '') for c in colleges]
-        embeddings = self.model.encode(
-            college_names,
-            convert_to_tensor=False,
-            show_progress_bar=True,
-            batch_size=32
-        )
+        
+        if self.use_bge_m3:
+            # FlagEmbedding API (BGE-M3)
+            result = self.model.encode(college_names, batch_size=32, max_length=128)
+            if isinstance(result, dict) and 'dense_vecs' in result:
+                embeddings = result['dense_vecs']
+            else:
+                embeddings = result
+            embeddings = np.array(embeddings)
+        else:
+            # SentenceTransformer API
+            embeddings = self.model.encode(
+                college_names,
+                convert_to_tensor=False,
+                show_progress_bar=True,
+                batch_size=32
+            )
 
-        # Convert to float32 (FAISS requirement)
+        # Convert to float32
         embeddings = embeddings.astype('float32')
 
-        # Train index if needed (for IVF)
-        if self.index_type == 'ivf' and not self.index.is_trained:
-            logger.info("Training IVF index...")
+        # Train index if needed
+        if self.use_faiss and self.index_type == 'ivf' and not self.index.is_trained:
             self.index.train(embeddings)
 
         # Add vectors to index
@@ -126,21 +204,22 @@ class VectorSearchEngine:
         # Store metadata
         for i, college in enumerate(colleges):
             self.id_to_data[i] = college
-            # Create reverse mapping using normalized name
             key = f"{college.get('name', '').lower()}_{college.get('state', '').lower()}"
             self.data_to_id[key] = i
 
         self.next_id = len(colleges)
 
-        # Save index and metadata
-        logger.info("Saving index to cache...")
-        faiss.write_index(self.index, str(index_file))
-        with open(metadata_file, 'wb') as f:
-            pickle.dump({
-                'id_to_data': self.id_to_data,
-                'data_to_id': self.data_to_id,
-                'next_id': self.next_id
-            }, f)
+        # Save index and metadata (Only for FAISS for now)
+        if self.use_faiss:
+            import faiss
+            logger.info("Saving index to cache...")
+            faiss.write_index(self.index, str(index_file))
+            with open(metadata_file, 'wb') as f:
+                pickle.dump({
+                    'id_to_data': self.id_to_data,
+                    'data_to_id': self.data_to_id,
+                    'next_id': self.next_id
+                }, f)
 
         logger.info(f"Index built successfully with {self.next_id} colleges")
 
@@ -151,65 +230,50 @@ class VectorSearchEngine:
         state_filter: Optional[str] = None,
         min_score: float = 0.0
     ) -> List[Tuple[Dict, float]]:
-        """
-        Search for colleges using vector similarity
-
-        Args:
-            query: Query text
-            k: Number of results to return
-            state_filter: Filter by state (optional)
-            min_score: Minimum similarity score
-
-        Returns:
-            List of (college, score) tuples
-        """
+        """Search for colleges using vector similarity"""
         if self.index.ntotal == 0:
-            logger.warning("Index is empty. Add colleges first.")
             return []
 
-        # Generate query embedding
-        query_emb = self.model.encode([query], convert_to_tensor=False)
+        # Generate query embedding - handle both FlagEmbedding and SentenceTransformer
+        if self.use_bge_m3:
+            result = self.model.encode([query], batch_size=1, max_length=128)
+            if isinstance(result, dict) and 'dense_vecs' in result:
+                query_emb = result['dense_vecs']
+            else:
+                query_emb = result
+            query_emb = np.array(query_emb)
+        else:
+            query_emb = self.model.encode([query], convert_to_tensor=False)
         query_emb = query_emb.astype('float32')
 
-        # Search in FAISS index
-        # Get more results for filtering
+        # Search
         search_k = k * 5 if state_filter else k
-
-        # Set nprobe for IVF index (number of clusters to search)
-        if self.index_type == 'ivf':
+        if self.use_faiss and self.index_type == 'ivf':
             self.index.nprobe = 10
 
         distances, indices = self.index.search(query_emb, search_k)
 
-        # Convert distances to similarity scores
-        # FAISS returns L2 distances, convert to similarity (0-1)
-        # similarity = 1 / (1 + distance)
+        # Convert distances to similarity scores (1 / (1 + L2))
+        # For normalized vectors, L2 = 2(1-cos). So cos = 1 - L2/2.
+        # But here we stick to 1/(1+L2) for consistency
         similarities = 1 / (1 + distances[0])
 
         results = []
         for idx, sim in zip(indices[0], similarities):
-            if idx == -1:  # No more results
-                break
+            if idx == -1: break
 
             college = self.id_to_data.get(idx)
-            if not college:
-                continue
+            if not college: continue
 
-            # Apply state filter
             if state_filter:
                 college_state = college.get('state', '').strip().upper()
                 if college_state != state_filter.strip().upper():
                     continue
 
-            # Apply minimum score filter
-            if sim < min_score:
-                continue
+            if sim < min_score: continue
 
             results.append((college, float(sim)))
-
-            # Stop if we have enough results
-            if len(results) >= k:
-                break
+            if len(results) >= k: break
 
         return results
 
@@ -220,35 +284,20 @@ class VectorSearchEngine:
         state_filter: Optional[str] = None,
         weights: Dict[str, float] = None
     ) -> List[Tuple[Dict, float, str]]:
-        """
-        Hybrid search combining vector similarity + fuzzy matching
-
-        Args:
-            query: Query text
-            k: Number of results
-            state_filter: Filter by state
-            weights: Scoring weights {'vector': 0.6, 'fuzzy': 0.4}
-
-        Returns:
-            List of (college, score, method) tuples
-        """
+        """Hybrid search combining vector similarity + fuzzy matching"""
         if weights is None:
             weights = {'vector': 0.6, 'fuzzy': 0.4}
 
-        # Get vector search results (more candidates for fuzzy reranking)
         vector_results = self.search(query, k=k*3, state_filter=state_filter)
 
         if not vector_results:
             return []
 
-        # Rerank with fuzzy matching
         hybrid_results = []
         for college, vector_score in vector_results:
-            # Calculate fuzzy score
             college_name = college.get('name', '')
             fuzzy_score = fuzz.ratio(query.upper(), college_name.upper()) / 100
 
-            # Combined score
             hybrid_score = (
                 vector_score * weights['vector'] +
                 fuzzy_score * weights['fuzzy']
@@ -260,103 +309,25 @@ class VectorSearchEngine:
                 f"hybrid(v:{vector_score:.2f},f:{fuzzy_score:.2f})"
             ))
 
-        # Sort by hybrid score
         hybrid_results.sort(key=lambda x: x[1], reverse=True)
-
         return hybrid_results[:k]
 
-    def multi_field_search(
-        self,
-        college_name: str,
-        address: str = '',
-        state: str = '',
-        k: int = 5
-    ) -> List[Tuple[Dict, float, str]]:
-        """
-        Search using multiple fields with intelligent weighting
-
-        Args:
-            college_name: College name
-            address: Address text
-            state: State
-            k: Number of results
-
-        Returns:
-            List of (college, score, details) tuples
-        """
-        # Build composite query
+    def multi_field_search(self, college_name: str, address: str = '', state: str = '', k: int = 5):
         query_parts = []
-        if college_name:
-            query_parts.append(college_name)
-        if address:
-            query_parts.append(address)
-
+        if college_name: query_parts.append(college_name)
+        if address: query_parts.append(address)
         query = ' '.join(query_parts)
-
-        # Search with state filter
-        results = self.hybrid_search(
-            query,
-            k=k,
-            state_filter=state if state else None
-        )
-
-        return results
-
-    def approximate_nearest_neighbors(
-        self,
-        query: str,
-        radius: float = 0.5,
-        state_filter: Optional[str] = None
-    ) -> List[Tuple[Dict, float]]:
-        """
-        Range search: find all colleges within similarity radius
-
-        Args:
-            query: Query text
-            radius: Maximum distance (0-1, lower is closer)
-            state_filter: Filter by state
-
-        Returns:
-            List of colleges within radius
-        """
-        # Generate query embedding
-        query_emb = self.model.encode([query], convert_to_tensor=False)
-        query_emb = query_emb.astype('float32')
-
-        # Range search (FAISS)
-        lims, distances, indices = self.index.range_search(query_emb, radius)
-
-        results = []
-        for idx, dist in zip(indices, distances):
-            college = self.id_to_data.get(idx)
-            if not college:
-                continue
-
-            # Apply state filter
-            if state_filter:
-                college_state = college.get('state', '').strip().upper()
-                if college_state != state_filter.strip().upper():
-                    continue
-
-            similarity = 1 / (1 + dist)
-            results.append((college, float(similarity)))
-
-        # Sort by similarity
-        results.sort(key=lambda x: x[1], reverse=True)
-
-        return results
+        return self.hybrid_search(query, k=k, state_filter=state if state else None)
 
     def get_statistics(self) -> Dict:
-        """Get index statistics"""
         return {
             'total_vectors': self.index.ntotal,
             'index_type': self.index_type,
             'embedding_dim': self.embedding_dim,
-            'is_trained': self.index.is_trained if hasattr(self.index, 'is_trained') else True
+            'backend': 'faiss' if self.use_faiss else 'numpy'
         }
 
     def clear_index(self):
-        """Clear the index"""
         self.index.reset()
         self.id_to_data = {}
         self.data_to_id = {}
@@ -458,7 +429,7 @@ if __name__ == "__main__":
     engine = VectorSearchEngine(
         embedding_dim=384,
         index_type='hnsw',  # Best quality
-        model_name='all-MiniLM-L6-v2'
+        model_name='BAAI/bge-base-en-v1.5'
     )
 
     # Example colleges

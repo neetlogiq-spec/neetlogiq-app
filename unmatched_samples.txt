@@ -1,0 +1,525 @@
+🔍 Investigating Unmatched Records...
+  ✓ Transformer matcher loaded
+  ✓ NER extractor loaded
+  ⊘ Vector search disabled in config
+  ✓ Multi-field matcher loaded
+✅ AI features initialized successfully!
+Loading semantic model: all-MiniLM-L6-v2
+Loading zero-shot classifier on device=-1
+Loading spaCy model: en_core_web_sm
+Loading cached embeddings from data/embeddings/college_embeddings.json
+✅ Loaded 886 cached embeddings from JSON format
+Loading FAISS index from data/college_index.faiss
+✅ Loaded FAISS index with 5034 vectors from data/college_index.faiss
+✅ Indexed 1223 unique college codes for Pass 0.5
+✅ Loaded master data from mmap cache (zero-copy, <100ms)
+⚠️  Found 83 unmatched groups
+
+Group ID: 1817 (Records: 18)
+Name: MELMARUVATHUR ADIPARASAKTHI INSTITUTE MEDICAL SCIENCES AND 
+RESEARCH
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1415 (Records: 17)
+Name: HI-TECH MEDICAL COLLEGE AND HOSPITAL
+State: ORISSA
+Raw Address: 'BHUBANESWAR'
+No codes found in address
+
+Group ID: 263 (Records: 16)
+Name: SHRI BALAJI INSTITUTE OF MEDICAL SCIENCE
+State: CHATTISGARH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1267 (Records: 13)
+Name: MAHARASHTRA POST GRAUDATE INSTITUTE OF MEDICAL EDUCATION AND 
+RESEARCH
+State: MAHARASHTRA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 302 (Records: 11)
+Name: EMPLOYEES STATE INSURANCE - PGIMSR, ESI-HOSPITAL
+State: DELHI
+Raw Address: 'BASAIDARAPUR'
+No codes found in address
+
+Group ID: 1878 (Records: 11)
+Name: ST PETERS MEDICAL COLLEGE HOSPITAL AND RESEARCH INSTITUTE
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1434 (Records: 10)
+Name: S C B DENTAL COLLEGE & HOSPITAL
+State: ORISSA
+Raw Address: 'CUTTACK'
+No codes found in address
+
+Group ID: 1562 (Records: 8)
+Name: DR S S TANTIA MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE
+State: RAJASTHAN
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1697 (Records: 8)
+Name: ARUNAI MEDICAL COLLEGE AND HOSPITAL
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2217 (Records: 8)
+Name: NOIDA INTERNATIONAL INSTITUTE OF MEDICAL SCIENCES
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1383 (Records: 6)
+Name: SHIJA ACADEMY OF HEALTH SCIENCES
+State: MANIPUR
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1416 (Records: 6)
+Name: HI-TECH MEDICAL COLLEGE AND HOSPITAL
+State: ORISSA
+Raw Address: 'ROURKELA'
+No codes found in address
+
+Group ID: 2331 (Records: 5)
+Name: CHITTARANJAN NATIONAL CANCER INSTITUTE
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1872 (Records: 3)
+Name: SRINIVASAN MEDICAL COLLEGE AND HOSPITAL
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1881 (Records: 3)
+Name: SWAMY VIVEKANANDHA MEDICAL COLLEGE HOSPITAL AND RESEARCH 
+INSTITUTE
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 290 (Records: 2)
+Name: CHACHA NEHRU BAL CHIKITSALAYA
+State: DELHI
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 123 (Records: 1)
+Name: ST PETERS MEDICAL COLLEGE HOSPITAL AND RESEARCH INSTITUTE
+State: ANDHRA PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 152 (Records: 1)
+Name: KOKRAJHAR MEDICAL COLLEGE
+State: ASSAM
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 153 (Records: 1)
+Name: LAKHIMPUR MEDICAL COLLEGE
+State: ASSAM
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 156 (Records: 1)
+Name: NAGAON MEDICAL COLLEGE
+State: ASSAM
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 160 (Records: 1)
+Name: PRAGJYOTISHPUR MEDICAL COLLEGE
+State: ASSAM
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 168 (Records: 1)
+Name: TINSUKIA MEDICAL COLLEGE
+State: ASSAM
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 205 (Records: 1)
+Name: RADHA DEVI JAGESHWARI MEMORIAL MEDICAL COLLEGE AND HOSPITAL
+State: BIHAR
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 216 (Records: 1)
+Name: SHREE NARAYAN MEDICAL INSTITUTE AND HOSPITAL
+State: BIHAR
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 266 (Records: 1)
+Name: SHRI RAWATPURA SARKAR INSTITUTE OF MEDICAL SCIENCES AND 
+RESEARCH
+State: CHATTISGARH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 300 (Records: 1)
+Name: EMPLOYEES STATE INSURANCE CORPORATION MEDICAL COLLEGE AND 
+HOSPITAL
+State: NEW DELHI
+Raw Address: 'BASAIDARAPUR'
+No codes found in address
+
+Group ID: 383 (Records: 1)
+Name: BHAGYODAY MEDICAL COLLEGE
+State: GUJARAT
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 391 (Records: 1)
+Name: DR KIRAN C PATEL MEDICAL COLLEGE AND RESEARCH INSTITUTE
+State: GUJARAT
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 446 (Records: 1)
+Name: MATUSHRI PRABHABEN KHODABHAI BOGHARA MEDICAL COLLEGE AND 
+RESEARCH CENTRE
+State: GUJARAT
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 476 (Records: 1)
+Name: SWAMINARAYAN INSTITUTE OF MEDICAL SCIENCES AND RESEARCH
+State: GUJARAT
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 605 (Records: 1)
+Name: SHRI MATA VAISHNO DEVI INSTITUTE OF MEDICAL EXCELLENCE
+State: JAMMU AND KASHMIR
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 621 (Records: 1)
+Name: LAXMI CHANDRAVANSI MEDICAL COLLEGE AND HOSPITAL
+State: JHARKHAND
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 834 (Records: 1)
+Name: SR PATIL MEDICAL COLLEGE AND HOSPITAL
+State: KARNATAKA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 840 (Records: 1)
+Name: SRI MADHUSUDAN SAI INSTITUTE OF MEDICAL SCIENCES AND RESEARCH
+State: KARNATAKA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1089 (Records: 1)
+Name: MANSAROVAR MEDICAL COLLEGE AND MGU HOSPITAL
+State: MADHYA PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1106 (Records: 1)
+Name: SCHOOL OF MEDICAL SCIENCES, SRI SATYA SAI UNIVERSITY OF 
+TECHNOLOGY AND MEDICAL SCIENCES
+State: MADHYA PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1114 (Records: 1)
+Name: SUNDARLAL PATWA GOVERNMENT MEDICAL COLLEGE
+State: MADHYA PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1116 (Records: 1)
+Name: VIRENDRA KUMAR SAKHLECHA GOVERNMENT MEDICAL COLLEGE
+State: MADHYA PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1158 (Records: 1)
+Name: D Y PATIL UNIVERSITY, SCHOOL OF MEDICINE
+State: MAHARASHTRA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1175 (Records: 1)
+Name: DR N Y TASGAONKAR INSTITUTE OF MEDICAL SCIENCE
+State: MAHARASHTRA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1389 (Records: 1)
+Name: PA SANGMA INTERNATIONAL MEDICAL COLLEGE AND HOSPITAL
+State: MEGHALAYA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1396 (Records: 1)
+Name: NAGALAND INSTITUTE OF MEDICAL SCIENCES AND RESEARCH
+State: NAGALAND
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1528 (Records: 1)
+Name: RIMT MEDICAL COLLEGE AND HOSPITAL
+State: PUNJAB
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1623 (Records: 1)
+Name: JIET MEDICAL COLLEGE AND HOSPITAL
+State: RAJASTHAN
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1666 (Records: 1)
+Name: SUDHA MEDICAL COLLEGE
+State: RAJASTHAN
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1672 (Records: 1)
+Name: VYAS MEDICAL COLLEGE AND HOSPITAL
+State: RAJASTHAN
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1682 (Records: 1)
+Name: ANNAII MEDICAL COLLEGE AND HOSPITAL
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1703 (Records: 1)
+Name: BHAARAT MEDICAL COLLEGE AND HOSPITAL
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1719 (Records: 1)
+Name: DHANALAKSHMI SRINIVASAN INSTITUTE OF MEDICAL SCIENCES AND 
+HOSPITAL
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1776 (Records: 1)
+Name: J R MEDICAL COLLEGE AND HOSPITAL
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1784 (Records: 1)
+Name: KANYAKUMARI MEDICAL MISSION RESEARCH CENTRE
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1820 (Records: 1)
+Name: NANDHA MEDICAL COLLEGE AND HOSPITAL ERODE
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1828 (Records: 1)
+Name: PSP MEDICAL COLLEGE HOSPITAL AND RESEARCH INSTITUTE
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1900 (Records: 1)
+Name: VELS MEDICAL COLLEGE AND HOSPITAL
+State: TAMIL NADU
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1919 (Records: 1)
+Name: ARUNDATHI INSTITUTE OF MEDICAL SCIENCES
+State: TELANGANA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1931 (Records: 1)
+Name: CMR INSTITUTE OF MEDICAL SCIENCES
+State: TELANGANA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 1945 (Records: 1)
+Name: FATHER COLOMBO INSTITUTE OF MEDICAL SCIENCES
+State: TELANGANA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2022 (Records: 1)
+Name: NOVA INSTITUTE OF MEDICAL SCIENCES AND RESEARCH CENTRE
+State: TELANGANA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2033 (Records: 1)
+Name: PRATHIMA RELIEF INSTITUE OF MEDICAL SCIENCES
+State: TELANGANA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2074 (Records: 1)
+Name: TRIPURA SANTINIKETAN MEDICAL COLLEGE AND HOSPITAL
+State: TRIPURA
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2076 (Records: 1)
+Name: AJAY SANGAAL INSTITUTE OF MEDICAL SCIENCES AND AYUSHMAN 
+HOSPITAL
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2106 (Records: 1)
+Name: BABA KINA RAM AUTONOMOUS STATE MEDICAL COLLEGE AND HOSPITAL
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2126 (Records: 1)
+Name: DR BS KUSHWAH INSTITUTE OF MEDICAL SCIENCES
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2184 (Records: 1)
+Name: KALYAN SINGH GOVERNMENT MEDICAL COLLEGE HOSPITAL AND KASTURBA 
+MAHILA CHIKITSALAYA
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2189 (Records: 1)
+Name: KMC MEDICAL COLLEGE AND HOSPITAL
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2202 (Records: 1)
+Name: MAHATMA VIDUR AUTONOMOUS STATE MEDICAL COLLEGE
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2212 (Records: 1)
+Name: NARAINA MEDICAL COLLEGE AND RESEARCH CENTRE
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2256 (Records: 1)
+Name: SHRI GORAKSHNATH MEDICAL COLLEGE HOSPITAL AND RESEARCH CENTRE
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2259 (Records: 1)
+Name: SHRI SIDDHI VINAYAK MEDICAL COLLEGE AND HOSPITAL
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2261 (Records: 1)
+Name: SKS HOSPITAL MEDICAL COLLEGE AND RESEARCH CENTRE
+State: UTTAR PRADESH
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2296 (Records: 1)
+Name: GRAPHIC ERA INSTITUTE OF MEDICAL SCIENCES
+State: UTTARAKHAND
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2318 (Records: 1)
+Name: BARASAT GOVERNMENT MEDICAL COLLEGE AND HOSPITAL
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2356 (Records: 1)
+Name: EAST WEST INSTITUTE OF MEDICAL SCIENCES AND RESEARCH
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2378 (Records: 1)
+Name: JAKIR HOSSAIN MEDICAL COLLEGE AND RESEARCH INSTITUTE
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2379 (Records: 1)
+Name: JALPAIGURI GOVERNMENT MEDICAL COLLEGE
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2382 (Records: 1)
+Name: JHARGRAM GOVERNMENT MEDICAL COLLEGE AND HOSPITAL
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2391 (Records: 1)
+Name: KRISHNANAGAR INSTITUTE OF MEDICAL SCIENCES
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2412 (Records: 1)
+Name: PKG MEDICAL COLLEGE
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2413 (Records: 1)
+Name: PRAFULLA CHANDRA SEN GOVERNMENT MEDICAL COLLEGE AND HOSPITAL
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2416 (Records: 1)
+Name: PURULIA GOVERNMENT MEDICAL COLLEGE AND HOSPITAL
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2425 (Records: 1)
+Name: RANIGANJ INSTITUTE OF MEDICAL SCIENCES
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2430 (Records: 1)
+Name: SARAT CHANDRA CHATTOPADHYAY GOVERNMENT MEDICAL COLLEGE AND 
+HOSPITAL
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address
+
+Group ID: 2444 (Records: 1)
+Name: TAMRALIPTO GOVERNMENT MEDICAL COLLEGE AND HOSPITAL
+State: WEST BENGAL
+Raw Address: 'None'
+No codes found in address

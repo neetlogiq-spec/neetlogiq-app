@@ -31,7 +31,9 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePremium } from '@/contexts/PremiumContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Shield } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const AIChatbot = dynamic(() => import('@/components/ai/AIChatbot'), {
@@ -51,7 +53,8 @@ const Header: React.FC = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isExploreOpen, setIsExploreOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
-  const { user, signInWithGoogle, signOut } = useAuth();
+  const { user, signInWithGoogle, signOut, isSuperAdmin } = useAuth();
+  const { isPremium } = usePremium();
   const { isDarkMode, toggleTheme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
@@ -70,6 +73,7 @@ const Header: React.FC = () => {
   ];
 
   const toolsItems = [
+<<<<<<< Updated upstream
     { name: 'AI Assistant', path: '/smart', icon: Bot },
     { name: 'VibeSDK', path: '/vibe', icon: Code },
     { name: 'Counselling', path: '/counselling', icon: Briefcase },
@@ -77,6 +81,14 @@ const Header: React.FC = () => {
     { name: 'Compare', path: '/compare', icon: GitCompare },
     { name: 'Analytics', path: '/analytics', icon: BarChart3 },
     { name: 'Recommendations', path: '/recommendations', icon: Sparkles }
+=======
+    { name: 'Compare Colleges', path: '/compare', icon: GitCompare },
+    { name: 'Rank Track', path: '/analytics/rank-tracking', icon: Target },
+    { name: 'Rank Group Track', path: '/analytics/rank-group-analysis', icon: BarChart3 },
+    { name: 'Rank Flow', path: '/analytics/upgrade-flow', icon: Zap },
+    { name: 'Analytics', path: '/analytics', icon: LineChart },
+    { name: 'Trends', path: '/trends', icon: BarChart3 }
+>>>>>>> Stashed changes
   ];
 
   const aboutItem = {
@@ -332,7 +344,19 @@ const Header: React.FC = () => {
                   ) : (
                     <User size={18} />
                   )}
-                  <span className="font-medium">{user.displayName || 'User'}</span>
+                  <div className="flex flex-col items-start leading-tight">
+                    <span className="font-medium">{user.givenName || user.displayName || 'User'}</span>
+                    {isSuperAdmin ? (
+                      <span className="px-1.5 py-0.5 bg-linear-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-bold rounded flex items-center gap-1 shadow-sm mt-0.5">
+                        <Shield className="w-2 h-2" />
+                        SUPER ADMIN
+                      </span>
+                    ) : isPremium && (
+                      <span className="px-1.5 py-0.5 bg-yellow-400 text-gray-900 text-[9px] font-bold rounded shadow-sm mt-0.5">
+                        PRO
+                      </span>
+                    )}
+                  </div>
                   <ChevronDown size={16} className={`transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -368,17 +392,6 @@ const Header: React.FC = () => {
                       >
                         <LayoutDashboard size={18} />
                         <span className="text-sm font-medium font-geist">Dashboard</span>
-                      </Link>
-                      <Link
-                        href="/settings"
-                        className={`flex items-center space-x-3 px-4 py-2.5 transition-colors w-full text-left ${
-                          isDarkMode
-                            ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                        }`}
-                      >
-                        <Settings size={18} />
-                        <span className="text-sm font-medium font-geist">Settings</span>
                       </Link>
                       <div className={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}></div>
                       <button
@@ -575,8 +588,24 @@ const Header: React.FC = () => {
                       }`}
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <User size={18} />
-                      <span className="font-medium">Profile</span>
+                      {user.photoURL ? (
+                        <img src={user.photoURL} alt={user.displayName || 'User'} className="h-6 w-6 rounded-full" />
+                      ) : (
+                        <User size={18} />
+                      )}
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">Profile</span>
+                        {isSuperAdmin ? (
+                          <span className="px-1.2 py-0.2 bg-linear-to-r from-blue-600 to-indigo-600 text-white text-[8px] font-bold rounded flex items-center gap-0.5">
+                            <Shield className="w-1.5 h-1.5" />
+                            ADMIN
+                          </span>
+                        ) : isPremium && (
+                          <span className="px-1.2 py-0.2 bg-yellow-400 text-gray-900 text-[8px] font-bold rounded">
+                            PRO
+                          </span>
+                        )}
+                      </div>
                     </Link>
                 <button
                   onClick={() => {

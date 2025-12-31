@@ -20,6 +20,7 @@ import {
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDataCache } from '@/hooks/useDataCache';
+import { supabase } from '@/lib/supabase';
 
 export interface Notification {
   id: string;
@@ -77,7 +78,18 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
         async () => {
           const response = await fetch('/api/notifications');
           if (!response.ok) throw new Error('Failed to fetch notifications');
-          return response.json();
+          const json = await response.json();
+          return json.data.notifications.map((n: any) => ({
+            id: n.id,
+            title: n.title,
+            message: n.message,
+            type: n.type === 'system' ? 'info' : n.type,
+            timestamp: new Date(n.created_at).getTime(),
+            read: n.read, // API returns 'read' now
+            priority: n.priority || 'medium',
+            actionUrl: n.link, // API returns 'link'
+            persistent: false
+          }));
         },
         { ttl: 30 * 1000 } // 30 seconds cache
       );
@@ -183,10 +195,62 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
     return newNotification;
   }, [maxNotifications, playNotificationSound, showDesktopNotification]);
   
+  // Real-time updates
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const channel = supabase
+      .channel('notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.uid}`
+        },
+        (payload) => {
+          const newNotification = payload.new as any;
+          
+          // Add to state
+          setNotifications(prev => {
+            const notification: Notification = {
+              id: newNotification.id,
+              title: newNotification.title,
+              message: newNotification.message,
+              type: newNotification.type === 'system' ? 'info' : newNotification.type, // Map types if needed
+              timestamp: new Date(newNotification.created_at).getTime(),
+              read: false,
+              priority: newNotification.priority || 'medium',
+              actionUrl: newNotification.link, // Map link to actionUrl
+              persistent: false
+            };
+            
+            // Play sound
+            playNotificationSound(notification.type);
+            
+            // Show desktop notification
+            showDesktopNotification(notification);
+            
+            return [notification, ...prev].slice(0, maxNotifications);
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.uid, maxNotifications, playNotificationSound, showDesktopNotification]);
+
   // Mark notification as read
   const markAsRead = useCallback(async (id: string) => {
     try {
-      await fetch(`/api/notifications/${id}/read`, { method: 'POST' });
+      await fetch('/api/notifications/mark-read', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notification_id: id })
+      });
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
     }
@@ -199,7 +263,11 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
   // Mark all notifications as read
   const markAllAsRead = useCallback(async () => {
     try {
-      await fetch('/api/notifications/read-all', { method: 'POST' });
+      await fetch('/api/notifications/mark-read', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mark_all: true })
+      });
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
     }

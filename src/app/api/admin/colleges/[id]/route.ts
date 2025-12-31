@@ -87,7 +87,7 @@ export async function PATCH(
     // Build update object (only include fields that are provided)
     const updates: any = {};
     const allowedFields = [
-      'name', 'city', 'state', 'management_type', 'college_type',
+      'name', 'state', 'management_type', 'college_type',
       'niac_rating', 'nirf_rank', 'established_year', 'address',
       'website', 'phone', 'email', 'facilities'
     ];
@@ -170,7 +170,7 @@ export async function DELETE(
     // Get college details for audit log
     const { data: college } = await supabaseAdmin
       .from('colleges')
-      .select('name, city, state')
+      .select('name, address, state')
       .eq('id', params.id)
       .single();
 

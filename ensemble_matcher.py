@@ -112,14 +112,23 @@ class EnsembleMatcher:
         self._college_cache = {}
         self._embedding_cache = {}
 
-        # Load transformer model if needed
+        # Load transformer model via shared vector_index singleton
         if self.use_transformers:
-            logger.info("Loading Transformer model (all-MiniLM-L6-v2)...")
             try:
-                self.transformer_model = SentenceTransformer('all-MiniLM-L6-v2')
+                from vector_index import get_vector_index
+                vector_index = get_vector_index()
+                if vector_index and vector_index._engine:
+                    self.transformer_model = vector_index._engine.model
+                    self.use_bge_m3 = vector_index._engine.use_bge_m3
+                    logger.info("Using shared vector index (BGE-base-en-v1.5)")
+                else:
+                    logger.warning("Vector index not available, transformer matching disabled")
+                    self.use_transformers = False
+                    self.use_bge_m3 = False
             except Exception as e:
-                logger.warning(f"Failed to load transformer: {e}")
+                logger.warning(f"Failed to load transformer from vector_index: {e}")
                 self.use_transformers = False
+                self.use_bge_m3 = False
 
         # Weights for ensemble voting (sum to 1.0)
         self.method_weights = {
@@ -471,18 +480,32 @@ class EnsembleMatcher:
             if len(colleges) == 0:
                 return None
 
-            # Encode query name
-            query_embedding = self.transformer_model.encode(
-                college_name,
-                convert_to_tensor=True
-            )
-
-            # Encode college names
-            college_names = colleges['normalized_name'].tolist()
-            college_embeddings = self.transformer_model.encode(
-                college_names,
-                convert_to_tensor=True
-            )
+            # Encode query name (handle BGE-M3 vs SentenceTransformer)
+            if hasattr(self, 'use_bge_m3') and self.use_bge_m3:
+                # BGE-M3 FlagEmbedding API
+                query_result = self.transformer_model.encode([college_name], batch_size=1, max_length=128)
+                if 'dense_vecs' in query_result:
+                    query_embedding = torch.tensor(query_result['dense_vecs'][0])
+                else:
+                    query_embedding = torch.tensor(query_result[0])
+                
+                college_names = colleges['normalized_name'].tolist()
+                college_result = self.transformer_model.encode(college_names, batch_size=32, max_length=128)
+                if 'dense_vecs' in college_result:
+                    college_embeddings = torch.tensor(college_result['dense_vecs'])
+                else:
+                    college_embeddings = torch.tensor(college_result)
+            else:
+                # SentenceTransformer API
+                query_embedding = self.transformer_model.encode(
+                    college_name,
+                    convert_to_tensor=True
+                )
+                college_names = colleges['normalized_name'].tolist()
+                college_embeddings = self.transformer_model.encode(
+                    college_names,
+                    convert_to_tensor=True
+                )
 
             # Calculate cosine similarity
             similarities = util.cos_sim(query_embedding, college_embeddings)[0]

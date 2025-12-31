@@ -231,7 +231,15 @@ export const StreamProvider: React.FC<StreamProviderProps> = ({ children }) => {
     localStorage.removeItem(MODAL_SHOWN_KEY);
   };
 
+<<<<<<< Updated upstream
   const openModal = () => {
+=======
+  const openModal = useCallback(() => {
+    // BETA: Temporarily disabled stream selection modal
+    // TODO: Re-enable after beta by removing this return
+    return;
+    
+>>>>>>> Stashed changes
     // Only allow opening modal if stream is not locked
     if (!isLocked) {
       setShowModal(true);

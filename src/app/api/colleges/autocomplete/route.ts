@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     // Get college name suggestions
     const { data, error } = await supabase
       .from('colleges')
-      .select('name, city, state, management_type')
+      .select('name, address, state, college_type')
       .ilike('name', `${query}%`)
       .limit(limit);
 
@@ -39,12 +39,12 @@ export async function GET(request: NextRequest) {
     // Format suggestions
     const suggestions = (data || []).map(college => ({
       value: college.name,
-      label: `${college.name}, ${college.city}`,
-      secondary: `${college.state} • ${college.management_type}`,
+      label: `${college.name}, ${college.address || ''}`,
+      secondary: `${college.state} • ${college.college_type || ''}`,
       name: college.name,
-      city: college.city,
+      address: college.address,
       state: college.state,
-      managementType: college.management_type
+      type: college.college_type
     }));
 
     return NextResponse.json({

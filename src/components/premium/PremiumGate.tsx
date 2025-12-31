@@ -7,11 +7,12 @@
 
 import React, { useState, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Crown, X, Check, Sparkles, Zap } from 'lucide-react';
+import { Crown, X, Check, Sparkles, Zap, ArrowRight } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { usePremium } from '@/contexts/PremiumContext';
 import { PRICING_PLANS, FeatureKey } from '@/config/premium';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface PremiumGateProps {
   featureKey: FeatureKey;
@@ -27,7 +28,7 @@ export const PremiumGate: React.FC<PremiumGateProps> = ({
   showUpgradeButton = true
 }) => {
   const { isDarkMode } = useTheme();
-  const { hasFeatureAccess, canUseFeature, currentPlan, getFeatureLimit, getFeatureUsage } = usePremium();
+  const { hasFeatureAccess, canUseFeature, currentPlan, getFeatureLimit, getFeatureUsage, loading: premiumLoading } = usePremium();
   const [showModal, setShowModal] = useState(false);
   const [canUse, setCanUse] = useState<boolean | null>(null);
   const router = useRouter();
@@ -40,93 +41,83 @@ export const PremiumGate: React.FC<PremiumGateProps> = ({
     checkAccess();
   }, [featureKey, canUseFeature]);
 
-  // Check if user has access to this feature
-  const hasAccess = hasFeatureAccess(featureKey);
-  const limit = getFeatureLimit(featureKey);
-  const usage = getFeatureUsage(featureKey);
-
-  if (canUse === null) {
-    return null; // Loading
+  // Show loading state while premium context loads or while checking feature access
+  if (premiumLoading || canUse === null) {
+    return (
+      <div className={`flex items-center justify-center p-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+        <span className="ml-3 font-medium">Checking access...</span>
+      </div>
+    );
   }
 
-  if (hasAccess && canUse) {
+  if (hasFeatureAccess(featureKey) && canUse) {
     return <>{children}</>;
   }
 
-  const currentPlanObj = PRICING_PLANS[currentPlan];
+  const currentPlanObj = PRICING_PLANS[currentPlan] || PRICING_PLANS.free;
   const suggestedPlan = Object.values(PRICING_PLANS).find(
     plan => plan.id !== 'free' && plan.id !== currentPlan
-  ) || PRICING_PLANS.basic;
+  ) || PRICING_PLANS.premium;
 
   const handleUpgrade = () => {
     router.push('/pricing');
     setShowModal(false);
   };
 
+  const LockedFeaturePlaceholder = () => (
+    <div className="relative w-full h-full min-h-[400px] flex items-center justify-center p-6 my-8">
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-blue-500/5 rounded-3xl" />
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`relative w-full max-w-2xl backdrop-blur-md rounded-3xl border-2 p-8 md:p-12 shadow-2xl overflow-hidden text-center ${
+          isDarkMode 
+            ? 'bg-slate-900/60 border-white/20 shadow-purple-500/10' 
+            : 'bg-white/80 border-gray-200/60 shadow-gray-200'
+        }`}
+      >
+        <div className={`w-16 h-16 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-xl ${
+          isDarkMode 
+            ? 'bg-gradient-to-br from-purple-500 to-pink-500' 
+            : 'bg-gradient-to-br from-purple-600 to-pink-600'
+        }`}>
+          <Crown className="w-8 h-8 text-white" />
+        </div>
+
+        <h2 className={`text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          Premium Insight Feature
+        </h2>
+        <p className={`text-lg mb-8 max-w-sm mx-auto ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+          Detailed Trend Analysis is exclusive to our Premium members. Upgrade now to unlock historical data patterns.
+        </p>
+
+        {showUpgradeButton && (
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold transition-all flex items-center gap-2 mx-auto shadow-lg shadow-purple-500/20"
+          >
+            <Sparkles className="w-5 h-5" />
+            Upgrade to Premium
+            <ArrowRight className="w-5 h-5" />
+          </button>
+        )}
+      </motion.div>
+    </div>
+  );
+
   return (
     <>
-      {fallback || (
-        <div className={`relative ${isDarkMode ? 'bg-white/5' : 'bg-gray-100'} rounded-xl p-8 border-2 ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl"></div>
+      {fallback || <LockedFeaturePlaceholder />}
 
-          <div className="relative z-10 text-center">
-            <div className="inline-flex p-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-4">
-              <Crown className="w-8 h-8 text-white" />
-            </div>
-
-            <h3 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Premium Feature
-            </h3>
-
-            <p className={`mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              {!hasAccess
-                ? 'Upgrade your plan to unlock this feature'
-                : `You've reached your limit of ${limit} uses for this month`
-              }
-            </p>
-
-            {typeof limit === 'number' && hasAccess && (
-              <div className="mb-6">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                    Usage: {usage} / {limit}
-                  </span>
-                  <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                    {Math.round((usage / limit) * 100)}%
-                  </span>
-                </div>
-                <div className={`h-2 rounded-full ${isDarkMode ? 'bg-white/10' : 'bg-gray-200'}`}>
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
-                    style={{ width: `${Math.min((usage / limit) * 100, 100)}%` }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {showUpgradeButton && (
-              <div className="flex gap-3 justify-center">
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold transition-all flex items-center gap-2"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  View Plans
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Upgrade Modal */}
       <AnimatePresence>
         {showModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={() => setShowModal(false)}
           >
             <motion.div
@@ -134,33 +125,37 @@ export const PremiumGate: React.FC<PremiumGateProps> = ({
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className={`max-w-4xl w-full rounded-2xl ${
-                isDarkMode ? 'bg-gray-900 border-white/20' : 'bg-white border-gray-200'
-              } border-2 p-8 max-h-[90vh] overflow-y-auto`}
+              className={`max-w-2xl w-full rounded-2xl border-2 p-8 shadow-2xl overflow-hidden relative ${
+                isDarkMode ? 'bg-slate-900 border-white/20' : 'bg-white border-gray-200'
+              }`}
             >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-6">
+              {/* Animated Glow */}
+              <div className="absolute top-0 right-0 p-8 pointer-events-none opacity-20">
+                <Sparkles className={`w-24 h-24 ${isDarkMode ? 'text-purple-400' : 'text-purple-500'}`} />
+              </div>
+
+              <div className="flex items-start justify-between mb-8 relative z-10">
                 <div>
                   <h2 className={`text-3xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Upgrade Your Plan
+                    Choose Your Plan
                   </h2>
-                  <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                    Choose the perfect plan for your needs
+                  <p className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
+                    Power up your NEET counselling journey
                   </p>
                 </div>
                 <button
                   onClick={() => setShowModal(false)}
-                  className={`p-2 rounded-lg ${
-                    isDarkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'
-                  } transition-colors`}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isDarkMode ? 'hover:bg-white/10 text-slate-400' : 'hover:bg-gray-100 text-gray-500'
+                  }`}
                 >
-                  <X className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
-              {/* Current Plan Info */}
-              <div className={`rounded-xl p-4 mb-6 ${
+              <div className={`rounded-xl p-4 mb-8 border ${
                 isDarkMode ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'
+<<<<<<< Updated upstream
               } border`}>
                 <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   Current Plan: <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -216,20 +211,62 @@ export const PremiumGate: React.FC<PremiumGateProps> = ({
                     <Zap className="w-5 h-5" />
                     Upgrade to {suggestedPlan.displayName}
                   </button>
+=======
+              }`}>
+                <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                  Active Plan
+                </div>
+                <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {currentPlanObj.displayName}
+>>>>>>> Stashed changes
                 </div>
               </div>
 
-              {/* View All Plans */}
-              <button
-                onClick={handleUpgrade}
-                className={`w-full py-3 rounded-xl border-2 font-semibold transition-all ${
-                  isDarkMode
-                    ? 'border-white/20 hover:bg-white/10 text-white'
-                    : 'border-gray-200 hover:bg-gray-50 text-gray-900'
-                }`}
-              >
-                View All Plans
-              </button>
+              <div className={`rounded-2xl p-6 border-2 mb-8 relative overflow-hidden transition-all ${
+                isDarkMode 
+                  ? 'bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/30' 
+                  : 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200'
+              }`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-purple-500/20' : 'bg-purple-500'}`}>
+                    <Zap className={`w-5 h-5 ${isDarkMode ? 'text-purple-400' : 'text-white'}`} />
+                  </div>
+                  <h3 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {suggestedPlan.displayName}
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                  {suggestedPlan.features.slice(0, 6).map((feature, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <Check className="w-5 h-5 text-green-500 shrink-0" />
+                      <span className={`text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
+                        {feature}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={handleUpgrade}
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-lg shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 hover:opacity-90 transition-all"
+                >
+                  Unlock All Features
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="text-center">
+                <Link
+                  href="/pricing"
+                  onClick={() => setShowModal(false)}
+                  className={`text-sm font-semibold transition-all hover:underline ${
+                    isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  Compare All Plans & Features
+                </Link>
+              </div>
             </motion.div>
           </motion.div>
         )}

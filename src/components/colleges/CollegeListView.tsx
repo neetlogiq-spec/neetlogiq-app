@@ -154,25 +154,20 @@ const CollegeListView: React.FC<CollegeListViewProps> = ({
                 } group-hover:text-blue-600 transition-colors`}>
                   {college.name}
                 </h3>
-                
-                {/* Rating */}
-                {college.rating && (
-                  <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
-                    <Star className="w-3 h-3 fill-green-500 text-green-500" />
-                    <span className="text-xs font-medium text-green-700 dark:text-green-400">
-                      {college.rating}
-                    </span>
-                  </div>
-                )}
               </div>
 
               {/* Location & Type */}
               <div className="flex flex-wrap items-center gap-3 mb-2">
-                <div className="flex items-center gap-1">
-                  <MapPin className={`w-4 h-4 ${isDarkMode ? 'text-white/60' : 'text-gray-500'}`} />
-                  <span className={`text-sm ${isDarkMode ? 'text-white/80' : 'text-gray-600'}`}>
-                    {college.city}, {college.state}
-                  </span>
+                <div className="flex items-start gap-1 max-w-[400px]">
+                  <MapPin className={`w-4 h-4 mt-0.5 shrink-0 ${isDarkMode ? 'text-white/60' : 'text-gray-500'}`} />
+                  <div className="flex flex-col min-w-0">
+                    <span className={`text-sm line-clamp-2 leading-tight ${isDarkMode ? 'text-white/80' : 'text-gray-600'}`} title={college.address}>
+                      {college.address || college.city || 'Unknown Address'}
+                    </span>
+                    <span className={`text-xs font-bold tracking-wide uppercase mt-0.5 ${isDarkMode ? 'text-white/40' : 'text-gray-400'}`}>
+                      {college.state}
+                    </span>
+                  </div>
                 </div>
                 
                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -246,14 +241,19 @@ const CollegeListView: React.FC<CollegeListViewProps> = ({
                 </div>
               </div>
 
-              {/* Additional Info */}
-              <div className="flex flex-wrap items-center gap-4">
-                {college.fees && (
-                  <span className={`text-sm font-medium ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>
-                    ₹{college.fees.toLocaleString()}/year
-                  </span>
-                )}
-              </div>
+              {/* University Info */}
+              {(college.university || college.university_affiliation) && (
+                <div className="flex items-center gap-1 mt-1">
+                  <div className={`flex items-center gap-1 px-2 py-0.5 rounded-lg ${
+                    isDarkMode ? 'bg-green-500/10 text-green-400' : 'bg-green-50 text-green-600'
+                  }`}>
+                    <Building2 className="w-3.5 h-3.5" />
+                    <span className="text-xs font-medium truncate max-w-[300px]">
+                      {college.university || college.university_affiliation}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Course Count & Action Button */}

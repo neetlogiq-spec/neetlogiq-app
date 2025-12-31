@@ -10,8 +10,14 @@ import Footer from '@/components/ui/Footer';
 import CollegeSelector from '@/components/compare/CollegeSelector';
 import ComparisonResults from '@/components/compare/ComparisonResults';
 import ProgressIndicator from '@/components/compare/ProgressIndicator';
+<<<<<<< Updated upstream:edge-native-app/src/app/compare/page.tsx
 import AchievementToast from '@/components/compare/AchievementToast';
 import './compare.css';
+=======
+
+import PremiumGate from '@/components/premium/PremiumGate';
+import { FEATURE_KEYS } from '@/config/premium';
+>>>>>>> Stashed changes:src/components/compare/CompareClient.tsx
 
 interface College {
   id: string;
@@ -29,20 +35,81 @@ interface College {
   acceptanceRate: number;
 }
 
+<<<<<<< Updated upstream:edge-native-app/src/app/compare/page.tsx
 const ComparePage: React.FC = () => {
+=======
+// Filter option interface
+interface FilterOption {
+  value: string;
+  label: string;
+  id?: string;
+}
+
+export default function CompareClient() {
+>>>>>>> Stashed changes:src/components/compare/CompareClient.tsx
   const [selectedColleges, setSelectedColleges] = useState<College[]>([]);
   const [showResults, setShowResults] = useState(false);
-  const [achievements, setAchievements] = useState<string[]>([]);
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectionMethod, setSelectionMethod] = useState<'dropdown' | 'search'>('dropdown');
   const [selectedStream, setSelectedStream] = useState<string>('all');
   const [selectedManagement, setSelectedManagement] = useState<string>('all');
   const { isDarkMode } = useTheme();
+<<<<<<< Updated upstream:edge-native-app/src/app/compare/page.tsx
 
   const maxColleges = 4;
   const currentStep = selectedColleges.length + 1;
   const totalSteps = maxColleges + 1;
 
+=======
+  const { canUseFeature, incrementFeatureUsage } = usePremium();
+  
+  // Dynamic filter options from API
+  const [filterOptions, setFilterOptions] = useState<{
+    streams: FilterOption[];
+    managements: FilterOption[];
+    states: FilterOption[];
+  }>({
+    streams: [],
+    managements: [],
+    states: []
+  });
+  const [isLoadingFilters, setIsLoadingFilters] = useState(true);
+  
+  // Hero/Content transition state
+  const [showContent, setShowContent] = useState(false);
+  
+  // Handle "Start Exploring" button click
+  const handleStartExploring = () => {
+    setShowContent(true);
+  };
+  const maxColleges = 4;
+  const currentStep = selectedColleges.length + 1;
+  const totalSteps = maxColleges + 1;
+  
+  // Fetch filter options on mount
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        const response = await fetch('/api/compare/filter-options');
+        const data = await response.json();
+        if (data.success) {
+          setFilterOptions({
+            streams: data.streams || [],
+            managements: data.managements || [],
+            states: data.states || []
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching filter options:', error);
+      } finally {
+        setIsLoadingFilters(false);
+      }
+    };
+    fetchFilterOptions();
+  }, []);
+  
+>>>>>>> Stashed changes:src/components/compare/CompareClient.tsx
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
@@ -50,6 +117,7 @@ const ComparePage: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
+<<<<<<< Updated upstream:edge-native-app/src/app/compare/page.tsx
   // Achievement system
   useEffect(() => {
     if (selectedColleges.length === 2) {
@@ -59,6 +127,8 @@ const ComparePage: React.FC = () => {
     }
   }, [selectedColleges.length]);
 
+=======
+>>>>>>> Stashed changes:src/components/compare/CompareClient.tsx
   const handleCollegeSelect = (college: College, index: number) => {
     setSelectedColleges(prev => {
       const newColleges = [...prev];
@@ -95,16 +165,16 @@ const ComparePage: React.FC = () => {
         <Vortex
           className="fixed inset-0 z-0"
           particleCount={800}
-          baseHue={280}
-          rangeHue={120}
-          baseSpeed={0.2}
-          rangeSpeed={2.0}
+          baseHue={200}
+          rangeHue={80}
+          baseSpeed={0.15}
+          rangeSpeed={1.8}
           baseRadius={1}
           rangeRadius={3}
           backgroundColor="#000000"
           containerClassName="fixed inset-0"
         >
-          <div className="absolute inset-0 bg-black/20 z-10"></div>
+          <div className="absolute inset-0 bg-black/30 z-10"></div>
         </Vortex>
       ) : (
         <LightVortex
@@ -131,8 +201,8 @@ const ComparePage: React.FC = () => {
             <motion.div
               className={`text-3xl md:text-4xl mb-2 font-medium transition-colors duration-300 ${
                 isDarkMode 
-                  ? 'bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent' 
-                  : 'bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent'
+                  ? 'bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent' 
+                  : 'bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent'
               }`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
@@ -157,8 +227,8 @@ const ComparePage: React.FC = () => {
             <motion.p
               className={`text-xl md:text-2xl mb-2 max-w-2xl mx-auto transition-colors duration-300 ${
                 isDarkMode 
-                  ? 'bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent' 
-                  : 'bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent'
+                  ? 'bg-linear-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent' 
+                  : 'bg-linear-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent'
               }`}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
@@ -168,11 +238,31 @@ const ComparePage: React.FC = () => {
             </motion.p>
 
           </div>
+<<<<<<< Updated upstream:edge-native-app/src/app/compare/page.tsx
         </main>
 
 
         {/* College Selection Interface */}
         <motion.section 
+=======
+            </main>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Section 2: Content Section */}
+      <AnimatePresence mode="wait">
+        {showContent && (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            transition={{ duration: 0.6 }}
+            className="fixed inset-0 z-20 overflow-y-auto pt-16"
+          >
+            {/* College Selection Interface */}
+            <motion.section 
+>>>>>>> Stashed changes:src/components/compare/CompareClient.tsx
           className="py-8 px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
@@ -194,7 +284,7 @@ const ComparePage: React.FC = () => {
               </h2>
               <p className={`text-lg max-w-2xl mx-auto ${
                 isDarkMode 
-                  ? 'bg-gradient-to-r from-gray-300 to-gray-400 bg-clip-text text-transparent' 
+                  ? 'bg-gradient-to-r from-purple-300 to-blue-400 bg-clip-text text-transparent' 
                   : 'bg-gradient-to-r from-gray-600 to-gray-500 bg-clip-text text-transparent'
               }`}>
                 Choose up to 4 colleges to get detailed comparison
@@ -203,10 +293,10 @@ const ComparePage: React.FC = () => {
 
             {/* External Filters */}
             <motion.div
-              className={`backdrop-blur-md rounded-2xl p-6 border-2 mb-8 ${
+              className={`rounded-2xl p-6 border mb-8 ${
                 isDarkMode 
-                  ? 'bg-white/10 border-white/20 shadow-lg' 
-                  : 'bg-white/80 border-gray-200/60 shadow-lg'
+                  ? 'bg-white/10 border-white/20 shadow-2xl backdrop-blur-md' 
+                  : 'bg-white/80 border-gray-200/60 shadow-lg backdrop-blur-md'
               }`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
@@ -221,16 +311,17 @@ const ComparePage: React.FC = () => {
                   <select 
                     value={selectedStream}
                     onChange={(e) => setSelectedStream(e.target.value)}
-                    className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${
+                    className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all duration-300 ${
                       isDarkMode 
-                        ? 'bg-white/90 backdrop-blur-sm text-gray-900' 
+                        ? 'bg-white/10 border border-white/20 text-white/90 hover:bg-white/15 backdrop-blur-md' 
                         : 'bg-white/95 backdrop-blur-sm text-gray-900 shadow-sm border border-gray-200'
                     }`}
+                    disabled={isLoadingFilters}
                   >
                     <option value="all">All Streams</option>
-                    <option value="medical">Medical</option>
-                    <option value="dental">Dental</option>
-                    <option value="ayush">AYUSH</option>
+                    {filterOptions.streams.map(stream => (
+                      <option key={stream.value} value={stream.value}>{stream.label}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -242,16 +333,17 @@ const ComparePage: React.FC = () => {
                   <select 
                     value={selectedManagement}
                     onChange={(e) => setSelectedManagement(e.target.value)}
-                    className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${
+                    className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all duration-300 ${
                       isDarkMode 
-                        ? 'bg-white/90 backdrop-blur-sm text-gray-900' 
+                        ? 'bg-white/10 border border-white/20 text-white/90 hover:bg-white/15 backdrop-blur-md' 
                         : 'bg-white/95 backdrop-blur-sm text-gray-900 shadow-sm border border-gray-200'
                     }`}
+                    disabled={isLoadingFilters}
                   >
                     <option value="all">All Management</option>
-                    <option value="government">Government</option>
-                    <option value="private">Private</option>
-                    <option value="deemed">Deemed</option>
+                    {filterOptions.managements.map(mgmt => (
+                      <option key={mgmt.value} value={mgmt.value}>{mgmt.label}</option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -279,9 +371,15 @@ const ComparePage: React.FC = () => {
                   >
                     <motion.button
                       onClick={() => {
-                        // This will trigger the search modal
-                        const event = new CustomEvent('openSearch', { detail: { index: selectedColleges.length } });
-                        window.dispatchEvent(event);
+                        // Add a placeholder college slot and trigger the search modal
+                        const newIndex = selectedColleges.length;
+                        // Dispatch event with slight delay to allow new CollegeSelector to mount
+                        setTimeout(() => {
+                          const event = new CustomEvent('openSearch', { detail: { index: newIndex } });
+                          window.dispatchEvent(event);
+                        }, 100);
+                        // Add a null placeholder to trigger rendering the new slot
+                        setSelectedColleges(prev => [...prev, null as any]);
                       }}
                       className={`px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 ${
                         isDarkMode 
@@ -296,8 +394,12 @@ const ComparePage: React.FC = () => {
                     </motion.button>
                   </motion.div>
                 )}
+<<<<<<< Updated upstream:edge-native-app/src/app/compare/page.tsx
 
                 {/* College Cards Grid - Always show at least 2 empty cards initially */}
+=======
+                {/* College Cards Grid */}
+>>>>>>> Stashed changes:src/components/compare/CompareClient.tsx
                 <div className={`grid gap-6 ${
                   selectedColleges.length <= 2 
                     ? 'grid-cols-1 md:grid-cols-2' 
@@ -317,6 +419,7 @@ const ComparePage: React.FC = () => {
                       selectionMethod={selectionMethod}
                       selectedStream={selectedStream}
                       selectedManagement={selectedManagement}
+                      stateOptions={filterOptions.states}
                     />
                   ))}
                   
@@ -332,6 +435,7 @@ const ComparePage: React.FC = () => {
                       selectionMethod={selectionMethod}
                       selectedStream={selectedStream}
                       selectedManagement={selectedManagement}
+                      stateOptions={filterOptions.states}
                     />
                   ))}
                 </div>
@@ -392,6 +496,7 @@ const ComparePage: React.FC = () => {
         )}
       </AnimatePresence>
 
+<<<<<<< Updated upstream:edge-native-app/src/app/compare/page.tsx
         {/* Achievement Toasts */}
         <AnimatePresence>
           {achievements.map((achievement, index) => (
@@ -406,6 +511,11 @@ const ComparePage: React.FC = () => {
 
       {/* Footer */}
       <Footer />
+=======
+          </motion.div>
+        )}
+      </AnimatePresence>
+>>>>>>> Stashed changes:src/components/compare/CompareClient.tsx
     </div>
   );
 };

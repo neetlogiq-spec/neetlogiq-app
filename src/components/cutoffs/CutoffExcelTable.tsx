@@ -38,6 +38,7 @@ interface CutoffExcelTableProps {
   onRowClick?: (cutoff: Cutoff) => void;
   onDataChange?: (data: Cutoff[]) => void;
   onRemoveRound?: (round: number) => void;
+  userRank?: number | null;
 }
 
 const CutoffExcelTable: React.FC<CutoffExcelTableProps> = ({
@@ -47,7 +48,8 @@ const CutoffExcelTable: React.FC<CutoffExcelTableProps> = ({
   visibleRounds,
   onRowClick,
   onDataChange,
-  onRemoveRound
+  onRemoveRound,
+  userRank
 }) => {
   // Transform data for Excel table - group by unique combination
   const transformedData = useMemo(() => {
@@ -98,15 +100,14 @@ const CutoffExcelTable: React.FC<CutoffExcelTableProps> = ({
         key: 'state',
         label: 'State',
         type: 'select' as const,
-        width: 120,
-        minWidth: 120,
+        width: 1, // Shrink to fit
         sortable: true,
         filterable: true,
         frozen: true,
         render: (value: string) => (
-          <div className="flex items-center space-x-1">
-            <MapPin className="w-3 h-3 text-gray-500" />
-            <span className="truncate" title={value}>{value}</span>
+          <div className="flex items-center gap-1">
+            <MapPin className="w-3 h-3 text-gray-500 shrink-0" />
+            <span className="text-xs whitespace-normal leading-tight" title={value}>{value}</span>
           </div>
         )
       },
@@ -114,62 +115,76 @@ const CutoffExcelTable: React.FC<CutoffExcelTableProps> = ({
         key: 'college',
         label: 'College',
         type: 'text' as const,
-        width: 200,
-        minWidth: 180,
-        maxWidth: 300,
+        minWidth: 150,
+        maxWidth: 280,
         frozen: true,
         sortable: true,
         filterable: true,
-        render: (value: string, row: any) => (
-          <div className="flex items-center space-x-2">
-            <Building2 className="w-4 h-4 text-blue-500 shrink-0" />
-            <span className="font-medium truncate" title={value}>{value}</span>
-          </div>
-        )
+        render: (value: string, row: any) => {
+          // Get management type with case-insensitive comparison
+          const mgmt = (row.collegeType || '').toUpperCase();
+          const isGovt = mgmt.includes('GOVERNMENT');
+          const badgeLabel = mgmt === 'GOVERNMENT' ? 'GOVT' : 
+                            mgmt === 'GOVERNMENT-SOCIETY' ? 'GOVT-SOC' :
+                            mgmt === 'PRIVATE' ? 'PVT' : 'PVT';
+          
+          return (
+            <div className="flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-blue-500 shrink-0" />
+              <span className="font-semibold line-clamp-2 text-sm leading-tight" title={value}>{value}</span>
+              {/* Govt/Private Badge */}
+              <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase shrink-0 ${
+                isGovt
+                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                  : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+              }`}>
+                {badgeLabel}
+              </span>
+            </div>
+          );
+        }
       },
       {
         key: 'course',
         label: 'Course',
         type: 'select' as const,
-        width: 120,
-        minWidth: 100,
+        minWidth: 120,
         sortable: true,
         filterable: true,
-        render: (value: string, row: any) => (
-          <div className="flex items-center space-x-2">
-            <GraduationCap className="w-4 h-4 text-green-500 shrink-0" />
-            <span className="truncate" title={value}>{value}</span>
-          </div>
+        render: (value: string) => (
+          <span className="font-medium text-xs whitespace-normal leading-tight line-clamp-2" title={value}>{value}</span>
         )
       },
       {
         key: 'quota',
         label: 'Quota',
         type: 'select' as const,
-        width: 80,
-        minWidth: 80,
+        width: 1, // Shrink to fit
+        minWidth: 60,
         sortable: true,
         filterable: true,
         render: (value: string) => (
-          <span className={`px-2 py-1 rounded text-xs font-medium ${
-            value === 'AIQ'
-              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
-              : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
-          }`}>
-            {value}
-          </span>
+          <div className="flex justify-center w-full">
+            <span className={`px-1.5 py-0.5 rounded text-xs font-medium text-center ${
+              value === 'AIQ'
+                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
+                : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+            }`} title={value}>
+              {value}
+            </span>
+          </div>
         )
       },
       {
         key: 'category',
         label: 'Category',
         type: 'select' as const,
-        width: 80,
-        minWidth: 80,
+        width: 1, // Shrink to fit
+        minWidth: 40,
         sortable: true,
         filterable: true,
         render: (value: string) => (
-          <span className={`px-2 py-1 rounded text-xs font-medium ${
+          <span className={`px-1 py-0.5 rounded text-xs font-medium whitespace-nowrap ${
             value === 'General'
               ? 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
               : value === 'OBC'
@@ -179,7 +194,7 @@ const CutoffExcelTable: React.FC<CutoffExcelTableProps> = ({
               : value === 'ST'
               ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
               : 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400'
-          }`}>
+          }`} title={value}>
             {value}
           </span>
         )
@@ -206,7 +221,7 @@ const CutoffExcelTable: React.FC<CutoffExcelTableProps> = ({
         </div>
       ),
       type: 'text' as const,
-      width: 120,
+      width: 1, // Shrink to fit
       minWidth: 120,
       sortable: false,
       filterable: false,
@@ -218,36 +233,61 @@ const CutoffExcelTable: React.FC<CutoffExcelTableProps> = ({
           return <span className="text-gray-400">-</span>;
         }
         
+        // Determine cell highlighting based on userRank
+        // If userRank <= closing: achievable (green bg), otherwise not achievable (red bg)
+        let cellBgClass = '';
+        let closingColorClass = 'text-purple-600 dark:text-purple-400';
+        
+        if (userRank) {
+          if (userRank <= closing) {
+            // Achievable - green
+            cellBgClass = isDarkMode 
+              ? 'bg-emerald-900/40 rounded-md' 
+              : 'bg-emerald-100 rounded-md';
+            closingColorClass = 'text-emerald-700 dark:text-emerald-300 font-bold';
+          } else {
+            // Not achievable - red
+            cellBgClass = isDarkMode 
+              ? 'bg-rose-900/40 rounded-md' 
+              : 'bg-rose-100 rounded-md';
+            closingColorClass = 'text-rose-700 dark:text-rose-300 font-bold';
+          }
+        }
+        
         return (
-          <div className="flex flex-col space-y-1 text-xs">
-            <div className="font-mono">
-              <span className="text-blue-600 dark:text-blue-400">open: {opening.toLocaleString()}</span>
-            </div>
-            <div className="font-mono">
-              <span className="text-purple-600 dark:text-purple-400">close: {closing.toLocaleString()}</span>
-            </div>
+          <div className={`flex flex-col text-xs font-mono leading-relaxed min-w-[90px] p-1.5 ${cellBgClass}`} title={`Opening: ${opening.toLocaleString()} | Closing: ${closing.toLocaleString()}`}>
+            <span className="text-gray-500 dark:text-gray-400 whitespace-nowrap overflow-hidden">
+              Open: <span className="text-blue-600 dark:text-blue-400 font-medium">{opening.toLocaleString()}</span>
+            </span>
+            <span className="text-gray-500 dark:text-gray-400 whitespace-nowrap overflow-hidden">
+              Close: <span className={`font-semibold ${closingColorClass}`}>{closing.toLocaleString()}</span>
+            </span>
           </div>
         );
       }
     }));
 
     return [...baseColumns, ...roundColumns];
+<<<<<<< Updated upstream
   }, [multiYear, visibleRounds]);
+=======
+  }, [multiYear, visibleRounds, isDarkMode, userRank]);
+>>>>>>> Stashed changes
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full"
+      className="w-full h-full"
     >
       <ExcelStyleTable
         data={transformedData}
         columns={columns}
         isDarkMode={isDarkMode}
         onRowClick={onRowClick}
+        height="100%"
         onDataChange={onDataChange}
-        height="70vh"
         enableColumnResize={true}
         enableColumnReorder={true}
         enableFreezeColumns={true}

@@ -73,7 +73,7 @@ const HomePage: React.FC = () => {
           <div className="absolute inset-0 bg-black/20 z-10"></div>
         </Vortex>
       ) : (
-        <LightVortex
+          <LightVortex
           className="fixed inset-0 z-0"
           particleCount={400}
           baseHue={200}
@@ -85,7 +85,7 @@ const HomePage: React.FC = () => {
           containerClassName="fixed inset-0"
         >
           {/* Light overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-indigo-50/20 to-purple-50/30 z-10"></div>
+          <div className="absolute inset-0 bg-linear-to-br from-blue-50/30 via-indigo-50/20 to-purple-50/30 z-10"></div>
         </LightVortex>
       )}
 
@@ -95,17 +95,17 @@ const HomePage: React.FC = () => {
         <main className="flex items-center justify-center px-4 sm:px-8 py-16 md:py-24 min-h-[80vh]">
           <div className="text-center max-w-4xl">
             {/* Welcome Message */}
-            <motion.div
+              <motion.div
               className={`text-3xl md:text-4xl mb-2 font-medium transition-colors duration-300 ${
                 isDarkMode 
-                  ? 'bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent' 
-                  : 'bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent'
+                  ? 'bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent' 
+                  : 'bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent'
               }`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              Welcome {user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'there'} to
+              Welcome {user?.givenName || user?.displayName || user?.email?.split('@')[0] || 'there'} to
             </motion.div>
 
             {/* Main Title */}
@@ -124,8 +124,8 @@ const HomePage: React.FC = () => {
             <motion.p
               className={`text-xl md:text-2xl mb-16 max-w-2xl mx-auto transition-colors duration-300 ${
                 isDarkMode 
-                  ? 'bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent' 
-                  : 'bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent'
+                  ? 'bg-linear-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent' 
+                  : 'bg-linear-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent'
               }`}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
@@ -143,7 +143,7 @@ const HomePage: React.FC = () => {
             >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Link href="/colleges" className="group">
-                   <div className="bg-gradient-to-br from-blue-800 to-purple-600 hover:from-blue-900 hover:to-purple-700 text-white px-6 py-4 rounded-xl text-center transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
+                   <div className="bg-linear-to-br from-blue-800 to-purple-600 hover:from-blue-900 hover:to-purple-700 text-white px-6 py-4 rounded-xl text-center transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
                      <div className="flex items-center space-x-2">
                        <GraduationCap className="w-5 h-5" />
                        <h3 className="text-lg font-semibold whitespace-nowrap">Explore Colleges</h3>
@@ -152,7 +152,7 @@ const HomePage: React.FC = () => {
                 </Link>
                 
                 <Link href="/courses" className="group">
-                   <div className="bg-gradient-to-br from-green-400 to-green-700 hover:from-green-500 hover:to-green-800 text-white px-6 py-4 rounded-xl text-center transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
+                   <div className="bg-linear-to-br from-green-400 to-green-700 hover:from-green-500 hover:to-green-800 text-white px-6 py-4 rounded-xl text-center transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
                      <div className="flex items-center space-x-2">
                        <BookOpen className="w-5 h-5" />
                        <h3 className="text-lg font-semibold whitespace-nowrap">Browse Courses</h3>
@@ -161,7 +161,7 @@ const HomePage: React.FC = () => {
                 </Link>
                 
                 <Link href="/cutoffs" className="group">
-                   <div className="bg-gradient-to-br from-orange-400 to-orange-700 hover:from-orange-500 hover:to-orange-800 text-white px-6 py-4 rounded-xl text-center transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
+                   <div className="bg-linear-to-br from-orange-400 to-orange-700 hover:from-orange-500 hover:to-orange-800 text-white px-6 py-4 rounded-xl text-center transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
                      <div className="flex items-center space-x-2">
                        <BarChart3 className="w-5 h-5" />
                        <h3 className="text-lg font-semibold whitespace-nowrap">Check Cutoffs</h3>

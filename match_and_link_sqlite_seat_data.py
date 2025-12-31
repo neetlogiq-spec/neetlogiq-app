@@ -553,19 +553,21 @@ class AdvancedSQLiteMatcher:
         console.print(f"  • Levels: {len(self.master_data.get('levels', [])):,}")
         console.print(f"  • State Mappings: {len(self.state_mappings):,}")
 
-        # Build vector index for AI matching if advanced features enabled
+        # Use shared vector index singleton (built once, cached, shared across all modes)
         if self.enable_advanced_features:
-            console.print("\n[cyan]🤖 Building AI Vector Index...[/cyan]")
+            console.print("\n[cyan]🤖 Loading Shared AI Vector Index...[/cyan]")
             try:
-                # Use a safer approach - disable FAISS if it causes issues
-                import warnings
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    self.build_vector_index_for_colleges(force_rebuild=False)
-            except (Exception, SystemError, OSError) as e:
-                console.print(f"[yellow]⚠️  Could not build vector index: {e}[/yellow]")
-                console.print("[yellow]   Disabling vector search (transformer matching will still work)[/yellow]")
-                # Disable vector engine to prevent crashes
+                from vector_index import get_vector_index
+                vector_index = get_vector_index()
+                if vector_index:
+                    stats = vector_index.get_statistics()
+                    console.print(f"[green]✅ Vector index ready: {stats.get('total_vectors', 0):,} colleges (shared singleton)[/green]")
+                    self._vector_engine = vector_index._engine  # Use internal engine for compatibility
+                else:
+                    console.print("[yellow]⚠️  Vector index not available[/yellow]")
+                    self._vector_engine = None
+            except Exception as e:
+                console.print(f"[yellow]⚠️  Could not load vector index: {e}[/yellow]")
                 self._vector_engine = None
 
         # Initialize Ensemble Matcher (after master data is loaded)

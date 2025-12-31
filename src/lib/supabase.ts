@@ -2,13 +2,16 @@
  * Supabase Client Configuration
  *
  * This file provides both client-side and server-side Supabase clients.
- * - Client-side: Uses anon key, respects RLS policies
+ * - Client-side: Re-exports from browser.ts (uses @supabase/ssr with cookies)
  * - Server-side: Uses service role key, bypasses RLS (admin access)
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseJsClient } from '@supabase/supabase-js';
+// Import the cookie-based browser client (single source of truth)
+import { supabase as browserClient } from '@/lib/supabase/browser';
 import type { Database } from './database.types';
 
+<<<<<<< Updated upstream
 // Validate environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
@@ -85,6 +88,33 @@ export const supabaseAdmin = createClient<Database>(
     }
   }
 );
+=======
+// Environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+const FALLBACK_URL = 'https://xyzxyzxyzxyzxyzxyzxy.supabase.co';
+const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5enh5enh5enh5enh5enh5enh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDk5NzQzODUsImV4cCI6MTk2NTU1MDM4NX0.fakefakefakefakefakefakefakefakefakefake';
+
+// Re-export the browser client - this is the ONLY client for browser use
+// This eliminates the "Multiple GoTrueClient instances" warning
+export const supabase = browserClient;
+
+// Server-side Supabase client (admin access, bypasses RLS)
+// Only use this in API routes, never expose to client!
+export const supabaseAdmin = typeof window === 'undefined'
+  ? createSupabaseJsClient<Database>(
+      supabaseUrl || FALLBACK_URL,
+      supabaseServiceKey || FALLBACK_KEY,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
+  : (null as unknown as ReturnType<typeof createSupabaseJsClient<Database>>);
+>>>>>>> Stashed changes
 
 // =====================================================
 // HELPER FUNCTIONS

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /**
  * AuthContext - Supabase Implementation
  *
@@ -5,55 +6,115 @@
  * while maintaining the same interface for backward compatibility
  */
 
+=======
+>>>>>>> Stashed changes
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase, getUserSubscription } from '@/lib/supabase';
-import type { User, Session } from '@supabase/supabase-js';
-import type { AuthContextType } from '@/types';
-import type { SubscriptionTier } from '@/lib/subscription-plans';
+/**
+ * Auth Context
+ * 
+ * Provides authentication state and methods using Supabase.
+ * Uses @supabase/ssr browser client for cookie-based session storage.
+ */
+
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { createClient } from '@/lib/supabase/browser';
+import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import type { User } from '@/types';
+
+interface AuthContextType {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
+  subscriptionTier: string;
+  isAdmin: boolean;
+  isSuperAdmin: boolean;
+  showStreamSelection: boolean;
+  setShowStreamSelection: (show: boolean) => void;
+  isAuthenticated: boolean;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
+  refreshSession: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
-
-// Extended user type with subscription info
-interface ExtendedUser extends User {
-  subscription_tier?: SubscriptionTier;
-  subscription_end_date?: string | null;
-  selected_stream?: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL';
-  neet_rank?: number | null;
-  neet_year?: number | null;
-  category?: string | null;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<ExtendedUser | null>(null);
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isUserAdmin, setIsUserAdmin] = useState(false);
-  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [subscriptionTier, setSubscriptionTier] = useState('free');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [showStreamSelection, setShowStreamSelection] = useState(false);
 
+<<<<<<< Updated upstream
   // Load user profile data from Supabase
   const loadUserProfile = async (userId: string) => {
+=======
+  const supabase = createClient();
+
+  // Helper to transform Supabase user to App user
+  const transformUser = useCallback((supabaseUser: SupabaseUser | null): User | null => {
+    if (!supabaseUser) return null;
+    
+    const meta = supabaseUser.user_metadata || {};
+    const fullName = meta.full_name || meta.name || null;
+    const photo = meta.avatar_url || meta.picture || null;
+    const givenName = meta.given_name || (fullName ? fullName.split(' ')[0] : null);
+    
+    return {
+      uid: supabaseUser.id,
+      email: supabaseUser.email || null,
+      displayName: fullName,
+      photoURL: photo,
+      name: fullName,
+      givenName: givenName,
+      imageUrl: photo,
+      user_metadata: meta
+    };
+  }, []);
+ 
+  // Consolidated admin status check
+  const updateAdminStatus = useCallback((email: string | undefined | null, dbRole: string | undefined | null) => {
+    if (!email) {
+      setIsAdmin(false);
+      setIsSuperAdmin(false);
+      return;
+    }
+
+    const adminEmails = ['kashyap0071232000@gmail.com', 'neetlogiq@gmail.com', 'kashyap2k007@gmail.com'];
+    const isDevelperEmail = adminEmails.includes(email.toLowerCase());
+    const role = dbRole || 'user';
+    
+    // Super Admin if role is 'super_admin' OR email is in developer list
+    const superAdminStatus = role === 'super_admin' || isDevelperEmail;
+    // Admin if role is 'admin' OR they are a Super Admin
+    const adminStatus = role === 'admin' || superAdminStatus;
+
+    console.log('🛡️ AuthContext: Calculating status:', { 
+      email, 
+      dbRole: role, 
+      isDevelperEmail,
+      finalIsAdmin: adminStatus, 
+      finalIsSuperAdmin: superAdminStatus 
+    });
+
+    setIsAdmin(adminStatus);
+    setIsSuperAdmin(superAdminStatus);
+  }, []);
+
+  // Load user profile
+  const loadUserProfile = useCallback(async (userId: string, email?: string | null) => {
+>>>>>>> Stashed changes
     try {
       const { data: profile } = await supabase
         .from('user_profiles')
-        .select('*')
+        .select('subscription_tier, preferences, role')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle() as { data: any, error: any };
 
+<<<<<<< Updated upstream
       if (profile) {
         return {
           subscription_tier: profile.subscription_tier,
@@ -85,10 +146,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           subscription_tier: 'free',
           onboarding_completed: false
         });
+=======
+      if (error) {
+        console.error('❌ AuthContext: Error loading profile:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+        return;
+      }
+
+      if (profile) {
+        setSubscriptionTier(profile.subscription_tier || 'free');
+        
+        // Pass to consolidated check
+        updateAdminStatus(email || profile.email, profile.role);
+        
+        const hasSelectedStream = profile.preferences?.selectedStream;
+        const streamSkipped = typeof window !== 'undefined' && 
+          localStorage.getItem('streamSelectionSkipped') === 'true';
+        
+        if (!hasSelectedStream && !streamSkipped) {
+          setShowStreamSelection(true);
+        }
+>>>>>>> Stashed changes
       }
     } catch (error) {
-      console.error('Error ensuring user profile:', error);
+      console.error('Error in loadUserProfile:', error);
     }
+<<<<<<< Updated upstream
   };
 
   // Check admin status (stored in user_metadata or user_profiles)
@@ -118,8 +205,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     return false;
   };
+=======
+  }, [supabase, updateAdminStatus]); // Added updateAdminStatus to dependencies
+>>>>>>> Stashed changes
 
+  // Initialize auth
   useEffect(() => {
+<<<<<<< Updated upstream
     let mounted = true;
     let subscription: any = null;
 
@@ -223,14 +315,64 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     };
   }, []);
+=======
+    const initialize = async () => {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        
+        if (initialSession) {
+          setSession(initialSession);
+          setUser(transformUser(initialSession.user));
+          await loadUserProfile(initialSession.user.id, initialSession.user.email);
+          updateAdminStatus(initialSession.user.email, undefined); // Initial check with email
+        }
+      } catch (error) {
+        console.error('Auth init error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    initialize();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, newSession) => {
+        console.log('🔐 Auth event:', event);
+        
+        if (newSession) {
+          setSession(newSession);
+          setUser(transformUser(newSession.user));
+          await loadUserProfile(newSession.user.id, newSession.user.email);
+          updateAdminStatus(newSession.user.email, undefined); // Initial check with email
+        } else {
+          setSession(null);
+          setUser(null);
+          setSubscriptionTier('free');
+          updateAdminStatus(undefined, undefined); // Clear admin status
+        }
+        
+        setLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [supabase, loadUserProfile, updateAdminStatus]);
+>>>>>>> Stashed changes
+
+  // Sign in with Google
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
+      
+      const origin = typeof window !== 'undefined' 
+        ? window.location.origin 
+        : 'http://localhost:3500';
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${origin}/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent'
@@ -241,20 +383,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) throw error;
     } catch (error) {
       console.error('Sign in error:', error);
-      throw error;
-    } finally {
       setLoading(false);
+      throw error;
     }
   };
 
-  const signOutHandler = async () => {
+  // Sign out
+  const signOut = async () => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
+      
       if (error) throw error;
-
-      // Clear local storage
-      localStorage.removeItem('neetlogiq_user_data');
+      
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('neetlogiq_user_data');
+        localStorage.removeItem('streamSelectionSkipped');
+        window.location.href = '/';
+      }
     } catch (error) {
       console.error('Sign out error:', error);
       throw error;
@@ -263,23 +409,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Get fresh auth token
-  const getToken = async (): Promise<string | null> => {
-    if (!user) return null;
-
+  // Refresh session
+  const refreshSession = async () => {
     try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) throw error;
-
-      const token = session?.access_token || null;
-      setAuthToken(token);
-      return token;
+      const { data: { session: newSession } } = await supabase.auth.refreshSession();
+      if (newSession) {
+        setSession(newSession);
+        setUser(transformUser(newSession.user));
+      }
     } catch (error) {
-      console.error('Error refreshing auth token:', error);
-      return null;
+      console.error('Refresh error:', error);
     }
   };
 
+<<<<<<< Updated upstream
   // Save user stream selection
   const saveStreamSelection = async (stream: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL') => {
     if (!user) return;
@@ -338,9 +481,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     saveStreamSelection
   };
 
+=======
+>>>>>>> Stashed changes
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{
+      user,
+      session,
+      loading,
+      subscriptionTier,
+      isAdmin,
+      isSuperAdmin,
+      isAuthenticated: !!user,
+      showStreamSelection,
+      setShowStreamSelection,
+      signInWithGoogle,
+      signOut,
+      refreshSession,
+    }}>
       {children}
     </AuthContext.Provider>
   );
+<<<<<<< Updated upstream
 };
+=======
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
+>>>>>>> Stashed changes

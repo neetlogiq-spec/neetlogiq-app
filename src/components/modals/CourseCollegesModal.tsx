@@ -57,13 +57,15 @@ interface CourseCollegesModalProps {
   onClose: () => void;
   course: Course | null;
   colleges?: College[];
+  isLoading?: boolean;
 }
 
 const CourseCollegesModal: React.FC<CourseCollegesModalProps> = ({
   isOpen,
   onClose,
   course,
-  colleges = []
+  colleges = [],
+  isLoading = false
 }) => {
   const { isDarkMode } = useTheme();
 
@@ -94,8 +96,11 @@ const CourseCollegesModal: React.FC<CourseCollegesModalProps> = ({
     }
   };
 
-  // Use the colleges array directly from the course (already aggregated by backend)
-  const aggregatedColleges = course.colleges || [];
+  // Use the colleges prop if provided, otherwise fallback to course.colleges
+  // This ensures that either data source (aggregated in backend or passed as prop) works
+  const aggregatedColleges = colleges && colleges.length > 0 
+    ? colleges 
+    : (course.colleges || []);
 
   return (
     <AnimatePresence>
@@ -145,7 +150,7 @@ const CourseCollegesModal: React.FC<CourseCollegesModalProps> = ({
                   <p className={`text-sm ${
                     isDarkMode ? 'text-gray-400' : 'text-gray-600'
                   }`}>
-                    Available in {aggregatedColleges.length} colleges
+                    {isLoading ? 'Loading colleges...' : `Available in ${aggregatedColleges.length} colleges`}
                   </p>
                 </div>
               </div>
@@ -165,7 +170,22 @@ const CourseCollegesModal: React.FC<CourseCollegesModalProps> = ({
 
           {/* Content */}
           <div className="p-6 max-h-[60vh] overflow-y-auto">
-            {aggregatedColleges.length > 0 ? (
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className={`p-4 rounded-xl border-2 animate-pulse ${
+                    isDarkMode ? 'bg-white/5 border-white/10' : 'bg-blue-50/20 border-blue-100'
+                  }`}>
+                    <div className="h-4 bg-gray-400/20 rounded w-3/4 mb-3"></div>
+                    <div className="h-3 bg-gray-400/20 rounded w-1/2 mb-2"></div>
+                    <div className="flex justify-between items-center mt-4">
+                      <div className="h-3 bg-gray-400/20 rounded w-1/4"></div>
+                      <div className="h-3 bg-gray-400/20 rounded w-1/4"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : aggregatedColleges.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {aggregatedColleges.map((college, index) => (
                   <motion.div

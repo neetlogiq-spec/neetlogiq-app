@@ -1,0 +1,12 @@
+{
+  "auto_threshold": 85,
+  "possible_threshold": 70,
+  "ignore_list": [],
+  "ignore_brackets": false,
+  "panel_positions": {},
+  "theme": "dark",
+  "use_lemmatization": true,
+  "learning_enabled": true,
+  "learning_threshold": 3,
+  "batch_max_workers": 4
+}

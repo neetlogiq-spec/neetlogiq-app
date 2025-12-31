@@ -260,14 +260,17 @@ export class StreamDataService {
 // Hook for using stream data service
 export const useStreamDataService = () => {
   const { user } = useAuth();
-  const { cutoffs, colleges, courses, loading, error } = useEdgeData();
+  const { cutoffs, masterData, loading, error } = useEdgeData();
   
   const currentStream = user?.selectedStream as StreamType | null;
   const streamService = new StreamDataService(currentStream);
 
+  const colleges = masterData?.colleges || [];
+  const courses = masterData?.courses || [];
+
   // Filter data based on current stream
-  const filteredColleges = streamService.filterColleges(colleges || []);
-  const filteredCourses = streamService.filterCourses(courses || []);
+  const filteredColleges = streamService.filterColleges(colleges);
+  const filteredCourses = streamService.filterCourses(courses);
   const filteredCutoffs = streamService.filterCutoffs(cutoffs || []);
 
   return {
@@ -281,8 +284,9 @@ export const useStreamDataService = () => {
     cutoffs: filteredCutoffs,
     
     // Original data
-    allColleges: colleges || [],
-    allCourses: courses || [],
+    masterData,
+    allColleges: colleges,
+    allCourses: courses,
     allCutoffs: cutoffs || [],
     
     // Loading and error states

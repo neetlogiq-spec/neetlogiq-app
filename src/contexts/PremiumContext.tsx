@@ -1,13 +1,9 @@
-/**
- * Premium Context
- * Manages subscription state and feature access across the app
- */
-
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { PRICING_PLANS, FeatureKey } from '@/config/premium';
+<<<<<<< Updated upstream
 
 interface Subscription {
   id: string;
@@ -26,45 +22,59 @@ interface FeatureUsage {
   usage_count: number;
   last_reset_at: string;
 }
+=======
+import { useAuth } from './AuthContext';
+>>>>>>> Stashed changes
 
 interface PremiumContextType {
-  subscription: Subscription | null;
-  featureUsage: Record<string, FeatureUsage>;
-  loading: boolean;
   isPremium: boolean;
-  currentPlan: string;
-  hasFeatureAccess: (featureKey: FeatureKey) => boolean;
-  canUseFeature: (featureKey: FeatureKey) => Promise<boolean>;
-  incrementFeatureUsage: (featureKey: FeatureKey) => Promise<void>;
-  getFeatureLimit: (featureKey: FeatureKey) => number | 'unlimited';
-  getFeatureUsage: (featureKey: FeatureKey) => number;
+  subscriptionTier: string;
+  subscriptionEndDate: string | null;
+  dailyRecommendationsUsed: number;
+  dailyRecommendationsLimit: number;
+  canGetRecommendations: boolean;
+  isLoading: boolean;
+  error: string | null;
   refreshSubscription: () => Promise<void>;
+  hasFeatureAccess: (feature: FeatureKey) => boolean;
+  canUseFeature: (feature: FeatureKey) => Promise<boolean>;
+  getFeatureLimit: (feature: FeatureKey) => number | 'unlimited' | boolean;
+  getFeatureUsage: (feature: FeatureKey) => number;
+  incrementFeatureUsage: (feature: FeatureKey) => Promise<void>;
+  currentPlan: string;
+  loading: boolean;
 }
 
 const PremiumContext = createContext<PremiumContextType | undefined>(undefined);
 
-export const PremiumProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [featureUsage, setFeatureUsage] = useState<Record<string, FeatureUsage>>({});
+export function PremiumProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const [subscriptionTier, setSubscriptionTier] = useState<string>('free');
+  const [subscriptionEndDate, setSubscriptionEndDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [recommendationCount, setRecommendationCount] = useState(0);
 
-  const currentPlan = subscription?.plan_type || 'free';
-  const isPremium = subscription?.status === 'active' && subscription?.plan_type !== 'free';
+  const fetchSubscription = useCallback(async () => {
+    if (!user) {
+      setSubscriptionTier('free');
+      setSubscriptionEndDate(null);
+      setRecommendationCount(0);
+      setLoading(false);
+      return;
+    }
 
-  // Fetch subscription and feature usage
-  const fetchSubscriptionData = async () => {
     try {
       setLoading(true);
+      const { data, error: fetchError } = await supabase
+        .from('user_profiles')
+        .select('subscription_tier, subscription_end_date, daily_recommendation_count')
+        .eq('user_id', user.uid)
+        .single();
 
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setSubscription(null);
-        setFeatureUsage({});
-        setLoading(false);
-        return;
-      }
+      if (fetchError) throw fetchError;
 
+<<<<<<< Updated upstream
       // Fetch active subscription
       const { data: subscriptionData, error: subError } = await supabase
         .from('subscriptions')
@@ -93,151 +103,115 @@ export const PremiumProvider: React.FC<{ children: ReactNode }> = ({ children })
         const usageMap: Record<string, FeatureUsage> = {};
         usageData?.forEach((usage: any) => {
           usageMap[usage.feature_key] = usage;
+=======
+      if (data) {
+        console.log('💳 PremiumContext: Data loaded:', {
+          tier: data.subscription_tier,
+          endDate: data.subscription_end_date
+>>>>>>> Stashed changes
         });
-        setFeatureUsage(usageMap);
+        setSubscriptionTier(data.subscription_tier || 'free');
+        setSubscriptionEndDate(data.subscription_end_date);
+        setRecommendationCount(data.daily_recommendation_count || 0);
       }
-    } catch (error) {
-      console.error('Error in fetchSubscriptionData:', error);
+    } catch (err: any) {
+      console.error('Error fetching subscription:', err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
-    fetchSubscriptionData();
+    fetchSubscription();
+  }, [fetchSubscription]);
 
-    // Set up real-time subscription for changes
-    const channel = supabase
-      .channel('subscription_changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'subscriptions'
-      }, () => {
-        fetchSubscriptionData();
-      })
-      .subscribe();
+  // Helper to normalize feature keys (snake_case to camelCase)
+  // because config/premium.ts uses camelCase for names in PricingPlan.limits
+  const normalizeFeatureKey = (feature: string): string => {
+    // If it's already camelCase (no underscores), return as is
+    if (!feature.includes('_')) return feature;
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const hasFeatureAccess = (featureKey: FeatureKey): boolean => {
-    const plan = PRICING_PLANS[currentPlan];
-    if (!plan) return false;
-
-    switch (featureKey) {
-      case 'trend_analysis':
-        return plan.limits.trendAnalysis;
-      case 'priority_support':
-        return plan.limits.prioritySupport;
-      case 'advanced_filters':
-        return plan.limits.advancedFilters;
-      case 'rank_predictor':
-        return plan.limits.rankPredictor;
-      default:
-        return true;
-    }
+    // Convert snake_case to camelCase (e.g., trend_analysis -> trendAnalysis)
+    return feature.toLowerCase().replace(/_([a-z])/g, (g) => g[1].toUpperCase());
   };
 
-  const getFeatureLimit = (featureKey: FeatureKey): number | 'unlimited' => {
-    const plan = PRICING_PLANS[currentPlan];
-    if (!plan) return 0;
-
-    switch (featureKey) {
-      case 'college_comparisons':
-        return plan.limits.collegeComparisons;
-      case 'smart_predictions':
-        return plan.limits.smartPredictions;
-      case 'counselling_documents':
-        return plan.limits.counsellingDocuments;
-      case 'export_data':
-        return plan.limits.exportData;
-      default:
-        return 0;
-    }
-  };
-
-  const getFeatureUsage = (featureKey: FeatureKey): number => {
-    return featureUsage[featureKey]?.usage_count || 0;
-  };
-
-  const canUseFeature = async (featureKey: FeatureKey): Promise<boolean> => {
-    const limit = getFeatureLimit(featureKey);
+  const hasFeatureAccess = useCallback((feature: FeatureKey): boolean => {
+    const plan = PRICING_PLANS[subscriptionTier] || PRICING_PLANS.free;
+    const normalizedKey = normalizeFeatureKey(feature) as keyof typeof plan.limits;
+    const limit = plan.limits[normalizedKey];
+    
+    if (typeof limit === 'boolean') return limit;
     if (limit === 'unlimited') return true;
-    if (limit === 0) return false;
+    if (typeof limit === 'number') return true; 
+    
+    return false;
+  }, [subscriptionTier]);
 
-    const usage = getFeatureUsage(featureKey);
-    return usage < limit;
-  };
+  const getFeatureLimit = useCallback((feature: FeatureKey): number | 'unlimited' | boolean => {
+    const plan = PRICING_PLANS[subscriptionTier] || PRICING_PLANS.free;
+    const normalizedKey = normalizeFeatureKey(feature) as keyof typeof plan.limits;
+    return plan.limits[normalizedKey];
+  }, [subscriptionTier]);
 
-  const incrementFeatureUsage = async (featureKey: FeatureKey): Promise<void> => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const currentUsage = featureUsage[featureKey];
-
-      if (currentUsage) {
-        // Update existing usage
-        const { error } = await supabase
-          .from('user_feature_usage')
-          .update({ usage_count: currentUsage.usage_count + 1 })
-          .eq('user_id', user.id)
-          .eq('feature_key', featureKey);
-
-        if (error) throw error;
-
-        setFeatureUsage(prev => ({
-          ...prev,
-          [featureKey]: {
-            ...currentUsage,
-            usage_count: currentUsage.usage_count + 1
-          }
-        }));
-      } else {
-        // Create new usage record
-        const { error } = await supabase
-          .from('user_feature_usage')
-          .insert({
-            user_id: user.id,
-            feature_key: featureKey,
-            usage_count: 1
-          });
-
-        if (error) throw error;
-
-        setFeatureUsage(prev => ({
-          ...prev,
-          [featureKey]: {
-            feature_key: featureKey,
-            usage_count: 1,
-            last_reset_at: new Date().toISOString()
-          }
-        }));
-      }
-    } catch (error) {
-      console.error('Error incrementing feature usage:', error);
+  const getFeatureUsage = useCallback((feature: FeatureKey): number => {
+    if (feature === 'smart_predictions') {
+      return recommendationCount;
     }
-  };
+    // Placeholder for other usages
+    return 0;
+  }, [recommendationCount]);
 
-  const refreshSubscription = async (): Promise<void> => {
-    await fetchSubscriptionData();
-  };
+  const canUseFeature = useCallback(async (feature: FeatureKey): Promise<boolean> => {
+    const limit = getFeatureLimit(feature);
+    const usage = getFeatureUsage(feature);
+
+    if (typeof limit === 'boolean') return limit;
+    if (limit === 'unlimited') return true;
+    if (typeof limit === 'number') return usage < limit;
+
+    return false;
+  }, [getFeatureLimit, getFeatureUsage]);
+
+  const incrementFeatureUsage = useCallback(async (feature: FeatureKey) => {
+    if (!user) return;
+
+    if (feature === 'smart_predictions') {
+      try {
+        const { error: updateError } = await supabase
+          .from('user_profiles')
+          .update({ 
+            daily_recommendation_count: recommendationCount + 1,
+            last_recommendation_at: new Date().toISOString()
+          })
+          .eq('user_id', user.uid);
+
+        if (updateError) throw updateError;
+        setRecommendationCount(prev => prev + 1);
+      } catch (err) {
+        console.error('Error incrementing recommendation count:', err);
+      }
+    }
+    // Handle other features here if needed
+  }, [user, recommendationCount]);
 
   const value: PremiumContextType = {
-    subscription,
-    featureUsage,
+    isPremium: subscriptionTier !== 'free',
+    subscriptionTier,
+    subscriptionEndDate,
+    dailyRecommendationsUsed: recommendationCount,
+    dailyRecommendationsLimit: (PRICING_PLANS[subscriptionTier]?.limits.smartPredictions as number) || 5,
+    canGetRecommendations: subscriptionTier !== 'free' || recommendationCount < 5,
+    isLoading: loading,
     loading,
-    isPremium,
-    currentPlan,
+    error,
+    refreshSubscription: fetchSubscription,
     hasFeatureAccess,
     canUseFeature,
-    incrementFeatureUsage,
     getFeatureLimit,
     getFeatureUsage,
-    refreshSubscription
+    incrementFeatureUsage,
+    currentPlan: subscriptionTier
   };
 
   return (
@@ -245,12 +219,12 @@ export const PremiumProvider: React.FC<{ children: ReactNode }> = ({ children })
       {children}
     </PremiumContext.Provider>
   );
-};
+}
 
-export const usePremium = (): PremiumContextType => {
+export function usePremium() {
   const context = useContext(PremiumContext);
   if (context === undefined) {
     throw new Error('usePremium must be used within a PremiumProvider');
   }
   return context;
-};
+}

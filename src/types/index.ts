@@ -126,12 +126,14 @@ export interface User {
   uid: string;
   email: string | null;
   displayName: string | null;
-  photoURL?: string | null;
-  givenName?: string;
-  familyName?: string;
-  name?: string;
-  imageUrl?: string;
+  photoURL: string | null;
+  givenName?: string | null;
+  familyName?: string | null;
+  name?: string | null;
+  imageUrl?: string | null;
   selectedStream?: 'UG' | 'PG_MEDICAL' | 'PG_DENTAL' | null;
+  role?: string | null;
+  user_metadata?: any;
 }
 
 export interface AuthContextType {
@@ -143,6 +145,7 @@ export interface AuthContextType {
   isAuthenticated?: boolean;
   // Enhanced auth features
   isAdmin?: boolean;
+  isSuperAdmin?: boolean;
   authToken?: string | null;
   getToken?: () => Promise<string | null>;
   // Stream selection

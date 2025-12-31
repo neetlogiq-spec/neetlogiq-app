@@ -30,7 +30,20 @@ const nextConfig = {
 
   // Minimal experimental features to reduce memory
   experimental: {
+<<<<<<< Updated upstream
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+=======
+    optimizePackageImports: ['lucide-react', 'framer-motion', 'recharts'],
+
+    // ✅ Server Actions for type-safe mutations
+    serverActions: {
+      bodySizeLimit: '2mb',
+      allowedOrigins: isDev ? ['localhost:3500', '127.0.0.1:3500', '192.168.31.3:3500', '*.lan', '*.local'] : ['neetlogiq.com', 'www.neetlogiq.com']
+    },
+
+    // ✅ Partial Prerendering (latest Next.js feature)
+    // ppr: true,  // Enable when ready for production
+>>>>>>> Stashed changes
   },
 
   // Configure webpack for memory efficiency and WASM support

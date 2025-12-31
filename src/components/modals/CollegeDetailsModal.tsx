@@ -147,109 +147,122 @@ const CollegeDetailsModal: React.FC<CollegeDetailsModalProps> = ({
             }`}
           >
             {/* Header */}
-            <div className={`p-6 border-b ${
-              isDarkMode ? 'border-gray-700' : 'border-gray-200'
+            <div className={`p-6 border-b sticky top-0 z-20 ${
+              isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
             }`}>
-              <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-4">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
+              {/* Close Button - Absolute Positioned */}
+              <button
+                onClick={onClose}
+                className={`absolute top-4 right-4 p-2 rounded-lg transition-colors duration-150 z-30 ${
+                  isDarkMode 
+                    ? 'hover:bg-gray-700 text-gray-400' 
+                    : 'hover:bg-gray-100 text-gray-600'
+                }`}
+                aria-label="Close modal"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="flex items-start pr-8"> {/* Room for absolute close button */}
+                <div className="flex items-start space-x-4 w-full">
+                  <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center shrink-0 ${
                     isDarkMode ? 'bg-green-500/20' : 'bg-green-100'
                   }`}>
-                    <Building2 className={`w-8 h-8 ${
+                    <Building2 className={`w-8 h-8 sm:w-10 sm:h-10 ${
                       isDarkMode ? 'text-green-400' : 'text-green-600'
                     }`} />
                   </div>
-                  <div className="flex-1">
-                    <h2 className={`text-2xl font-bold mb-2 ${
+                  <div className="flex-1 min-w-0 pt-1">
+                    <h2 className={`text-xl sm:text-2xl font-bold mb-2 wrap-break-word leading-tight ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
                     }`}>
                       {college.fullName || college.name}
                     </h2>
-                    <div className="flex items-center gap-2 mb-3">
-                      <MapPin className={`w-4 h-4 ${
-                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                      }`} />
-                      <span className={`text-sm ${
-                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                      }`}>
-                        {college.city ? `${college.city}, ` : ''}{college.state}
-                      </span>
-                    </div>
                     
-                    {/* Badges */}
-                    <div className="flex flex-wrap gap-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getManagementBadgeColor(college.management || college.management_type || '')}`}>
-                        {college.management || college.management_type || 'N/A'}
-                      </span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCollegeTypeColor(college.type || college.college_type || '')}`}>
-                        {college.type || college.college_type || 'N/A'}
-                      </span>
-                      {college.status && (
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          college.status === 'ACTIVE' 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-3">
+                      <div className="flex items-center gap-2">
+                        <MapPin className={`w-4 h-4 shrink-0 ${
+                          isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                        }`} />
+                        <span className={`text-sm ${
+                          isDarkMode ? 'text-gray-300' : 'text-gray-600'
                         }`}>
-                          {college.status}
+                          {college.city ? `${college.city}, ` : ''}{college.state}
                         </span>
-                      )}
+                      </div>
+                      
+                      {/* Badges */}
+                      <div className="flex flex-wrap gap-2">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getManagementBadgeColor(college.management || college.management_type || '')}`}>
+                          {college.management || college.management_type || 'N/A'}
+                        </span>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCollegeTypeColor(college.type || college.college_type || '')}`}>
+                          {college.type || college.college_type || 'N/A'}
+                        </span>
+                        {college.status && (
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            college.status === 'ACTIVE' 
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                              : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                          }`}>
+                            {college.status}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-                
-                <button
-                  onClick={onClose}
-                  className={`p-2 rounded-lg transition-colors duration-150 ${
-                    isDarkMode 
-                      ? 'hover:bg-gray-700 text-gray-400' 
-                      : 'hover:bg-gray-100 text-gray-600'
-                  }`}
-                >
-                  <X className="w-6 h-6" />
-                </button>
               </div>
             </div>
 
             {/* Content */}
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
               <div className="space-y-6">
-                {/* Key Statistics */}
-                <div className="grid grid-cols-2 gap-6">
-                  {/* Courses */}
-                  <div className={`p-6 rounded-xl ${
+                {/* Key Statistics - Optimized for vertical space */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Courses - Narrower column */}
+                  <div className={`px-4 py-3 rounded-xl flex items-center justify-between ${
                     isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
                   }`}>
-                    <div className="flex items-center mb-3">
-                      <GraduationCap className={`w-6 h-6 mr-3 ${
+                    <div className="flex items-center">
+                      <GraduationCap className={`w-5 h-5 mr-3 flex-shrink-0 ${
                         isDarkMode ? 'text-purple-400' : 'text-purple-600'
                       }`} />
-                      <span className={`text-lg font-semibold ${
+                      <span className={`text-sm font-semibold ${
                         isDarkMode ? 'text-gray-300' : 'text-gray-600'
                       }`}>Courses</span>
                     </div>
-                    <p className={`text-2xl font-bold ${
+                    <p className={`text-base font-bold ml-4 ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
                     }`}>
-                      {college.course_count || courses.length || 'N/A'}
+                      {isLoading ? (
+                        <span className="inline-block w-8 h-4 bg-gray-400/20 animate-pulse rounded"></span>
+                      ) : (
+                        college.course_count || courses.length || 'N/A'
+                      )}
                     </p>
                   </div>
 
-                  {/* Affiliated University */}
-                  <div className={`p-6 rounded-xl ${
+                  {/* Affiliated University - Wider column */}
+                  <div className={`px-4 py-3 rounded-xl flex items-center justify-between md:col-span-2 ${
                     isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
                   }`}>
-                    <div className="flex items-center mb-3">
-                      <School className={`w-6 h-6 mr-3 ${
+                    <div className="flex items-center min-w-0 mr-4">
+                      <School className={`w-5 h-5 mr-3 flex-shrink-0 ${
                         isDarkMode ? 'text-green-400' : 'text-green-600'
                       }`} />
-                      <span className={`text-lg font-semibold ${
+                      <span className={`text-sm font-semibold whitespace-nowrap ${
                         isDarkMode ? 'text-gray-300' : 'text-gray-600'
                       }`}>Affiliated University</span>
                     </div>
-                    <p className={`text-sm font-bold leading-relaxed ${
+                    <p className={`text-sm font-bold truncate ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      {college.university_affiliation || college.university || 'N/A'}
+                    }`} title={college.university_affiliation || college.university || 'N/A'}>
+                      {isLoading ? (
+                        <span className="inline-block w-24 h-4 bg-gray-400/20 animate-pulse rounded"></span>
+                      ) : (
+                        college.university_affiliation || college.university || 'N/A'
+                      )}
                     </p>
                   </div>
                 </div>
@@ -265,23 +278,27 @@ const CollegeDetailsModal: React.FC<CollegeDetailsModalProps> = ({
                     }`}>
                       Available Courses
                     </h3>
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                     <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                       isDarkMode 
                         ? 'bg-blue-500/20 text-blue-300' 
                         : 'bg-blue-100 text-blue-800'
                     }`}>
-                      {college.course_count || courses.length} courses
+                      {isLoading ? '...' : `${college.course_count || courses.length} courses`}
                     </div>
                   </div>
                   
                   {isLoading ? (
-                    <div className="flex items-center justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-                      <span className={`ml-3 ${
-                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
-                        Loading courses...
-                      </span>
+                    <div className="space-y-3">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className={`p-4 rounded-xl border-2 animate-pulse ${
+                          isDarkMode ? 'bg-white/5 border-white/10' : 'bg-green-50/20 border-green-100'
+                        }`}>
+                          <div className="flex justify-between items-center">
+                            <div className="h-4 bg-gray-400/20 rounded w-2/3"></div>
+                            <div className="h-4 bg-gray-400/20 rounded w-1/4"></div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   ) : courses && courses.length > 0 ? (
                     <div className="space-y-3">

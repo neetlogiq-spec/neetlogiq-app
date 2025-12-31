@@ -16,18 +16,20 @@ import {
   X,
   Bell,
   Bot,
-  Info
+  Info,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import UserPopup from '../ui/UserPopup';
-import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import ThemeToggle from '../ui/theme-toggle';
+import { usePremium } from '@/contexts/PremiumContext';
 
 const StaticHeader: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user, signInWithGoogle, signOutUser } = useAuth();
+  const { user, signInWithGoogle, signOutUser, isSuperAdmin } = useAuth();
+  const { isPremium } = usePremium();
   const pathname = usePathname();
 
   // Handle scroll effect
@@ -126,12 +128,24 @@ const StaticHeader: React.FC = () => {
 
             {/* User Actions */}
             {user ? (
-              <UserPopup
-                isOpen={isUserPopupOpen}
-                onClose={() => setIsUserPopupOpen(false)}
-                user={user}
-                onLogout={signOutUser}
-              />
+              <div className="flex items-center space-x-2">
+                <UserPopup
+                  isOpen={isUserPopupOpen}
+                  onClose={() => setIsUserPopupOpen(false)}
+                  user={user}
+                  onLogout={signOutUser}
+                />
+                {isSuperAdmin ? (
+                  <span className="px-1.5 py-0.5 bg-linear-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-bold rounded flex items-center gap-1 shadow-sm border border-white/20">
+                    <Shield className="w-2.5 h-2.5" />
+                    SUPER ADMIN
+                  </span>
+                ) : isPremium && (
+                  <span className="px-1.5 py-0.5 bg-yellow-400 text-gray-900 text-[10px] font-bold rounded flex items-center shadow-sm">
+                    PRO
+                  </span>
+                )}
+              </div>
             ) : (
               <button
                 onClick={signInWithGoogle}
@@ -228,9 +242,32 @@ const StaticHeader: React.FC = () => {
               <div className="pt-4 border-t border-gray-200">
                 {user ? (
                   <div className="space-y-3">
-                    <div className="px-4 py-2">
-                      <p className="text-sm text-gray-500">Signed in as</p>
-                      <p className="font-medium text-gray-900">{user.displayName || user.email}</p>
+                    <div className="flex items-center space-x-3 px-4 py-2">
+                       {user.photoURL ? (
+                        <img src={user.photoURL} alt={user.displayName || 'User'} className="h-10 w-10 rounded-full object-cover border border-gray-200" />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+                          <User size={20} className="text-white" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-sm text-gray-500">Signed in as</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-gray-900 dark:text-white truncate max-w-[150px]">
+                            {user.displayName || user.email}
+                          </p>
+                          {isSuperAdmin ? (
+                            <span className="px-1.5 py-0.5 bg-linear-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-bold rounded flex items-center gap-1 shadow-sm border border-white/20">
+                              <Shield className="w-2.5 h-2.5" />
+                              SUPER ADMIN
+                            </span>
+                          ) : isPremium && (
+                            <span className="px-1.5 py-0.5 bg-yellow-400 text-gray-900 text-[10px] font-bold rounded shadow-sm">
+                              PRO
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                     <button
                       onClick={() => {

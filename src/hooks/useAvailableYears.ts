@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 interface YearData {
   year: string;
@@ -26,263 +27,78 @@ export const useAvailableYears = () => {
         setLoading(true);
         setError(null);
 
-        // First, try to get years from counselling body statistics
-        try {
-          const response = await fetch('/data/json/counselling-body-statistics.json');
-          if (response.ok) {
-            const data = await response.json();
-            
-            // Extract unique years from the data
-            const years = new Set<string>();
-            const yearDataMap = new Map<string, YearData>();
-            
-            Object.entries(data.counselling_bodies).forEach(([counsellingBody, bodyData]: [string, any]) => {
-              Object.entries(bodyData.years).forEach(([year, yearData]: [string, any]) => {
-                years.add(year);
-                
-                if (!yearDataMap.has(year)) {
-                  yearDataMap.set(year, {
-                    year,
-                    counsellingBodies: [],
-                    levels: [],
-                    rounds: []
-                  });
-                }
-                
-                const yearInfo = yearDataMap.get(year)!;
-                
-                // Add counselling body if not already present
-                if (!yearInfo.counsellingBodies.includes(counsellingBody)) {
-                  yearInfo.counsellingBodies.push(counsellingBody);
-                }
-                
-                // Add level if not already present
-                if (!yearInfo.levels.includes(yearData.level)) {
-                  yearInfo.levels.push(yearData.level);
-                }
-                
-                // Add rounds
-                Object.keys(yearData.rounds).forEach(round => {
-                  const roundNum = parseInt(round);
-                  if (!yearInfo.rounds.includes(roundNum)) {
-                    yearInfo.rounds.push(roundNum);
-                  }
-                });
-              });
-            });
-            
-            // Convert to array and sort in descending order
-            const sortedYears = Array.from(years).sort((a, b) => b.localeCompare(a));
-            const sortedYearData = Array.from(yearDataMap.values()).sort((a, b) => b.year.localeCompare(a.year));
-            
-            setAvailableYears(sortedYears);
-            setYearData(sortedYearData);
-            setLatestYear(sortedYears[0] || '');
-            setLoading(false);
-            return;
-          }
-        } catch (error) {
-          console.warn('Could not load from counselling-body-statistics.json, trying file scan approach');
-        }
-
-        // Fallback: Scan for available counselling files
-        // This approach requires a manifest file or server endpoint to list files
-        // For now, we'll use a predefined list of common patterns
-        const commonYears = ['2025', '2024', '2023', '2022', '2021', '2020'];
+        // 1. Get distinct years from cutoffs table
+        // We can't do distinct easily with simple select, so we'll fetch all years (lightweight column) 
+        // or rely on a known range if the table is too big. 
+        // For accurate data, let's use a distinct-like query or aggregation if possible.
+        // Since we don't have a 'years' table, we will query distinct years using a specialized generic query or 
+        // fallback to checking a probable range (2020-2026) for existence.
+        
+        const probableYears = ['2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019'];
         const detectedYears: string[] = [];
         const detectedYearData: YearData[] = [];
-        
-        // Check for each year by trying to load a representative file
-        for (const year of commonYears) {
+
+        // Check each year in parallel
+        await Promise.all(probableYears.map(async (year) => {
+          // Check if any data exists for this year
+          const { count, error: yearError } = await supabase
+            .from('cutoffs')
+            .select('*', { count: 'exact', head: true })
+            .eq('year', parseInt(year));
+
+          if (yearError || !count) return;
+
+          detectedYears.push(year);
+
           const yearInfo: YearData = {
             year,
             counsellingBodies: [],
             levels: [],
             rounds: []
           };
+
+          // 2. Probe details for this year in parallel
+          const probes = [
+            // Check Levels
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('level', 'UG').then(r => r.count ? 'UG' : null),
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('level', 'PG').then(r => r.count ? 'PG' : null),
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('level', 'DEN').then(r => r.count ? 'DEN' : null),
+            
+            // Check Sources (Counselling Bodies) - Simplified check
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('source', 'AIQ').then(r => r.count ? 'AIQ' : null),
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).in('source', ['State', 'KEA', 'TN', 'MH']).then(r => r.count ? 'State' : null), // Generic check for State data
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('source', 'KEA').then(r => r.count ? 'KEA' : null),
+
+            // Check Rounds (1-6)
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('round', 1).then(r => r.count ? 1 : null),
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('round', 2).then(r => r.count ? 2 : null),
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('round', 3).then(r => r.count ? 3 : null),
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('round', 4).then(r => r.count ? 4 : null),
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('round', 5).then(r => r.count ? 5 : null),
+            supabase.from('cutoffs').select('*', { count: 'exact', head: true }).eq('year', parseInt(year)).eq('round', 6).then(r => r.count ? 6 : null),
+          ];
+
+          const results = await Promise.all(probes);
           
-          let yearHasData = false;
-          
-          // Check for AIQ UG data
-          try {
-            const response = await fetch(`/data/json/cutoffs/AIQ-${year}-UG-R1.json`);
-            if (response.ok) {
-              yearHasData = true;
-              if (!yearInfo.counsellingBodies.includes('AIQ')) {
-                yearInfo.counsellingBodies.push('AIQ');
-              }
-              if (!yearInfo.levels.includes('UG')) {
-                yearInfo.levels.push('UG');
-              }
-              
-              // Try to determine available rounds
-              for (let round = 1; round <= 5; round++) {
-                try {
-                  const roundResponse = await fetch(`/data/json/cutoffs/AIQ-${year}-UG-R${round}.json`);
-                  if (roundResponse.ok && !yearInfo.rounds.includes(round)) {
-                    yearInfo.rounds.push(round);
-                  }
-                } catch (e) {
-                  // Round doesn't exist, stop checking further rounds
-                  break;
-                }
-              }
-            }
-          } catch (e) {
-            // File doesn't exist
+          // Process Levels
+          if (results[0]) yearInfo.levels.push('UG');
+          if (results[1]) yearInfo.levels.push('PG');
+          if (results[2]) yearInfo.levels.push('DEN');
+
+          // Process Bodies
+          if (results[3]) yearInfo.counsellingBodies.push('AIQ');
+          if (results[4] && !yearInfo.counsellingBodies.includes('State')) yearInfo.counsellingBodies.push('State'); 
+          // Note: State might cover KEA, but we check KEA explicitly too if needed
+          if (results[5] && !yearInfo.counsellingBodies.includes('KEA')) yearInfo.counsellingBodies.push('KEA');
+
+          // Process Rounds
+          for (let i = 6; i < 12; i++) {
+            if (results[i]) yearInfo.rounds.push(results[i] as number);
           }
-          
-          // Check for KEA UG data
-          try {
-            const response = await fetch(`/data/json/cutoffs/KEA-${year}-UG-R1.json`);
-            if (response.ok) {
-              yearHasData = true;
-              if (!yearInfo.counsellingBodies.includes('KEA')) {
-                yearInfo.counsellingBodies.push('KEA');
-              }
-              if (!yearInfo.levels.includes('UG')) {
-                yearInfo.levels.push('UG');
-              }
-              
-              // Try to determine available rounds
-              for (let round = 1; round <= 5; round++) {
-                try {
-                  const roundResponse = await fetch(`/data/json/cutoffs/KEA-${year}-UG-R${round}.json`);
-                  if (roundResponse.ok && !yearInfo.rounds.includes(round)) {
-                    yearInfo.rounds.push(round);
-                  }
-                } catch (e) {
-                  // Round doesn't exist, stop checking further rounds
-                  break;
-                }
-              }
-            }
-          } catch (e) {
-            // File doesn't exist
-          }
-          
-          // Check for AIQ PG data
-          try {
-            const response = await fetch(`/data/json/cutoffs/AIQ-${year}-PG-R1.json`);
-            if (response.ok) {
-              yearHasData = true;
-              if (!yearInfo.counsellingBodies.includes('AIQ')) {
-                yearInfo.counsellingBodies.push('AIQ');
-              }
-              if (!yearInfo.levels.includes('PG')) {
-                yearInfo.levels.push('PG');
-              }
-              
-              // Try to determine available rounds
-              for (let round = 1; round <= 5; round++) {
-                try {
-                  const roundResponse = await fetch(`/data/json/cutoffs/AIQ-${year}-PG-R${round}.json`);
-                  if (roundResponse.ok && !yearInfo.rounds.includes(round)) {
-                    yearInfo.rounds.push(round);
-                  }
-                } catch (e) {
-                  // Round doesn't exist, stop checking further rounds
-                  break;
-                }
-              }
-            }
-          } catch (e) {
-            // File doesn't exist
-          }
-          
-          // Check for KEA PG data
-          try {
-            const response = await fetch(`/data/json/cutoffs/KEA-${year}-PG-R1.json`);
-            if (response.ok) {
-              yearHasData = true;
-              if (!yearInfo.counsellingBodies.includes('KEA')) {
-                yearInfo.counsellingBodies.push('KEA');
-              }
-              if (!yearInfo.levels.includes('PG')) {
-                yearInfo.levels.push('PG');
-              }
-              
-              // Try to determine available rounds
-              for (let round = 1; round <= 5; round++) {
-                try {
-                  const roundResponse = await fetch(`/data/json/cutoffs/KEA-${year}-PG-R${round}.json`);
-                  if (roundResponse.ok && !yearInfo.rounds.includes(round)) {
-                    yearInfo.rounds.push(round);
-                  }
-                } catch (e) {
-                  // Round doesn't exist, stop checking further rounds
-                  break;
-                }
-              }
-            }
-          } catch (e) {
-            // File doesn't exist
-          }
-          
-          // Check for AIQ DEN data
-          try {
-            const response = await fetch(`/data/json/cutoffs/AIQ-${year}-DEN-R1.json`);
-            if (response.ok) {
-              yearHasData = true;
-              if (!yearInfo.counsellingBodies.includes('AIQ')) {
-                yearInfo.counsellingBodies.push('AIQ');
-              }
-              if (!yearInfo.levels.includes('DEN')) {
-                yearInfo.levels.push('DEN');
-              }
-              
-              // Try to determine available rounds
-              for (let round = 1; round <= 5; round++) {
-                try {
-                  const roundResponse = await fetch(`/data/json/cutoffs/AIQ-${year}-DEN-R${round}.json`);
-                  if (roundResponse.ok && !yearInfo.rounds.includes(round)) {
-                    yearInfo.rounds.push(round);
-                  }
-                } catch (e) {
-                  // Round doesn't exist, stop checking further rounds
-                  break;
-                }
-              }
-            }
-          } catch (e) {
-            // File doesn't exist
-          }
-          
-          // Check for KEA DEN data
-          try {
-            const response = await fetch(`/data/json/cutoffs/KEA-${year}-DEN-R1.json`);
-            if (response.ok) {
-              yearHasData = true;
-              if (!yearInfo.counsellingBodies.includes('KEA')) {
-                yearInfo.counsellingBodies.push('KEA');
-              }
-              if (!yearInfo.levels.includes('DEN')) {
-                yearInfo.levels.push('DEN');
-              }
-              
-              // Try to determine available rounds
-              for (let round = 1; round <= 5; round++) {
-                try {
-                  const roundResponse = await fetch(`/data/json/cutoffs/KEA-${year}-DEN-R${round}.json`);
-                  if (roundResponse.ok && !yearInfo.rounds.includes(round)) {
-                    yearInfo.rounds.push(round);
-                  }
-                } catch (e) {
-                  // Round doesn't exist, stop checking further rounds
-                  break;
-                }
-              }
-            }
-          } catch (e) {
-            // File doesn't exist
-          }
-          
-          if (yearHasData) {
-            detectedYears.push(year);
-            detectedYearData.push(yearInfo);
-          }
-        }
-        
+
+          detectedYearData.push(yearInfo);
+        }));
+
         // Sort years in descending order
         detectedYears.sort((a, b) => b.localeCompare(a));
         detectedYearData.sort((a, b) => b.year.localeCompare(a.year));
@@ -295,8 +111,8 @@ export const useAvailableYears = () => {
         console.error('Failed to fetch available years:', err);
         setError('Failed to load available years');
         
-        // Fallback to hardcoded years
-        const fallbackYears = ['2024', '2023', '2022', '2021', '2020'];
+        // Fallback to minimal default
+        const fallbackYears = ['2024'];
         setAvailableYears(fallbackYears);
         setLatestYear(fallbackYears[0]);
       } finally {

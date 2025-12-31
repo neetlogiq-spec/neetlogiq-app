@@ -24,15 +24,17 @@ import {
   Lightbulb
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import UserPopup from '../ui/UserPopup';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { usePremium } from '@/contexts/PremiumContext';
+import { Shield } from 'lucide-react';
 
 const DashboardHeader: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user, signInWithGoogle, signOutUser } = useAuth();
+  const { user, signInWithGoogle, signOutUser, isSuperAdmin } = useAuth();
+  const { isPremium } = usePremium();
   const pathname = usePathname();
 
   // Handle scroll effect
@@ -172,10 +174,28 @@ const DashboardHeader: React.FC = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <User size={18} />
+                    {user.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        alt={user.displayName || 'User'}
+                        className="h-6 w-6 rounded-full object-cover border border-white/20"
+                      />
+                    ) : (
+                      <User size={18} />
+                    )}
                     <span className="hidden lg:block font-medium">
-                      {user.name || user.email?.split('@')[0] || 'User'}
+                      {user.givenName || user.displayName || user.name || user.email?.split('@')[0] || 'User'}
                     </span>
+                    {isSuperAdmin ? (
+                      <span className="ml-1 px-1.5 py-0.5 bg-linear-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-bold rounded flex items-center gap-1 shadow-sm border border-white/20">
+                        <Shield className="w-2.5 h-2.5" />
+                        SUPER ADMIN
+                      </span>
+                    ) : isPremium && (
+                      <span className="ml-1 px-1.5 py-0.5 bg-yellow-400 text-gray-900 text-[10px] font-bold rounded flex items-center shadow-sm">
+                         PRO
+                      </span>
+                    )}
                   </motion.button>
                   <UserPopup
                     isOpen={isUserPopupOpen}
@@ -368,11 +388,31 @@ const DashboardHeader: React.FC = () => {
                     {user ? (
                       <div className="space-y-3">
                         <div className="flex items-center space-x-3 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 text-white">
-                          <User size={20} />
+                          {user.photoURL ? (
+                            <img
+                              src={user.photoURL}
+                              alt={user.displayName || 'User'}
+                              className="h-10 w-10 rounded-full object-cover border-2 border-white/30"
+                            />
+                          ) : (
+                            <User size={20} />
+                          )}
                           <div>
-                            <p className="font-medium">
-                              {user.givenName || user.displayName || 'User'}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium">
+                                {user.displayName || user.name || 'User'}
+                              </p>
+                              {isSuperAdmin ? (
+                                <span className="px-1.5 py-0.5 bg-linear-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-bold rounded flex items-center gap-1 shadow-sm border border-white/20">
+                                  <Shield className="w-2.5 h-2.5" />
+                                  SUPER ADMIN
+                                </span>
+                              ) : isPremium && (
+                                <span className="px-1.5 py-0.5 bg-yellow-400 text-gray-900 text-[10px] font-bold rounded shadow-sm">
+                                  PRO
+                                </span>
+                              )}
+                            </div>
                             <p className="text-sm opacity-80">{user.email}</p>
                           </div>
                         </div>

@@ -1,0 +1,5 @@
+2025-12-18 18:44:47,644 - CourseStandardizer - INFO - Loaded 205 standard terms from standard_courses.xlsx
+2025-12-18 18:44:54,283 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-12-18 18:44:54,283 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-12-18 18:44:59,685 - CourseStandardizer - INFO - Downloading missing NLTK resource: punkt_tab
+2025-12-18 18:45:07,367 - CourseStandardizer - INFO - Downloading missing NLTK resource: wordnet

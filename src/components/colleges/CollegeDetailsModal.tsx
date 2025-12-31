@@ -346,13 +346,16 @@ const CollegeDetailsModal: React.FC<CollegeDetailsModalProps> = ({
                                   const program = (course.program || '').toUpperCase();
                                   const stream = (course.stream || '').toUpperCase();
                                   
-                                  // DIPLOMA courses (Postgraduate Diploma) - Check this FIRST for NBEMS-DIPLOMA
+                                  // Favor explicit program/course_type from API if available
+                                  if (program && program !== 'N/A') {
+                                    if (program.includes('DIPLOMA')) return 'DIPLOMA';
+                                    if (program.includes('NBEMS')) return 'NBEMS';
+                                    return program;
+                                  }
+                                  
+                                  // Fallback to name-based classification
                                   if (courseName.includes('DIPLOMA') || courseName.includes('DIPLOMA -')) return 'DIPLOMA';
-                                  
-                                  // MBBS - Bachelor of Medicine, Bachelor of Surgery
                                   if (courseName.includes('MBBS')) return 'MBBS';
-                                  
-                                  // BDS - Bachelor of Dental Surgery (only for the exact course name "BDS")
                                   if (courseName === 'BDS') return 'BDS';
                                   
                                   // MDS - Master of Dental Surgery (for dental postgraduate courses)

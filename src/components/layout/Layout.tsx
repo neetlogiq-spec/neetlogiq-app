@@ -4,6 +4,7 @@ import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import MobileBottomNavigation from '@/components/mobile/MobileBottomNavigation';
+import BackToTopButton from '@/components/ui/BackToTopButton';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -25,6 +26,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Mobile Bottom Navigation */}
       <MobileBottomNavigation />
+      
+      {/* Back to Top Button - Global for all pages */}
+      <BackToTopButton />
     </div>
   );
 };

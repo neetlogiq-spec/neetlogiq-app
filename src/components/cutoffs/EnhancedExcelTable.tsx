@@ -8,18 +8,9 @@ import {
   MapPin, 
   Award, 
   Users,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  BarChart3,
-  Filter,
   SortAsc,
   SortDesc,
-  Search,
-  Download,
-  RefreshCw,
-  Settings,
-  Zap
+  Search
 } from 'lucide-react';
 
 interface CutoffRecord {
@@ -81,8 +72,7 @@ const EnhancedExcelTable: React.FC<EnhancedExcelTableProps> = ({
   const [filters, setFilters] = useState<FilterConfig[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  const [isLoading, setIsLoading] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+
   const [virtualization, setVirtualization] = useState(true);
   
   // Performance optimization
@@ -104,11 +94,7 @@ const EnhancedExcelTable: React.FC<EnhancedExcelTableProps> = ({
       { key: `r${round}_opening`, label: `R${round} Opening`, type: 'number', sortable: true, filterable: true, width: 120 },
       { key: `r${round}_closing`, label: `R${round} Closing`, type: 'number', sortable: true, filterable: true, width: 120 },
       { key: `r${round}_range`, label: `R${round} Range`, type: 'number', sortable: true, filterable: true, width: 100 }
-    ]),
-    // AI-enhanced columns
-    { key: 'predictionScore', label: 'AI Score', type: 'number', sortable: true, filterable: true, width: 100 },
-    { key: 'trendDirection', label: 'Trend', type: 'text', sortable: true, filterable: true, width: 80 },
-    { key: 'recommendationRank', label: 'AI Rank', type: 'number', sortable: true, filterable: true, width: 100 }
+    ])
   ], [data]);
 
   // Transform data for display
@@ -125,22 +111,21 @@ const EnhancedExcelTable: React.FC<EnhancedExcelTableProps> = ({
         year: cutoff.year,
         quota: cutoff.quota,
         category: cutoff.category,
-        totalSeats: cutoff.totalSeats,
-        predictionScore: cutoff.predictionScore,
-        trendDirection: cutoff.trendDirection,
-        recommendationRank: cutoff.recommendationRank
+        totalSeats: cutoff.totalSeats
       };
 
-      // Add round data
+      // Add round data (with null check)
       const roundData: any = {};
-      Object.keys(cutoff.rounds).forEach(round => {
-        const roundInfo = cutoff.rounds[parseInt(round)];
-        if (roundInfo) {
-          roundData[`r${round}_opening`] = roundInfo.openingRank;
-          roundData[`r${round}_closing`] = roundInfo.closingRank;
-          roundData[`r${round}_range`] = roundInfo.closingRank - roundInfo.openingRank;
-        }
-      });
+      if (cutoff.rounds && typeof cutoff.rounds === 'object') {
+        Object.keys(cutoff.rounds).forEach(round => {
+          const roundInfo = cutoff.rounds[parseInt(round)];
+          if (roundInfo) {
+            roundData[`r${round}_opening`] = roundInfo.openingRank;
+            roundData[`r${round}_closing`] = roundInfo.closingRank;
+            roundData[`r${round}_range`] = roundInfo.closingRank - roundInfo.openingRank;
+          }
+        });
+      }
 
       return { ...baseData, ...roundData };
     });
@@ -254,130 +239,12 @@ const EnhancedExcelTable: React.FC<EnhancedExcelTableProps> = ({
     }
   }, [filteredData]);
 
-  // Export functionality
-  const handleExport = useCallback(async (format: 'csv' | 'excel' | 'json') => {
-    setIsLoading(true);
-    try {
-      // Use WebAssembly for high-performance export
-      const exportData = filteredData.map(row => ({
-        ...row,
-        selected: selectedRows.has(row.id)
-      }));
 
-      // Simulate WebAssembly export
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      console.log(`Exporting ${exportData.length} rows as ${format}`);
-      // Actual export logic would go here
-    } finally {
-      setIsLoading(false);
-    }
-  }, [filteredData, selectedRows]);
-
-  // AI-powered insights
-  const aiInsights = useMemo(() => {
-    const totalRows = filteredData.length;
-    const avgSeats = filteredData.reduce((sum, row) => sum + (row.totalSeats || 0), 0) / totalRows;
-    const trendingUp = filteredData.filter(row => row.trendDirection === 'up').length;
-    const trendingDown = filteredData.filter(row => row.trendDirection === 'down').length;
-    
-    return {
-      totalRows,
-      avgSeats: Math.round(avgSeats),
-      trendingUp,
-      trendingDown,
-      stable: totalRows - trendingUp - trendingDown
-    };
-  }, [filteredData]);
 
   return (
     <div className={`enhanced-excel-table ${isDarkMode ? 'dark' : 'light'}`}>
-      {/* Header with AI Insights */}
-      <div className={`sticky top-0 z-50 p-4 border-b ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'}`}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-4">
-            <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Enhanced Cutoffs Table
-            </h2>
-            <div className="flex items-center space-x-2">
-              <div className={`px-3 py-1 rounded-full text-sm ${isDarkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-800'}`}>
-                <Zap className="w-4 h-4 inline mr-1" />
-                AI-Powered
-              </div>
-              <div className={`px-3 py-1 rounded-full text-sm ${isDarkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-800'}`}>
-                {aiInsights.totalRows} Records
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                showFilters
-                  ? isDarkMode
-                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                    : 'bg-blue-100 text-blue-800 border border-blue-200'
-                  : isDarkMode
-                  ? 'text-white/70 hover:text-white hover:bg-white/10'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              <Filter className="w-4 h-4" />
-              Filters
-            </button>
-            
-            <button
-              onClick={() => handleExport('csv')}
-              disabled={isLoading}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                isDarkMode
-                  ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
-                  : 'bg-green-100 text-green-800 hover:bg-green-200'
-              }`}
-            >
-              <Download className="w-4 h-4" />
-              Export
-            </button>
-          </div>
-        </div>
+      {/* Header */}
 
-        {/* AI Insights Bar */}
-        <div className={`grid grid-cols-4 gap-4 p-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-          <div className="text-center">
-            <div className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              {aiInsights.totalRows}
-            </div>
-            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              Total Records
-            </div>
-          </div>
-          <div className="text-center">
-            <div className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              {aiInsights.avgSeats}
-            </div>
-            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              Avg Seats
-            </div>
-          </div>
-          <div className="text-center">
-            <div className={`text-2xl font-bold text-green-500`}>
-              {aiInsights.trendingUp}
-            </div>
-            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              Trending Up
-            </div>
-          </div>
-          <div className="text-center">
-            <div className={`text-2xl font-bold text-red-500`}>
-              {aiInsights.trendingDown}
-            </div>
-            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              Trending Down
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Search and Quick Filters */}
       <div className={`p-4 border-b ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'}`}>
@@ -502,24 +369,7 @@ const EnhancedExcelTable: React.FC<EnhancedExcelTableProps> = ({
                       isDarkMode ? 'text-white' : 'text-gray-900'
                     }`}
                   >
-                    {column.key === 'trendDirection' ? (
-                      <div className="flex items-center space-x-1">
-                        {row.trendDirection === 'up' && <TrendingUp className="w-4 h-4 text-green-500" />}
-                        {row.trendDirection === 'down' && <TrendingDown className="w-4 h-4 text-red-500" />}
-                        {row.trendDirection === 'stable' && <Minus className="w-4 h-4 text-gray-500" />}
-                        <span className="capitalize">{row.trendDirection}</span>
-                      </div>
-                    ) : column.key === 'predictionScore' ? (
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${
-                          (row.predictionScore || 0) > 0.8 ? 'bg-green-500' :
-                          (row.predictionScore || 0) > 0.6 ? 'bg-yellow-500' : 'bg-red-500'
-                        }`} />
-                        <span>{((row.predictionScore || 0) * 100).toFixed(0)}%</span>
-                      </div>
-                    ) : (
                       <span>{row[column.key] || '-'}</span>
-                    )}
                   </td>
                 ))}
               </motion.tr>

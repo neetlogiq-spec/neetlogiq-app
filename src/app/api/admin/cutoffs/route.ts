@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       .from('cutoffs')
       .select(`
         *,
-        colleges:college_id (id, name, city, state),
+        colleges:college_id (id, name, address, state),
         courses:course_id (id, name)
       `, { count: 'exact' });
 

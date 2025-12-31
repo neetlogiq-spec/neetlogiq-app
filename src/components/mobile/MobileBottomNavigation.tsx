@@ -122,6 +122,12 @@ export default function MobileBottomNavigation({
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY, autoHide]);
 
+  // Hide on cutoffs page (has its own fixed pagination bar)
+  const isCutoffsPage = pathname?.startsWith('/cutoffs');
+  if (isCutoffsPage) {
+    return null;
+  }
+
   const handleItemClick = (item: NavItem) => {
     setActiveItem(item.id);
     router.push(item.href);
